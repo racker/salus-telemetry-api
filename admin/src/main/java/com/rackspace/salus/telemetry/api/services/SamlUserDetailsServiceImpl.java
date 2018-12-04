@@ -30,7 +30,7 @@ public class SamlUserDetailsServiceImpl implements SAMLUserDetailsService {
         .map(normalized -> new SimpleGrantedAuthority("ROLE_" + normalized))
         .collect(Collectors.toList());
 
-    return new User(userId, "n/a",
+    return new User(userId, "",
         true, true, true, true,
         authorities);
   }

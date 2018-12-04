@@ -22,7 +22,7 @@ import com.rackspace.salus.telemetry.etcd.EnableEtcd;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication()
+@SpringBootApplication
 @EnableEtcd
 public class TelemetryAdminApiApplication {
 
