@@ -1,0 +1,8 @@
+server:
+  port: 8443
+  ssl:
+    key-alias: boot
+    key-store: file:samlKeystore.jks
+    key-store-type: JKS
+    key-store-password: devonly
+    key-password: devonly
