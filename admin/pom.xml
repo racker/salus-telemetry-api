@@ -100,7 +100,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
 
                 <configuration>
-                    <arguments>--logging.level.com.rackspace.rmii=debug</arguments>
+                    <arguments>--logging.level.com.rackspace.salus=debug</arguments>
                 </configuration>
             </plugin>
 
