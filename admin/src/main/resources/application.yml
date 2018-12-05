@@ -17,3 +17,11 @@ management:
         enabled: ${influx.enabled:false}
 server:
   port: 8888
+graphql:
+  servlet:
+    mapping: /graphql
+    enabled: true
+    corsEnabled: false
+logging:
+  level:
+    graphql.servlet.internal.ApolloSubscriptionKeepAliveRunner: error

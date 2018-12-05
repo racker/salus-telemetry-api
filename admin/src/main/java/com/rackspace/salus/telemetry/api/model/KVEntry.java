@@ -16,11 +16,16 @@
  *
  */
 
-package com.rackspace.salus.telemetry.api.admin;
+package com.rackspace.salus.telemetry.api.model;
 
 import lombok.Data;
 
 @Data
-public class DeleteResponse {
-    final long count;
+public class KVEntry {
+    String name;
+    String value;
+    long version;
+    long createRevision;
+    long modRevision;
+    long lease;
 }

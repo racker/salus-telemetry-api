@@ -1,0 +1,11 @@
+type Query {
+  currentProfile: Profile
+
+  # Queries the raw etcd key-value entries. By default all keys that start with "/" are returned.
+  # If name is given, then all other criteria are ignored.
+  keys(name:String, prefix:String): [KVEntry!]!
+
+  # Queries agent releases. By default all releases are returned. If an id is given then
+  # all other criteria are ignored.
+  agentReleases(id:String, type:AgentType): [AgentRelease!]!
+}
