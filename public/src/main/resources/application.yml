@@ -15,3 +15,12 @@ management:
         host: ${statsd.host:localhost}
         port: ${statsd.port:8086}
         enabled: ${influx.enabled:false}
+logging:
+  level:
+    graphql.servlet.internal.ApolloSubscriptionKeepAliveRunner: error
+graphql:
+  servlet:
+    mapping: /graphql
+    enabled: true
+    corsEnabled: false
+    exception-handlers-enabled: true

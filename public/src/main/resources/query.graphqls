@@ -1,0 +1,9 @@
+type Query {
+  agentConfigs(id:String) : [AgentConfigResponse]
+
+  # Queries agent releases. By default all releases are returned. If an id is given then
+  # all other criteria are ignored.
+  agentReleases(id:String, type:AgentType): [AgentRelease!]!
+
+  agentInstallations : [AgentInstallation!]!
+}

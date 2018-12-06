@@ -12,16 +12,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
-public class AgentCatalogQuery implements GraphQLQueryResolver {
+public class AdminAgentCatalogQuery implements GraphQLQueryResolver {
 
   private final AgentsCatalogService agentsCatalogService;
 
   @Autowired
-  public AgentCatalogQuery(AgentsCatalogService agentsCatalogService) {
+  public AdminAgentCatalogQuery(AgentsCatalogService agentsCatalogService) {
     this.agentsCatalogService = agentsCatalogService;
   }
 
   public CompletableFuture<List<AgentRelease>> agentReleases(String id, AgentType type) {
+    return agentsCatalogService.queryAgentReleases(id, type);
+  }
+
+  private CompletableFuture<List<AgentRelease>> queryAgentReleases(String id, AgentType type) {
     if (StringUtils.hasText(id)) {
       return agentsCatalogService.getAgentById(id)
           .thenApply(Collections::singletonList);
