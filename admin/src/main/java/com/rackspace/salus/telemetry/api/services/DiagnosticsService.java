@@ -24,8 +24,7 @@ import com.coreos.jetcd.data.KeyValue;
 import com.coreos.jetcd.kv.DeleteResponse;
 import com.coreos.jetcd.options.DeleteOption;
 import com.coreos.jetcd.options.GetOption;
-import com.rackspace.salus.telemetry.api.admin.KeyResponse;
-import com.rackspace.salus.telemetry.model.NotFoundException;
+import com.rackspace.salus.telemetry.api.model.KVEntry;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -35,75 +34,73 @@ import org.springframework.stereotype.Service;
 @Service
 public class DiagnosticsService {
 
-    private final Client etcd;
+  private final Client etcd;
 
-    @Autowired
-    public DiagnosticsService(Client etcd) {
-        this.etcd = etcd;
-    }
+  @Autowired
+  public DiagnosticsService(Client etcd) {
+    this.etcd = etcd;
+  }
 
-    public CompletableFuture<List<String>> getAllKeys() {
-        final CompletableFuture<List<String>> keysFuture = etcd.getKVClient().get(
-                ByteSequence.fromString("/"),
-                GetOption.newBuilder()
-                        .withPrefix(ByteSequence.fromString("/"))
-                        .withKeysOnly(true)
-                        .build())
-                .thenApply(getResponse -> {
-                    final List<String> keys = getResponse.getKvs().stream()
-                            .map(keyValue -> {
-                                return keyValue.getKey().toStringUtf8();
-                            })
-                            .collect(Collectors.toList());
-
-                    return keys;
-                });
-
-        return keysFuture;
-    }
-
-    public CompletableFuture<KeyResponse> getKey(String key) {
-        return etcd.getKVClient().get(
-                ByteSequence.fromString(key)
-        )
-                .thenApply(getResponse -> {
-                    if (getResponse.getCount() == 0) {
-                        return null;
-                    } else {
-                        final KeyResponse keyResponse = new KeyResponse();
-                        final KeyValue keyValue = getResponse.getKvs().get(0);
-
-                        keyResponse.setValue(keyValue.getValue().toStringUtf8());
-                        keyResponse.setVersion(keyValue.getVersion());
-                        keyResponse.setCreateRevision(keyValue.getCreateRevision());
-                        keyResponse.setModRevision(keyValue.getModRevision());
-                        keyResponse.setLease(keyValue.getLease());
-
-                        return keyResponse;
-                    }
-                });
-    }
-
-    public CompletableFuture<Boolean> deleteKey(String key) {
-        return etcd.getKVClient()
-                .delete(ByteSequence.fromString(key))
-        .thenApply(deleteResponse -> {
-            if (deleteResponse.getDeleted() == 0) {
-                throw new NotFoundException(String.format("The requested key was not present: %s", key));
-            }
-            return true;
+  public CompletableFuture<KVEntry> getKey(String key) {
+    return etcd.getKVClient().get(
+        ByteSequence.fromString(key)
+    )
+        .thenApply(getResponse -> {
+          if (getResponse.getCount() == 0) {
+            return null;
+          } else {
+            return buildKVEntry(getResponse.getKvs().get(0));
+          }
         });
+  }
+
+  public CompletableFuture<Long> deleteKey(String key) {
+    return etcd.getKVClient()
+        .delete(ByteSequence.fromString(key))
+        .thenApply(DeleteResponse::getDeleted);
+  }
+
+  public CompletableFuture<Long> deleteKeysByPrefix(String prefix) {
+    final ByteSequence prefixBytes = ByteSequence.fromString(prefix);
+
+    return etcd.getKVClient().delete(
+        prefixBytes,
+        DeleteOption.newBuilder()
+            .withPrefix(prefixBytes)
+            .build()
+    )
+        .thenApply(DeleteResponse::getDeleted);
+  }
+
+  public CompletableFuture<List<KVEntry>> getKeys(String prefix) {
+    if (prefix == null) {
+      // we tend to start prefixes with a slash, so its a good fallback
+      prefix = "/";
     }
+    final ByteSequence prefixBytes = ByteSequence.fromString(prefix);
 
-    public CompletableFuture<Long> deleteKeysByPrefix(String prefix) {
-        final ByteSequence prefixBytes = ByteSequence.fromString(prefix);
-
-        return etcd.getKVClient().delete(
-                prefixBytes,
-                DeleteOption.newBuilder()
-                        .withPrefix(prefixBytes)
-                        .build()
+    return etcd.getKVClient()
+        .get(
+            prefixBytes,
+            GetOption.newBuilder()
+                .withPrefix(prefixBytes)
+                .build()
         )
-                .thenApply(DeleteResponse::getDeleted);
-    }
+        .thenApply(getResponse ->
+            getResponse.getKvs().stream()
+                .map(this::buildKVEntry)
+                .collect(Collectors.toList())
+        );
+
+  }
+
+  private KVEntry buildKVEntry(KeyValue kv) {
+    return new KVEntry()
+        .setName(kv.getKey().toStringUtf8())
+        .setValue(kv.getValue().toStringUtf8())
+        .setCreateRevision(kv.getCreateRevision())
+        .setModRevision(kv.getModRevision())
+        .setLease(kv.getLease())
+        .setVersion(kv.getVersion());
+  }
 }
