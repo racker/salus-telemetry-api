@@ -1,0 +1,7 @@
+type Mutation {
+  installAgentRelease(agentReleaseId:String!, labels: [LabelInput!]!) : AgentInstallation!
+
+  createAgentConfig(config: AgentConfigInput!) : AgentConfigResponse!
+  modifyAgentConfig(id: String!, config: AgentConfigInput!) : AgentConfigResponse!
+  deleteAgentConfig(id: String!) : DeleteResult!
+}
