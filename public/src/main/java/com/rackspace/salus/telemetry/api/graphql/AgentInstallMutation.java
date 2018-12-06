@@ -5,7 +5,7 @@ import com.rackspace.salus.telemetry.api.model.AgentInstallation;
 import com.rackspace.salus.telemetry.api.model.Label;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
-import com.rackspace.salus.telemetry.model.AgentInstallSelector;
+import com.rackspace.salus.telemetry.etcd.types.AgentInstallSelector;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
@@ -43,13 +43,13 @@ public class AgentInstallMutation implements GraphQLMutationResolver {
     return agentsCatalogService.install(
         tenantId,
         new AgentInstallSelector()
-            .setAgentInfoId(agentReleaseId)
+            .setAgentReleaseId(agentReleaseId)
             .setLabels(Converters.convertToLabelMap(labels))
     )
         .thenApply(result ->
             new AgentInstallation()
                 .setId(result.getId())
-                .setAgentReleaseId(result.getAgentInfoId())
+                .setAgentReleaseId(result.getAgentReleaseId())
                 .setLabels(Converters.convertToLabelList(result.getLabels()))
         );
   }

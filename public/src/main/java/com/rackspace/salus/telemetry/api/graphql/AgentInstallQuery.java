@@ -31,7 +31,7 @@ public class AgentInstallQuery implements GraphQLQueryResolver {
                 .map(selector ->
                     new AgentInstallation()
                         .setId(selector.getId())
-                        .setAgentReleaseId(selector.getAgentInfoId())
+                        .setAgentReleaseId(selector.getAgentReleaseId())
                         .setLabels(Converters.convertToLabelList(selector.getLabels()))
                 )
                 .collect(Collectors.toList())
