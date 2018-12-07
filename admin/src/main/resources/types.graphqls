@@ -70,3 +70,8 @@ input AgentReleaseInput {
 type SuccessResult {
   success: Boolean
 }
+
+type KeyRange {
+  start: String!
+  end: String!
+}

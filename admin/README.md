@@ -95,3 +95,55 @@ keytool -genkey -alias boot \
 
 When prompted for "your first and last name" enter "salus-telemetry-admin-local.area51.rax.io"
 to correspond with the SAML callback location.
+
+## Example Queries
+
+### Declare agent release
+
+```graphql
+mutation DeclareAgentRelease($release:AgentReleaseInput!) {
+  declareAgentRelease(agentRelease:$release) {
+    id
+  }
+}
+```
+
+given
+```json
+{
+  "release": {
+    "type": "TELEGRAF",
+    "os": "DARWIN",
+    "arch": "X86_64",
+    "version": "1.8.0",
+    "url": "https://homebrew.bintray.com/bottles/telegraf-1.8.0.high_sierra.bottle.tar.gz",
+    "exe": "telegraf/1.8.0/bin/telegraf",
+    "checksum": {
+      "value": "655234590790c420dc8a442c78d71e247d39698525d8fad05a05b67006eb07c7875e6b6e7f184203b59a9a82ee3b91af6b24396a4760b3eb9d236470591e6f89",
+      "type": "SHA512"
+    }
+  }
+}
+```
+
+### Change work partition count
+
+```graphql
+mutation 
+{
+  changePresenceMonitorPartitions(count:32) {
+    success
+  }
+}
+```
+
+### Query work partitions
+
+```graphql
+{
+  presenceMonitorPartitions {
+    start
+    end
+  }
+}
+```
