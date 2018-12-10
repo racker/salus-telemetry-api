@@ -4,4 +4,6 @@ type Mutation {
   createAgentConfig(config: AgentConfigInput!) : AgentConfigResponse!
   modifyAgentConfig(id: String!, config: AgentConfigInput!) : AgentConfigResponse!
   deleteAgentConfig(id: String!) : DeleteResult!
+
+  deleteResource(identifier: String!, identifierValue: String!) : DeleteResult!
 }
