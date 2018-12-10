@@ -6,4 +6,6 @@ type Query {
   agentReleases(id:String, type:AgentType): [AgentRelease!]!
 
   agentInstallations : [AgentInstallation!]!
+
+  resources(identifier:String, identifierValue:String): [ResourceResponse!]!
 }
