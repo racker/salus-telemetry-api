@@ -8,6 +8,33 @@ of [Repose KeystoneV2](https://repose.atlassian.net/wiki/spaces/REPOSE/pages/342
 
 # Example GraphQL operations
 
+## Agent Releases Operations
+
+### Install Agent Release
+
+```graphql
+mutation InstallAgentRelease($releaseId:String!, $labels:[LabelInput!]!)
+{
+  installAgentRelease(agentReleaseId:$releaseId, labels:$labels) {
+    id
+  }
+}
+```
+
+given
+
+```json
+{
+  "releaseId": "ea99d592-fbc3-452a-9b17-5b0e0b1325bd",
+  "labels": [
+    {
+      "name": "os",
+      "value": "DARWIN"
+    }
+  ]
+}
+```
+
 ## AgentConfig Operations
 
 ### Create AgentConfig
@@ -28,11 +55,11 @@ given
   "config": {
     "agentType": "TELEGRAF",
     "selectorScope": "ALL_OF",
-    "content": "testing",
+    "content": "[[inputs.cpu]]\n[[inputs.disk]]\n  mount_points=[\"/\"]\n[[inputs.mem]]\n",
     "labels": [
       {
         "name": "os",
-        "value": "darwin"
+        "value": "DARWIN"
       }
     ]
   }
