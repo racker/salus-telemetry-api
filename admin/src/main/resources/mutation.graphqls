@@ -4,4 +4,6 @@ type Mutation {
 
   declareAgentRelease(agentRelease:AgentReleaseInput!) : AgentRelease
   deleteAgentRelease(id:String!) : SuccessResult
+
+  changePresenceMonitorPartitions(count:Int!) : SuccessResult
 }

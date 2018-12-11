@@ -8,4 +8,6 @@ type Query {
   # Queries agent releases. By default all releases are returned. If an id is given then
   # all other criteria are ignored.
   agentReleases(id:String, type:AgentType): [AgentRelease!]!
+
+  presenceMonitorPartitions : [KeyRange!]!
 }
