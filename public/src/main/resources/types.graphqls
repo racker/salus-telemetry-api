@@ -12,6 +12,14 @@ type ResourceResponse {
   identifierValue: String!
   labels: [Label!]!
   envoyId: String
+  tenantId: String!
+  address: String
+}
+
+input ResourceInput {
+  identifier: String!
+  identifierValue: String!
+  labels: [LabelInput!]!
   tenantId: String
 }
 

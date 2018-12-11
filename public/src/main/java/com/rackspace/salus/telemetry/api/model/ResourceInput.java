@@ -21,7 +21,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ResourceResponse {
+public class ResourceInput {
 
     String identifier;
 
@@ -30,8 +30,4 @@ public class ResourceResponse {
     List<Label> labels;
 
     String tenantId;
-
-    String envoyId;
-
-    String address;
 }

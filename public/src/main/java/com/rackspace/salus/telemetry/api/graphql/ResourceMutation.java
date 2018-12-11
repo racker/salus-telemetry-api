@@ -19,6 +19,8 @@ package com.rackspace.salus.telemetry.api.graphql;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.rackspace.salus.telemetry.api.Meters;
 import com.rackspace.salus.telemetry.api.model.DeleteResult;
+import com.rackspace.salus.telemetry.api.model.ResourceInput;
+import com.rackspace.salus.telemetry.api.model.ResourceResponse;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.EnvoyResourceManagement;
 import io.micrometer.core.instrument.Counter;
@@ -30,17 +32,29 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
-public class ResourceMutation  implements GraphQLMutationResolver {
+public class ResourceMutation implements GraphQLMutationResolver {
 
     private final EnvoyResourceManagement envoyResourceManagement;
     private final UserService userService;
+    private final Counter creates;
     private final Counter deletes;
 
     public ResourceMutation(EnvoyResourceManagement envoyResourceManagement, UserService userService, MeterRegistry meterRegistry) {
         this.envoyResourceManagement = envoyResourceManagement;
         this.userService = userService;
 
+        creates = meterRegistry.counter("creates", "type", Meters.RESOURCES_TYPE);
         deletes = meterRegistry.counter("deletes", "type", Meters.RESOURCES_TYPE);
+    }
+
+    public CompletableFuture<ResourceResponse> createResource(ResourceInput resource) {
+        final String tenantId = userService.currentTenantId();
+
+        log.debug("Creating new resource for tenant={}", tenantId);
+        creates.increment();
+
+        return envoyResourceManagement.create(tenantId, Converters.convertResourceFromInput(resource))
+                .thenApply(Converters::convertToResponse);
     }
 
     public CompletableFuture<DeleteResult> deleteResource(String identifier, String identifierValue) {
