@@ -58,7 +58,6 @@ public class Converters {
   static ResourceInfo convertResourceFromInput(ResourceInput resource) {
     return new ResourceInfo()
             .setIdentifier(resource.getIdentifier())
-            .setIdentifierValue(resource.getIdentifierValue())
             .setLabels(convertToLabelMap(resource.getLabels()));
   }
 

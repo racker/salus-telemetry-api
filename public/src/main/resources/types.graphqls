@@ -18,9 +18,7 @@ type ResourceResponse {
 
 input ResourceInput {
   identifier: String!
-  identifierValue: String!
   labels: [LabelInput!]!
-  tenantId: String
 }
 
 input AgentConfigInput {

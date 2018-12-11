@@ -25,9 +25,5 @@ public class ResourceInput {
 
     String identifier;
 
-    String identifierValue;
-
     List<Label> labels;
-
-    String tenantId;
 }
