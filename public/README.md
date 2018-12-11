@@ -142,6 +142,8 @@ mutation DeleteResource ($i:String!, $iv:String!) {
 }
 ```
 
+given
+
 ```json
 {
   "i": "arch",
