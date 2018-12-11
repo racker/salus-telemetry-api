@@ -1,14 +1,16 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.rackspace.salus.telemetry.api.model.AgentConfigInput;
-import com.rackspace.salus.telemetry.api.model.AgentConfigResponse;
-import com.rackspace.salus.telemetry.api.model.Label;
+import com.rackspace.salus.telemetry.api.model.*;
 import com.rackspace.salus.telemetry.model.AgentConfig;
+import com.rackspace.salus.telemetry.model.ResourceInfo;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class Converters {
 
   static List<Label> convertToLabelList(Map<String, String> labels) {
@@ -51,5 +53,32 @@ public class Converters {
         .setContent(config.getContent())
         .setSelectorScope(config.getSelectorScope())
         .setLabels(convertToLabelMap(config.getLabels()));
+  }
+
+  static ResourceInfo convertResourceFromInput(ResourceInput resource) {
+    return new ResourceInfo()
+            .setIdentifier(resource.getIdentifier())
+            .setLabels(convertToLabelMap(resource.getLabels()));
+  }
+
+  static ResourceResponse convertToResponse(ResourceInfo resourceInfo) {
+    ResourceResponse response = new ResourceResponse()
+            .setIdentifier(resourceInfo.getIdentifier())
+            .setIdentifierValue(resourceInfo.getIdentifierValue())
+            .setTenantId(resourceInfo.getTenantId())
+            .setEnvoyId(resourceInfo.getEnvoyId())
+            .setLabels(convertToLabelList(resourceInfo.getLabels()));
+
+    if (resourceInfo.getAddress() != null) {
+      response.setAddress(resourceInfo.getAddress().toString());
+    }
+    return response;
+  }
+
+  static List<ResourceResponse> convertToResourceResponse(List<ResourceInfo> resourceInfos) {
+    return resourceInfos.stream()
+            .map(Converters::convertToResponse
+            )
+            .collect(Collectors.toList());
   }
 }

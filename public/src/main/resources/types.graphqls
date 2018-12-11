@@ -7,14 +7,25 @@ enum ConfigSelectorScope {
   ALL_OF
 }
 
-type Label {
-  name: String!
-  value: String!
+type ResourceResponse {
+  identifier: String!
+  identifierValue: String!
+  labels: [Label!]!
+  envoyId: String
+  tenantId: String!
+  address: String
 }
 
-input LabelInput {
-  name: String!
-  value: String!
+input ResourceInput {
+  identifier: String!
+  labels: [LabelInput!]!
+}
+
+input AgentConfigInput {
+  agentType: AgentType!
+  content: String!
+  selectorScope: ConfigSelectorScope!
+  labels: [LabelInput!]!
 }
 
 type AgentConfigResponse {
@@ -25,13 +36,6 @@ type AgentConfigResponse {
   labels: [Label!]!
 }
 
-input AgentConfigInput {
-  agentType: AgentType!
-  content: String!
-  selectorScope: ConfigSelectorScope!
-  labels: [LabelInput!]!
-}
-
 type DeleteResult {
   success: Boolean
 }
@@ -40,6 +44,16 @@ type AgentInstallation {
   id: String
   agentReleaseId: String!
   labels: [Label!]!
+}
+
+type Label {
+  name: String!
+  value: String!
+}
+
+input LabelInput {
+  name: String!
+  value: String!
 }
 
 enum OperatingSystem {
