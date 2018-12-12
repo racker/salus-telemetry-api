@@ -2,7 +2,7 @@
 This module contains the APIs for interacting with and managing a Salus Telemetry system.
 The API includes both user/tenant facing operations and system admin facing operations.
 
-## Building
+# Building
 
 This module is a Spring Boot application and can be built with the usual Maven process of
 
@@ -10,9 +10,17 @@ This module is a Spring Boot application and can be built with the usual Maven p
 mvn package
 ```
 
-## Working with the SAML based authentication for local testing
+# Running locally 
 
-### Creating the metadata XML and SAML keystore for development
+With the default configuration, the Admin API application will run non-secure and bind to port 8888.
+The GraphQL API can be invoked interactively at http://localhost:8888/graphiql
+
+# Using SAML based authentication for local testing
+
+**NOTE** the approach described in this section is only needed for testing the SAML authentication
+locally. In most cases, you can run non-secure in local development using the previous section.
+
+## Creating the metadata XML and SAML keystore for development
 
 Using [this wiki page](https://one.rackspace.com/display/GET/Integrating+Your+App+with+AD+FS)
 download the IdP metadata XML and save it as `FederationMetadata.xml` in the working directory.
@@ -45,7 +53,7 @@ keytool -importcert \
 > **NOTE** If you use different keystore and key passwords, which you **MUST** in production, you will 
 > need to set the application properties `saml.keystore-password` and `saml.key-password` accordingly.
 
-### Running the application
+## Running the application
 
 After establishing the files in the previous section, you can run the `TelemetryAdminApiApplication`
 entry point with a working directory set to the directory where those files were established.
@@ -59,7 +67,7 @@ With that running you can access the endpoints **in a browser** via HTTPS on por
     https://salus-telemetry-admin-local.area51.rax.io:8443/admin/profile
 
 
-## SAML setup for registering with Identity Provider (IdP), such as AD FS
+# SAML setup for registering with Identity Provider (IdP), such as AD FS
 
 > **NOTE** The process in this section has already been conducted, but is noted here when the 
 > need arises to re-configure this in the IdP.
@@ -81,7 +89,7 @@ The public certificate, which was also provided to the ADFS team, was exported u
 keytool -exportcert -keystore keystore.p12 -alias boot -rfc -storepass devonly
 ```
 
-### Generating the server certificate for local development
+## Generating the server certificate for local development
 
 If the development-time, self-signed certificate expires or needs to be recreated, then the 
 following was used to generate the server's HTTPS keystore `src/main/resources/keystore.p12`
@@ -96,9 +104,9 @@ keytool -genkey -alias boot \
 When prompted for "your first and last name" enter "salus-telemetry-admin-local.area51.rax.io"
 to correspond with the SAML callback location.
 
-## Example Queries
+# Example Queries
 
-### Declare agent release
+## Declare agent release
 
 ```graphql
 mutation DeclareAgentRelease($release:AgentReleaseInput!) {
@@ -126,7 +134,7 @@ given
 }
 ```
 
-### Change work partition count
+## Change work partition count
 
 ```graphql
 mutation 
@@ -137,7 +145,7 @@ mutation
 }
 ```
 
-### Query work partitions
+## Query work partitions
 
 ```graphql
 {
