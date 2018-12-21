@@ -42,18 +42,18 @@ public class ResourceQuery implements GraphQLQueryResolver {
         this.userService = userService;
     }
 
-    public CompletableFuture<List<ResourceResponse>> resources(@Nullable String identifier, @Nullable String identifierValue) {
+    public CompletableFuture<List<ResourceResponse>> resources(@Nullable String identifierName, @Nullable String identifierValue) {
         final String tenantId = userService.currentTenantId();
 
         log.debug("Querying resources for tenant={}", tenantId);
 
-        if (StringUtils.hasText(identifier) && StringUtils.hasText(identifierValue)) {
-            log.debug("Getting resources with identifier value for tenant={}", tenantId);
-            return envoyResourceManagement.getOne(tenantId, identifier, identifierValue)
+        if (StringUtils.hasText(identifierName) && StringUtils.hasText(identifierValue)) {
+            log.debug("Getting resources with identifierName value for tenant={}", tenantId);
+            return envoyResourceManagement.getOne(tenantId, identifierName, identifierValue)
                     .thenApply(Converters::convertToResourceResponse);
-        } else if (StringUtils.hasText(identifier)) {
-            log.debug("Getting resources with identifier for tenant={}", tenantId);
-            return envoyResourceManagement.getSome(tenantId, identifier)
+        } else if (StringUtils.hasText(identifierName)) {
+            log.debug("Getting resources with identifierName for tenant={}", tenantId);
+            return envoyResourceManagement.getSome(tenantId, identifierName)
                     .thenApply(Converters::convertToResourceResponse);
         } else {
             log.debug("Getting all resources for tenant={}", tenantId);

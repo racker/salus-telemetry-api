@@ -6,5 +6,5 @@ type Mutation {
   deleteAgentConfig(id: String!) : DeleteResult!
 
   createResource(resource: ResourceInput!) : ResourceResponse!
-  deleteResource(identifier: String!, identifierValue: String!) : DeleteResult!
+  deleteResource(identifierName: String!, identifierValue: String!) : DeleteResult!
 }

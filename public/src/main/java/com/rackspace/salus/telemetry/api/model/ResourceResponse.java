@@ -23,7 +23,7 @@ import java.util.List;
 @Data
 public class ResourceResponse {
 
-    String identifier;
+    String identifierName;
 
     String identifierValue;
 

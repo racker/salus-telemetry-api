@@ -57,13 +57,13 @@ public class Converters {
 
   static ResourceInfo convertResourceFromInput(ResourceInput resource) {
     return new ResourceInfo()
-            .setIdentifier(resource.getIdentifier())
+            .setIdentifierName(resource.getIdentifierName())
             .setLabels(convertToLabelMap(resource.getLabels()));
   }
 
   static ResourceResponse convertToResponse(ResourceInfo resourceInfo) {
     ResourceResponse response = new ResourceResponse()
-            .setIdentifier(resourceInfo.getIdentifier())
+            .setIdentifierName(resourceInfo.getIdentifierName())
             .setIdentifierValue(resourceInfo.getIdentifierValue())
             .setTenantId(resourceInfo.getTenantId())
             .setEnvoyId(resourceInfo.getEnvoyId())
