@@ -57,14 +57,14 @@ public class ResourceMutation implements GraphQLMutationResolver {
                 .thenApply(Converters::convertToResponse);
     }
 
-    public CompletableFuture<DeleteResult> deleteResource(String identifier, String identifierValue) {
+    public CompletableFuture<DeleteResult> deleteResource(String identifierName, String identifierValue) {
         final String tenantId = userService.currentTenantId();
 
-        log.debug("Deleting resource with identifier={} identifierValue={} for tenant={}",
-                identifier, identifierValue, tenantId);
+        log.debug("Deleting resource with identifierName={} identifierValue={} for tenant={}",
+                identifierName, identifierValue, tenantId);
         deletes.increment();
 
-        return envoyResourceManagement.delete(tenantId, identifier, identifierValue)
+        return envoyResourceManagement.delete(tenantId, identifierName, identifierValue)
                 .thenApply(deleteResponse -> new DeleteResult().setSuccess(deleteResponse != null));
     }
 

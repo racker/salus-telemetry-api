@@ -124,7 +124,7 @@ given
 ```graphql
 mutation CreateResource($r:ResourceInput!) {
   createResource(resource:$r) {
-    identifier
+    identifierName
     identifierValue
     envoyId
     address
@@ -137,7 +137,7 @@ given
 ```json
 {
   "r": {
-    "identifier": "myid",
+    "identifierName": "myid",
     "labels": {
       "name": "myid",
       "value": "thingsandstuff"
@@ -151,7 +151,7 @@ given
 query GetAllResources {
   resources {
     tenantId
-    identifier
+    identifierName
     identifierValue
     address
     envoyId
@@ -164,11 +164,11 @@ query GetAllResources {
 ```
 
 ### Delete a resource
-Must specify the identifier and value.
+Must specify the identifierName and value.
 
 ```graphql
 mutation DeleteResource ($i:String!, $iv:String!) {
-  deleteResource(identifier:$i, identifierValue:$iv) {
+  deleteResource(identifierName:$i, identifierValue:$iv) {
     success
   }
 }

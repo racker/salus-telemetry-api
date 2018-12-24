@@ -7,5 +7,5 @@ type Query {
 
   agentInstallations : [AgentInstallation!]!
 
-  resources(identifier:String, identifierValue:String): [ResourceResponse!]!
+  resources(identifierName:String, identifierValue:String): [ResourceResponse!]!
 }
