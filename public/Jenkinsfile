@@ -13,14 +13,14 @@ podTemplate(label: label, containers: [
                     googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './.mvn/'
                 }
                 stage('Maven install') {
-                  sh 'mvn install -Dmaven.test.skip=true -s .mvn/settings.xml'
+                  sh 'cd public/'
+                  sh 'mvn install -Dmaven.test.skip=true -s ../.mvn/settings.xml'
                 }
                 stage('Integration Test') {
-                  // sh 'mvn integration-test'
-                  sh 'TZ=":America/Chicago" date'
+                  sh 'mvn integration-test'
                 }
                 stage('Deploy snapshot') {
-                  sh 'mvn deploy -Dmaven.test.skip=true -s .mvn/settings.xml'
+                  sh 'mvn deploy -Dmaven.test.skip=true -s ../.mvn/settings.xml'
                 }
             }
         }
