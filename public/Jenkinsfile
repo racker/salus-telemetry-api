@@ -10,16 +10,16 @@ podTemplate(label: label, containers: [
             ansiColor('xterm') {
                 stage('Checkout') {
                     checkout scm
-                    googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './.mvn/'
+                    googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './public/.mvn/'
                 }
                 stage('Maven install') {
-                    sh 'cd ${WORKSPACE}/public/ && mvn install -Dmaven.test.skip=true -s ${WORKSPACE}/.mvn/settings.xml'
+                    sh 'cd ${WORKSPACE}/public/ && mvn install -Dmaven.test.skip=true -s ${WORKSPACE}/public/.mvn/settings.xml'
                 }
                 stage('Integration Test') {
-                    sh 'cd ${WORKSPACE}/public/ && mvn integration-test'
+                    sh 'cd ${WORKSPACE}/public/ && mvn integration-test -s ${WORKSPACE}/public/.mvn/settings.xml'
                 }
                 stage('Deploy snapshot') {
-                    sh 'cd ${WORKSPACE}/public/ && mvn deploy -Dmaven.test.skip=true -s ${WORKSPACE}/.mvn/settings.xml'
+                    sh 'cd ${WORKSPACE}/public/ && mvn deploy -Dmaven.test.skip=true -s ${WORKSPACE}/public/.mvn/settings.xml'
                 }
             }
         }
@@ -30,7 +30,7 @@ podTemplate(label: label, containers: [
                     sh 'curl -fsSL "https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/download/v1.5.0/docker-credential-gcr_linux_amd64-1.5.0.tar.gz" | tar xz --to-stdout ./docker-credential-gcr > /usr/bin/docker-credential-gcr'
                     sh 'chmod +x /usr/bin/docker-credential-gcr'
                     sh 'docker-credential-gcr configure-docker'
-                    googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: '${WORKSPACE}/public/.mvn/'
+                    googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './public/.mvn/'
                     sh 'cd ${WORKSPACE}/public/ && ../mvnw -P docker -Dmaven.test.skip=true -Dmaven.deploy.skip=true -DskipLocalDockerBuild=true -Ddocker.image.prefix=gcr.io/salus-220516 -s .mvn/settings.xml deploy'
                 }
             }
