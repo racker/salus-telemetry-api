@@ -31,7 +31,7 @@ podTemplate(label: label, containers: [
                     sh 'chmod +x /usr/bin/docker-credential-gcr'
                     sh 'docker-credential-gcr configure-docker'
                     googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './admin/.mvn/'
-                    sh 'cp -v ${WORKSPACE}/.mvn/ ${WORKSPACE}/admin/.mvn/'
+                    sh 'rsync -avP ${WORKSPACE}/.mvn/ ${WORKSPACE}/admin/.mvn/'
                     sh 'cd ${WORKSPACE}/admin/ && ../mvnw -P docker -Dmaven.test.skip=true -Dmaven.deploy.skip=true -DskipLocalDockerBuild=true -Ddocker.image.prefix=gcr.io/salus-220516 -s .mvn/settings.xml deploy'
                 }
             }
