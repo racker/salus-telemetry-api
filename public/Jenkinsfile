@@ -1,23 +1,42 @@
 def label = "maven-${UUID.randomUUID().toString()}"
 
 podTemplate(label: label, containers: [
-  containerTemplate(name: 'maven', image: 'maven:3-jdk-8', ttyEnabled: true, command: 'cat')
+  containerTemplate(name: 'maven', image: 'maven:3-jdk-8', ttyEnabled: true, command: 'cat'),
+  containerTemplate(name: 'gcloud', image: 'google/cloud-sdk', ttyEnabled: true, command: 'cat')
   ])
 {
     node(label) {
         container('maven') {
-            stage('Checkout') {
-                checkout scm
-            }
             ansiColor('xterm') {
-                // TODO Add persistentVolumeClaim to greatly speed this up
+                stage('Checkout') {
+                    checkout scm
+                    googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './public/.mvn/'
+                }
                 stage('Maven install') {
-                  sh 'mvn install -Dmaven.test.skip=true'
+                    sh 'cd ${WORKSPACE}/public/ && mvn install -Dmaven.test.skip=true -s ${WORKSPACE}/public/.mvn/settings.xml'
                 }
                 stage('Integration Test') {
-                  sh 'mvn integration-test'
+                    sh 'cd ${WORKSPACE}/public/ && mvn integration-test -s ${WORKSPACE}/public/.mvn/settings.xml'
+                }
+                stage('Deploy snapshot') {
+                    sh 'cd ${WORKSPACE}/public/ && mvn deploy -Dmaven.test.skip=true -s ${WORKSPACE}/public/.mvn/settings.xml'
+                }
+            }
+        }
+        container('gcloud') {
+            stage('Deploy docker') {
+                withCredentials([[$class: 'FileBinding', credentialsId: 'salus-dev-gcr', variable: 'GOOGLE_APPLICATION_CREDENTIALS']]) {
+                    sh 'gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS'
+                    sh 'curl -fsSL "https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/download/v1.5.0/docker-credential-gcr_linux_amd64-1.5.0.tar.gz" | tar xz --to-stdout ./docker-credential-gcr > /usr/bin/docker-credential-gcr'
+                    sh 'chmod +x /usr/bin/docker-credential-gcr'
+                    sh 'docker-credential-gcr configure-docker'
+                    googleStorageDownload bucketUri: 'gs://monplat-jenkins-artifacts/settings.xml', credentialsId: 'monplat-jenkins', localDirectory: './public/.mvn/'
+                    sh 'rsync -avP ${WORKSPACE}/.mvn/ ${WORKSPACE}/public/.mvn/'
+                    sh 'cd ${WORKSPACE}/public/ && ../mvnw -P docker -Dmaven.test.skip=true -Dmaven.deploy.skip=true -DskipLocalDockerBuild=true -Ddocker.image.prefix=gcr.io/salus-220516 -s .mvn/settings.xml deploy'
                 }
             }
         }
     }
 }
+
+
