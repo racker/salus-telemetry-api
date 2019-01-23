@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@GraphQLApi
 public class PresenceMonitorQuery {
 
   private final WorkAllocationPartitionService workAllocationPartitionService;

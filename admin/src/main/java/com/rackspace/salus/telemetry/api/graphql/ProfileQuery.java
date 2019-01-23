@@ -4,12 +4,14 @@ import com.rackspace.salus.telemetry.api.model.Profile;
 import java.util.stream.Collectors;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
+@GraphQLApi
 public class ProfileQuery {
 
   @GraphQLQuery
