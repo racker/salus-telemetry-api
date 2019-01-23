@@ -1,17 +1,18 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.rackspace.salus.telemetry.api.model.AgentReleaseInput;
 import com.rackspace.salus.telemetry.api.model.SuccessResult;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
 import com.rackspace.salus.telemetry.model.AgentRelease;
 import com.rackspace.salus.telemetry.model.Checksum;
 import java.util.concurrent.CompletableFuture;
+
+import io.leangen.graphql.annotations.GraphQLQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AgentsCatalogMutation implements GraphQLMutationResolver {
+public class AgentsCatalogMutation {
 
   private final AgentsCatalogService agentsCatalogService;
 
@@ -20,6 +21,7 @@ public class AgentsCatalogMutation implements GraphQLMutationResolver {
     this.agentsCatalogService = agentsCatalogService;
   }
 
+  @GraphQLQuery
   public CompletableFuture<AgentRelease> declareAgentRelease(AgentReleaseInput input) {
     final AgentRelease agentRelease = new AgentRelease()
         .setType(input.getType())

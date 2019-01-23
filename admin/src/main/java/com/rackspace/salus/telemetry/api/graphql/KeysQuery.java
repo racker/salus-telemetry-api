@@ -1,17 +1,18 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.rackspace.salus.telemetry.api.model.KVEntry;
 import com.rackspace.salus.telemetry.api.services.DiagnosticsService;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import io.leangen.graphql.annotations.GraphQLQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
-public class KeysQuery implements GraphQLQueryResolver {
+public class KeysQuery {
 
   private final DiagnosticsService diagnosticsService;
 
@@ -20,6 +21,7 @@ public class KeysQuery implements GraphQLQueryResolver {
     this.diagnosticsService = diagnosticsService;
   }
 
+  @GraphQLQuery
   public CompletableFuture<List<KVEntry>> keys(String name, String prefix) {
     if (StringUtils.hasText(name)) {
       return diagnosticsService.getKey(name)

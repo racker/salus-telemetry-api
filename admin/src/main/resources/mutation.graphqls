@@ -1,9 +1,0 @@
-type Mutation {
-  deleteKey(name:String!) : DeleteResponse
-  deleteKeys(prefix:String!) : DeleteResponse
-
-  declareAgentRelease(agentRelease:AgentReleaseInput!) : AgentRelease
-  deleteAgentRelease(id:String!) : SuccessResult
-
-  changePresenceMonitorPartitions(count:Int!) : SuccessResult
-}
