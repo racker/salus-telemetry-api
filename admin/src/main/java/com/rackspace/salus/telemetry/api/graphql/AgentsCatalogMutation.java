@@ -1,12 +1,12 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.rackspace.salus.telemetry.api.model.AgentReleaseInput;
+import com.rackspace.salus.telemetry.api.model.input.AgentRelease;
 import com.rackspace.salus.telemetry.api.model.SuccessResult;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
-import com.rackspace.salus.telemetry.model.AgentRelease;
 import com.rackspace.salus.telemetry.model.Checksum;
 import java.util.concurrent.CompletableFuture;
 
+import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +23,9 @@ public class AgentsCatalogMutation {
     this.agentsCatalogService = agentsCatalogService;
   }
 
-  @GraphQLQuery
-  public CompletableFuture<AgentRelease> declareAgentRelease(AgentReleaseInput input) {
-    final AgentRelease agentRelease = new AgentRelease()
+  @GraphQLMutation
+  public CompletableFuture<com.rackspace.salus.telemetry.model.AgentRelease> declareAgentRelease(AgentRelease input) {
+    final com.rackspace.salus.telemetry.model.AgentRelease agentRelease = new com.rackspace.salus.telemetry.model.AgentRelease()
         .setType(input.getType())
         .setUrl(input.getUrl())
         .setArch(input.getArch())

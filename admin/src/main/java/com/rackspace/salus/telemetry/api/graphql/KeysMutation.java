@@ -4,6 +4,7 @@ import com.rackspace.salus.telemetry.api.model.DeleteResponse;
 import com.rackspace.salus.telemetry.api.services.DiagnosticsService;
 import java.util.concurrent.CompletableFuture;
 
+import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class KeysMutation {
     this.diagnosticsService = diagnosticsService;
   }
 
-  @GraphQLQuery
+  @GraphQLMutation
   public CompletableFuture<DeleteResponse> deleteKey(String name) {
     return diagnosticsService.deleteKey(name)
         .thenApply(DeleteResponse::new);

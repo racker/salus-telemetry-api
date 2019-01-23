@@ -5,6 +5,7 @@ import com.rackspace.salus.telemetry.etcd.services.WorkAllocationPartitionServic
 import com.rackspace.salus.telemetry.etcd.types.WorkAllocationRealm;
 import java.util.concurrent.CompletableFuture;
 
+import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class PresenceMonitorMutation {
     this.workAllocationPartitionService = workAllocationPartitionService;
   }
 
-  @GraphQLQuery
+  @GraphQLMutation
   public CompletableFuture<SuccessResult> changePresenceMonitorPartitions(int count) {
     return workAllocationPartitionService.changePartitions(WorkAllocationRealm.PRESENCE_MONITOR, count)
         .thenApply(result -> new SuccessResult().setSuccess(result));
