@@ -1,4 +1,4 @@
-package com.rackspace.salus.telemetry.api.model;
+package com.rackspace.salus.telemetry.api.model.input;
 
 import com.rackspace.salus.telemetry.model.AgentType;
 import com.rackspace.salus.telemetry.model.Architecture;
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class AgentReleaseInput {
+public class AgentRelease {
   @NotBlank
   String version;
 
@@ -25,7 +25,7 @@ public class AgentReleaseInput {
   String url;
 
   @NotNull
-  ChecksumInput checksum;
+  ExpectedChecksum checksum;
 
   /**
    * Path to the agent's executable within the package

@@ -110,7 +110,7 @@ to correspond with the SAML callback location.
 
 ```graphql
 mutation DeclareAgentRelease($release:AgentReleaseInput!) {
-  declareAgentRelease(agentRelease:$release) {
+  declareAgentRelease(input:$release) {
     id
   }
 }
