@@ -27,7 +27,7 @@ public class KeysMutation {
         .thenApply(DeleteResponse::new);
   }
 
-  @GraphQLQuery
+  @GraphQLMutation
   public CompletableFuture<DeleteResponse> deleteKeys(String prefix) {
     return diagnosticsService.deleteKeysByPrefix(prefix)
         .thenApply(DeleteResponse::new);
