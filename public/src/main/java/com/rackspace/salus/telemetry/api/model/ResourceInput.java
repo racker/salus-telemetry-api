@@ -23,7 +23,7 @@ import java.util.List;
 @Data
 public class ResourceInput {
 
-    String identifierName;
+    String resourceId;
 
     List<Label> labels;
 }

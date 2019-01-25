@@ -16,13 +16,14 @@
 
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.rackspace.salus.telemetry.api.Meters;
 import com.rackspace.salus.telemetry.api.model.DeleteResult;
 import com.rackspace.salus.telemetry.api.model.ResourceInput;
 import com.rackspace.salus.telemetry.api.model.ResourceResponse;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.EnvoyResourceManagement;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
-public class ResourceMutation implements GraphQLMutationResolver {
+@GraphQLApi
+public class ResourceMutation {
 
     private final EnvoyResourceManagement envoyResourceManagement;
     private final UserService userService;
@@ -47,6 +49,7 @@ public class ResourceMutation implements GraphQLMutationResolver {
         deletes = meterRegistry.counter("deletes", "type", Meters.RESOURCES_TYPE);
     }
 
+    @GraphQLMutation
     public CompletableFuture<ResourceResponse> createResource(ResourceInput resource) {
         final String tenantId = userService.currentTenantId();
 
@@ -57,14 +60,15 @@ public class ResourceMutation implements GraphQLMutationResolver {
                 .thenApply(Converters::convertToResponse);
     }
 
-    public CompletableFuture<DeleteResult> deleteResource(String identifierName, String identifierValue) {
+    @GraphQLMutation
+    public CompletableFuture<DeleteResult> deleteResource(String resourceId) {
         final String tenantId = userService.currentTenantId();
 
-        log.debug("Deleting resource with identifierName={} identifierValue={} for tenant={}",
-                identifierName, identifierValue, tenantId);
+        log.debug("Deleting resource with resourceId={} for tenant={}",
+                resourceId, tenantId);
         deletes.increment();
 
-        return envoyResourceManagement.delete(tenantId, identifierName, identifierValue)
+        return envoyResourceManagement.delete(tenantId, resourceId)
                 .thenApply(deleteResponse -> new DeleteResult().setSuccess(deleteResponse != null));
     }
 

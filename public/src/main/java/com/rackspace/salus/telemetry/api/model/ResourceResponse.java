@@ -23,9 +23,7 @@ import java.util.List;
 @Data
 public class ResourceResponse {
 
-    String identifierName;
-
-    String identifierValue;
+    String resourceId;
 
     List<Label> labels;
 
