@@ -1,10 +1,11 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.rackspace.salus.telemetry.api.Meters;
 import com.rackspace.salus.telemetry.api.model.AgentConfigResponse;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.ConfigService;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
@@ -16,7 +17,8 @@ import org.springframework.util.StringUtils;
 
 @Service
 @Slf4j
-public class ConfigQuery implements GraphQLQueryResolver {
+@GraphQLApi
+public class ConfigQuery {
 
   private final UserService userService;
   private final ConfigService configService;
@@ -30,6 +32,7 @@ public class ConfigQuery implements GraphQLQueryResolver {
     agentConfigQueries = meterRegistry.counter("queries", "type", Meters.AGENT_CONFIGS_TYPE);
   }
 
+  @GraphQLQuery
   public CompletableFuture<List<AgentConfigResponse>> agentConfigs(String id) {
     final String tenantId = userService.currentTenantId();
 

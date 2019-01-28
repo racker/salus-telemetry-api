@@ -1,17 +1,20 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.rackspace.salus.telemetry.api.model.AgentInstallation;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AgentInstallQuery implements GraphQLQueryResolver {
+@GraphQLApi
+public class AgentInstallQuery {
 
   private final AgentsCatalogService agentsCatalogService;
   private final UserService userService;
@@ -22,6 +25,7 @@ public class AgentInstallQuery implements GraphQLQueryResolver {
     this.userService = userService;
   }
 
+  @GraphQLQuery
   public CompletableFuture<List<AgentInstallation>> agentInstallations() {
     final String tenantId = userService.currentTenantId();
 

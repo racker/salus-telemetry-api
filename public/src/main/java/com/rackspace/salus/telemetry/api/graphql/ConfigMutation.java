@@ -1,12 +1,13 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.rackspace.salus.telemetry.api.Meters;
 import com.rackspace.salus.telemetry.api.model.AgentConfigInput;
 import com.rackspace.salus.telemetry.api.model.AgentConfigResponse;
 import com.rackspace.salus.telemetry.api.model.DeleteResult;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.ConfigService;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class ConfigMutation implements GraphQLMutationResolver {
+@GraphQLApi
+public class ConfigMutation {
 
   private final UserService userService;
   private final ConfigService configService;
@@ -35,6 +37,7 @@ public class ConfigMutation implements GraphQLMutationResolver {
     deletes = meterRegistry.counter("deletes", "type", Meters.AGENT_CONFIGS_TYPE);
   }
 
+  @GraphQLMutation
   public CompletableFuture<AgentConfigResponse> createAgentConfig(AgentConfigInput config) {
     final String tenantId = userService.currentTenantId();
 
@@ -45,6 +48,7 @@ public class ConfigMutation implements GraphQLMutationResolver {
         .thenApply(Converters::convertToResponse);
   }
 
+  @GraphQLMutation
   public CompletableFuture<AgentConfigResponse> modifyAgentConfig(String id, AgentConfigInput config) {
     final String tenantId = userService.currentTenantId();
 
@@ -55,6 +59,7 @@ public class ConfigMutation implements GraphQLMutationResolver {
         .thenApply(Converters::convertToResponse);
   }
 
+  @GraphQLMutation
   public CompletableFuture<DeleteResult> deleteAgentConfig(String id) {
     final String tenantId = userService.currentTenantId();
 

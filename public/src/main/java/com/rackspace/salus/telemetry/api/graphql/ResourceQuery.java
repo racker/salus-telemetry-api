@@ -16,10 +16,11 @@
 
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.rackspace.salus.telemetry.api.model.ResourceResponse;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.EnvoyResourceManagement;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
-public class ResourceQuery implements GraphQLQueryResolver {
+@GraphQLApi
+public class ResourceQuery {
 
     private final EnvoyResourceManagement envoyResourceManagement;
     private final UserService userService;
@@ -42,6 +44,7 @@ public class ResourceQuery implements GraphQLQueryResolver {
         this.userService = userService;
     }
 
+    @GraphQLQuery
     public CompletableFuture<List<ResourceResponse>> resources(@Nullable String identifierName, @Nullable String identifierValue) {
         final String tenantId = userService.currentTenantId();
 

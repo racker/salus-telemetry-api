@@ -1,11 +1,12 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.rackspace.salus.telemetry.api.model.AgentInstallation;
 import com.rackspace.salus.telemetry.api.model.Label;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
 import com.rackspace.salus.telemetry.etcd.types.AgentInstallSelector;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AgentInstallMutation implements GraphQLMutationResolver {
+@GraphQLApi
+public class AgentInstallMutation {
 
   private final AgentsCatalogService agentsCatalogService;
   private final UserService userService;
@@ -32,7 +34,7 @@ public class AgentInstallMutation implements GraphQLMutationResolver {
     agentInstalls = meterRegistry.counter("agentInstalls");
     agentUninstalls = meterRegistry.counter("agentUninstalls");
   }
-
+  @GraphQLMutation
   public CompletableFuture<AgentInstallation> installAgentRelease(String agentReleaseId,
       List<Label> labels) {
     final String tenantId = userService.currentTenantId();
