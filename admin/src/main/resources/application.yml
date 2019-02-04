@@ -15,8 +15,6 @@ management:
         host: ${statsd.host:localhost}
         port: ${statsd.port:8086}
         enabled: ${influx.enabled:false}
-server:
-  port: 8888
 graphql:
   servlet:
     mapping: /graphql

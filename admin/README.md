@@ -12,8 +12,8 @@ mvn package
 
 # Running locally 
 
-With the default configuration, the Admin API application will run non-secure and bind to port 8888.
-The GraphQL API can be invoked interactively at http://localhost:8888/graphiql
+With the default configuration and the Spring "dev" profile activated, 
+the Admin API application will run non-secure and bind to port 8888.
 
 # Using SAML based authentication for local testing
 
