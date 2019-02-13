@@ -19,8 +19,6 @@ logging:
   level:
     graphql.servlet.internal.ApolloSubscriptionKeepAliveRunner: error
 graphql:
-  servlet:
-    mapping: /graphql
-    enabled: true
-    corsEnabled: false
-    exception-handlers-enabled: true
+  spqr:
+    gui:
+      enabled: true
