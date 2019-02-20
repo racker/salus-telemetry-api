@@ -16,7 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
-import com.rackspace.salus.common.web.ReposeHeaderFilter;
+import com.rackspace.salus.common.web.PreAuthenticatedFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -25,14 +25,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-@Profile("secured")
-public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
+@Profile("proxied-auth")
+public class ProxiedAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final ApiPublicProperties apiPublicProperties;
+  private final ApiAdminProperties properties;
 
   @Autowired
-  public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties) {
-    this.apiPublicProperties = apiPublicProperties;
+  public ProxiedAuthWebSecurityConfig(ApiAdminProperties properties) {
+    this.properties = properties;
   }
 
   @Override
@@ -40,11 +40,12 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .csrf().disable()
         .addFilterBefore(
-            new ReposeHeaderFilter(),
+            new PreAuthenticatedFilter(properties.getUserHeader(), properties.getGroupsHeader()),
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
         .antMatchers("/graphql")
-        .hasAnyRole(apiPublicProperties.getRoles());
+        .hasAnyRole(properties.getRoles());
   }
+
 }

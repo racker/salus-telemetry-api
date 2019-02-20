@@ -17,6 +17,8 @@
 package com.rackspace.salus.telemetry.api.config;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,7 +47,9 @@ import org.springframework.security.saml.SAMLBootstrap;
 import org.springframework.security.saml.SAMLEntryPoint;
 import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLProcessingFilter;
+import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
+import org.springframework.security.saml.context.SAMLContextProviderLB;
 import org.springframework.security.saml.key.JKSKeyManager;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
@@ -254,7 +258,18 @@ public class AdminWebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public SAMLContextProviderImpl contextProvider() {
+  public SAMLContextProvider contextProvider() throws MalformedURLException {
+    if (samlProperties.isUsingLbContextProvider()) {
+      final SAMLContextProviderLB contextProvider = new SAMLContextProviderLB();
+
+      final URL baseUrl = new URL(samlProperties.getEntityBaseUrl());
+      contextProvider.setScheme(baseUrl.getProtocol());
+      contextProvider.setServerName(baseUrl.getHost());
+      contextProvider.setServerPort(baseUrl.getPort());
+      contextProvider.setContextPath(baseUrl.getPath());
+
+      return contextProvider;
+    }
     return new SAMLContextProviderImpl();
   }
 
