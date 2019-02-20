@@ -1,0 +1,31 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: GET_SETTINGS
+    args: ['cp', 'gs://salus-mavenrepository/m2-settings.xml', '.mvn/settings.xml']
+
+  - name: 'gcr.io/cloud-builders/mvn'
+    id: ADMIN_INTEGRATION_TEST
+    args: ['integration-test', '-s', '../.mvn/settings.xml']
+    dir: 'admin'
+    waitFor:
+      - GET_SETTINGS
+  - name: 'gcr.io/cloud-builders/mvn'
+    id: PUBLIC_INTEGRATION_TEST
+    args: ['integration-test', '-s', '../.mvn/settings.xml']
+    dir: 'public'
+    waitFor:
+      - GET_SETTINGS
+
+  - name: 'gcr.io/cloud-builders/mvn'
+    id: DEPLOY_ADMIN
+    args: ['compile','jib:dockerBuild', '-Dmaven.test.skip=true', '-Ddocker.image.prefix=gcr.io/$PROJECT_ID', '-s', '../.mvn/settings.xml']
+    dir: 'admin'
+    waitFor:
+      - ADMIN_INTEGRATION_TEST
+
+  - name: 'gcr.io/cloud-builders/mvn'
+    id: DEPLOY_PUBLIC
+    args: ['compile','jib:dockerBuild', '-Dmaven.test.skip=true', '-Ddocker.image.prefix=gcr.io/$PROJECT_ID', '-s', '../.mvn/settings.xml']
+    dir: 'admin'
+    waitFor:
+      - PUBLIC_INTEGRATION_TEST
