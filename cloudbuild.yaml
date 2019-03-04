@@ -59,8 +59,6 @@ steps:
     - 'SHORT_SHA=$SHORT_SHA'
     args:
     - compile
-    - '-e'
-    - '-X'
     # Runs the Jib build by using the latest version of the plugin.
     # To use a specific version, configure the plugin in the pom.xml.
     - jib:build
