@@ -103,12 +103,14 @@ steps:
     volumes:
     - name: user.home
       path: /root
+    waitFor:
+      - PUBLIC_INTEGRATION_TEST
 
   # Saves the files to the GCS cache.
   - id: PUSH_UP_CACHE
     waitFor:
-    - COMPILE_AND_PUSH_ADMIN_CONTAINER
-    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
+      - COMPILE_AND_PUSH_ADMIN_CONTAINER
+      - COMPILE_AND_PUSH_PUBLIC_CONTAINER
     name: gcr.io/cloud-builders/gsutil
     dir: /root
     entrypoint: bash
