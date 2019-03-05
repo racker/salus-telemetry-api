@@ -1,14 +1,13 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
-import com.rackspace.salus.telemetry.api.model.*;
-import com.rackspace.salus.telemetry.model.AgentConfig;
+import com.rackspace.salus.telemetry.api.model.Resource;
+import com.rackspace.salus.telemetry.model.Label;
 import com.rackspace.salus.telemetry.model.ResourceInfo;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Converters {
@@ -31,38 +30,8 @@ public class Converters {
     return converted;
   }
 
-  static AgentConfigResponse convertToResponse(AgentConfig agentConfig) {
-    return new AgentConfigResponse()
-        .setId(agentConfig.getId())
-        .setAgentType(agentConfig.getAgentType())
-        .setContent(agentConfig.getContent())
-        .setSelectorScope(agentConfig.getSelectorScope())
-        .setLabels(convertToLabelList(agentConfig.getLabels()));
-  }
-
-  static List<AgentConfigResponse> convertToResponse(List<AgentConfig> agentConfigs) {
-    return agentConfigs.stream()
-        .map(Converters::convertToResponse
-        )
-        .collect(Collectors.toList());
-  }
-
-  static AgentConfig convertFromInput(AgentConfigInput config) {
-    return new AgentConfig()
-        .setAgentType(config.getAgentType())
-        .setContent(config.getContent())
-        .setSelectorScope(config.getSelectorScope())
-        .setLabels(convertToLabelMap(config.getLabels()));
-  }
-
-  static ResourceInfo convertResourceFromInput(ResourceInput resource) {
-    return new ResourceInfo()
-            .setResourceId(resource.getResourceId())
-            .setLabels(convertToLabelMap(resource.getLabels()));
-  }
-
-  static ResourceResponse convertToResponse(ResourceInfo resourceInfo) {
-    ResourceResponse response = new ResourceResponse()
+  static Resource convertToResponse(ResourceInfo resourceInfo) {
+    Resource response = new Resource()
             .setResourceId(resourceInfo.getResourceId())
             .setTenantId(resourceInfo.getTenantId())
             .setEnvoyId(resourceInfo.getEnvoyId())
@@ -74,7 +43,7 @@ public class Converters {
     return response;
   }
 
-  static List<ResourceResponse> convertToResourceResponse(List<ResourceInfo> resourceInfos) {
+  static List<Resource> convertToResourceResponse(List<ResourceInfo> resourceInfos) {
     return resourceInfos.stream()
             .map(Converters::convertToResponse
             )

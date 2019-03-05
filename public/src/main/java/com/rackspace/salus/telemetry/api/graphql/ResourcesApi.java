@@ -16,32 +16,38 @@
 
 package com.rackspace.salus.telemetry.api.graphql;
 
+import static com.rackspace.salus.telemetry.api.graphql.Converters.convertToLabelMap;
+
 import com.rackspace.salus.telemetry.api.Meters;
 import com.rackspace.salus.telemetry.api.model.DeleteResult;
-import com.rackspace.salus.telemetry.api.model.ResourceInput;
-import com.rackspace.salus.telemetry.api.model.ResourceResponse;
+import com.rackspace.salus.telemetry.api.model.Resource;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.EnvoyResourceManagement;
+import com.rackspace.salus.telemetry.model.Label;
+import com.rackspace.salus.telemetry.model.ResourceInfo;
+import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
-import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
+import io.leangen.graphql.annotations.GraphQLNonNull;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
 @GraphQLApi
-public class ResourceMutation {
+public class ResourcesApi {
 
     private final EnvoyResourceManagement envoyResourceManagement;
     private final UserService userService;
     private final Counter creates;
     private final Counter deletes;
 
-    public ResourceMutation(EnvoyResourceManagement envoyResourceManagement, UserService userService, MeterRegistry meterRegistry) {
+    public ResourcesApi(EnvoyResourceManagement envoyResourceManagement, UserService userService, MeterRegistry meterRegistry) {
         this.envoyResourceManagement = envoyResourceManagement;
         this.userService = userService;
 
@@ -50,18 +56,21 @@ public class ResourceMutation {
     }
 
     @GraphQLMutation
-    public CompletableFuture<ResourceResponse> createResource(ResourceInput resource) {
+    public CompletableFuture<Resource> createResource(@GraphQLNonNull String resourceId,
+                                                      @GraphQLNonNull List<Label> labels) {
         final String tenantId = userService.currentTenantId();
 
         log.debug("Creating new resource for tenant={}", tenantId);
         creates.increment();
 
-        return envoyResourceManagement.create(tenantId, Converters.convertResourceFromInput(resource))
+        return envoyResourceManagement.create(tenantId, new ResourceInfo()
+            .setResourceId(resourceId)
+            .setLabels(convertToLabelMap(labels)))
                 .thenApply(Converters::convertToResponse);
     }
 
     @GraphQLMutation
-    public CompletableFuture<DeleteResult> deleteResource(String resourceId) {
+    public CompletableFuture<DeleteResult> deleteResource(@GraphQLNonNull String resourceId) {
         final String tenantId = userService.currentTenantId();
 
         log.debug("Deleting resource with resourceId={} for tenant={}",
@@ -70,6 +79,26 @@ public class ResourceMutation {
 
         return envoyResourceManagement.delete(tenantId, resourceId)
                 .thenApply(deleteResponse -> new DeleteResult().setSuccess(deleteResponse != null));
+    }
+
+    @GraphQLQuery
+    public CompletableFuture<List<Resource>> resources() {
+        final String tenantId = userService.currentTenantId();
+
+        log.debug("Querying resources for tenant={}", tenantId);
+
+        return envoyResourceManagement.getAll(tenantId)
+            .thenApply(Converters::convertToResourceResponse);
+    }
+
+    @GraphQLQuery
+    public CompletableFuture<List<Resource>> resources(@GraphQLArgument(name = "resourceId") String resourceId) {
+        final String tenantId = userService.currentTenantId();
+
+        log.debug("Querying resources for tenant={}", tenantId);
+
+        return envoyResourceManagement.getOne(tenantId, resourceId)
+            .thenApply(Converters::convertToResourceResponse);
     }
 
 }

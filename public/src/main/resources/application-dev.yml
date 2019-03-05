@@ -1,3 +1,6 @@
+
 logging:
   level:
-    com.rackspace.salus: debug
+    com.rackspace.salus.telemetry.api: debug
+services:
+  monitor-management-url: http://localhost:8089

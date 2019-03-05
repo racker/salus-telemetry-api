@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rackspace US, Inc.
+ * Copyright 2019 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,10 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
+import com.rackspace.salus.telemetry.api.model.telegraf.UsingRemoteTelegraf;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class ResourceResponse {
-
-    String resourceId;
-
-    List<Label> labels;
-
-    String tenantId;
-
-    String envoyId;
-
-    String address;
+public class RemoteMonitorConfigs {
+  UsingRemoteTelegraf usingTelegraf;
 }

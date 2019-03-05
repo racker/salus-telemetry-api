@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rackspace US, Inc.
+ * Copyright 2019 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.rackspace.salus.telemetry.api.model;
+package com.rackspace.salus.telemetry.api.model.telegraf;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.List;
+/**
+ * Telegraf plugins extending from this perform remote monitoring where the target resource
+ * differs from the monitoring system identified by the matching labels.
+ */
+@Data @EqualsAndHashCode(callSuper = true)
+public class RemoteTelegrafPlugin extends TelegrafPlugin {
 
-@Data
-public class ResourceInput {
-
-    String resourceId;
-
-    List<Label> labels;
 }
