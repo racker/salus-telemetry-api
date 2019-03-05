@@ -3,11 +3,9 @@ package com.rackspace.salus.telemetry.api.graphql;
 import com.rackspace.salus.telemetry.api.model.SuccessResult;
 import com.rackspace.salus.telemetry.etcd.services.WorkAllocationPartitionService;
 import com.rackspace.salus.telemetry.etcd.types.WorkAllocationRealm;
-import java.util.concurrent.CompletableFuture;
-
 import io.leangen.graphql.annotations.GraphQLMutation;
-import io.leangen.graphql.annotations.GraphQLQuery;
-import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

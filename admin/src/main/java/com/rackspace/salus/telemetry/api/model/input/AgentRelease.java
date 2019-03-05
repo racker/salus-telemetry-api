@@ -17,19 +17,15 @@
 package com.rackspace.salus.telemetry.api.model.input;
 
 import com.rackspace.salus.telemetry.model.AgentType;
-import com.rackspace.salus.telemetry.model.Architecture;
-import com.rackspace.salus.telemetry.model.OperatingSystem;
+import com.rackspace.salus.telemetry.model.Label;
 import io.leangen.graphql.annotations.GraphQLNonNull;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@EqualsAndHashCode
-@ToString
+@Data
 @Setter(onParam = @__({@GraphQLNonNull})) // GraphQL SPQR only looks at the setter property for required-field calculation
 public class AgentRelease {
   @NotBlank
@@ -39,10 +35,7 @@ public class AgentRelease {
   AgentType type;
 
   @NotNull
-  OperatingSystem os;
-
-  @NotNull
-  Architecture arch;
+  List<@GraphQLNonNull Label> labels;
 
   @NotBlank
   String url;
