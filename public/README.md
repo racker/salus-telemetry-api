@@ -88,6 +88,16 @@ mutation {
 }
 ```
 
+### Delete monitor
+
+```graphql
+mutation {
+  deleteMonitor(id:"e20d16c0-c1dd-46f6-8cac-577100c0f341") {
+    success
+  }
+}
+```
+
 ## Resource Operations
 
 ### Create a resource
