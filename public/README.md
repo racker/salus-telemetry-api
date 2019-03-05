@@ -151,3 +151,49 @@ mutation {
   }
 }
 ```
+
+## Event task operations
+
+### Create
+
+```graphql
+mutation {
+  createEventTask(measurement:"cpu", 
+    scenario:{
+      rising: {
+        threshold:50,
+        field:"usage_user"
+      }
+    }) {
+    id
+  }
+}
+```
+
+### Get all
+
+```graphql
+{
+  eventTasks {
+    id
+    measurement
+   	scenarioType
+    scenario {
+      rising {
+        field
+        threshold
+      }
+    }
+  }
+}
+```
+
+### Delete
+
+```graphql
+mutation {
+  deleteEventTask(id:"c435da6d-9596-4780-88bc-b8edccf0a339") {
+    success
+  }
+}
+```

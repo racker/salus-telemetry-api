@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.rackspace.salus.telemetry.api.config;
+package com.rackspace.salus.telemetry.api.model;
 
+import com.rackspace.salus.event.manage.model.scenarios.Falling;
+import com.rackspace.salus.event.manage.model.scenarios.Rising;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("services")
-@Component
 @Data
-public class ServicesProperties {
-  String monitorManagementUrl = "http://monitor-management:8080";
-  String resourceManagementUrl = "http://resource-management:8080";
-  String eventManagementUrl = "http://event-management:8080";
+public class EventTaskScenario {
+  Falling falling;
+  Rising rising;
 }
