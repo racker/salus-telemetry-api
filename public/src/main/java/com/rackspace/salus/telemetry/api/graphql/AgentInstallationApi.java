@@ -51,7 +51,7 @@ public class AgentInstallationApi {
                     new AgentInstallation()
                         .setId(selector.getId())
                         .setAgentReleaseId(selector.getAgentReleaseId())
-                        .setMatchingLabels(Converters.convertToLabelList(selector.getLabels()))
+                        .setMatchingLabels(Label.convertToLabelList(selector.getLabels()))
                 )
                 .collect(Collectors.toList())
         );
@@ -75,13 +75,13 @@ public class AgentInstallationApi {
         tenantId,
         new AgentInstallSelector()
             .setAgentReleaseId(agentReleaseId)
-            .setLabels(Converters.convertToLabelMap(matchingLabels))
+            .setLabels(Label.convertToMap(matchingLabels))
     )
         .thenApply(result ->
             new AgentInstallation()
                 .setId(result.getId())
                 .setAgentReleaseId(result.getAgentReleaseId())
-                .setMatchingLabels(Converters.convertToLabelList(result.getLabels()))
+                .setMatchingLabels(Label.convertToLabelList(result.getLabels()))
         );
   }
 }

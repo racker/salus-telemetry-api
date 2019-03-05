@@ -4,3 +4,4 @@ logging:
     com.rackspace.salus.telemetry.api: debug
 services:
   monitor-management-url: http://localhost:8089
+  resource-management-url: http://localhost:8085

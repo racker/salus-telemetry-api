@@ -25,4 +25,5 @@ import org.springframework.stereotype.Component;
 @Data
 public class ServicesProperties {
   String monitorManagementUrl = "http://monitor-management:8080";
+  String resourceManagementUrl = "http://resource-management:8080";
 }

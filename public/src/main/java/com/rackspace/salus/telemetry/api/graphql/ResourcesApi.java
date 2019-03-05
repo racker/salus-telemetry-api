@@ -16,15 +16,14 @@
 
 package com.rackspace.salus.telemetry.api.graphql;
 
-import static com.rackspace.salus.telemetry.api.graphql.Converters.convertToLabelMap;
-
 import com.rackspace.salus.telemetry.api.Meters;
+import com.rackspace.salus.telemetry.api.model.CreatedResource;
 import com.rackspace.salus.telemetry.api.model.DeleteResult;
-import com.rackspace.salus.telemetry.api.model.Resource;
+import com.rackspace.salus.telemetry.api.services.FrontendResourceService;
 import com.rackspace.salus.telemetry.api.services.UserService;
-import com.rackspace.salus.telemetry.etcd.services.EnvoyResourceManagement;
 import com.rackspace.salus.telemetry.model.Label;
-import com.rackspace.salus.telemetry.model.ResourceInfo;
+import com.rackspace.salus.telemetry.model.PagedContent;
+import com.rackspace.salus.telemetry.model.Resource;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLNonNull;
@@ -33,7 +32,6 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -42,63 +40,70 @@ import org.springframework.stereotype.Service;
 @GraphQLApi
 public class ResourcesApi {
 
-    private final EnvoyResourceManagement envoyResourceManagement;
-    private final UserService userService;
-    private final Counter creates;
-    private final Counter deletes;
+  private final UserService userService;
+  private final Counter creates;
+  private final Counter deletes;
+  private final FrontendResourceService resourceService;
 
-    public ResourcesApi(EnvoyResourceManagement envoyResourceManagement, UserService userService, MeterRegistry meterRegistry) {
-        this.envoyResourceManagement = envoyResourceManagement;
-        this.userService = userService;
+  public ResourcesApi(UserService userService,
+                      MeterRegistry meterRegistry,
+                      FrontendResourceService resourceService) {
+    this.userService = userService;
 
-        creates = meterRegistry.counter("creates", "type", Meters.RESOURCES_TYPE);
-        deletes = meterRegistry.counter("deletes", "type", Meters.RESOURCES_TYPE);
-    }
+    creates = meterRegistry.counter("creates", "type", Meters.RESOURCES_TYPE);
+    deletes = meterRegistry.counter("deletes", "type", Meters.RESOURCES_TYPE);
+    this.resourceService = resourceService;
+  }
 
-    @GraphQLMutation
-    public CompletableFuture<Resource> createResource(@GraphQLNonNull String resourceId,
-                                                      @GraphQLNonNull List<Label> labels) {
-        final String tenantId = userService.currentTenantId();
+  @GraphQLMutation
+  public CreatedResource createResource(@GraphQLNonNull String resourceId,
+                                        @GraphQLNonNull List<Label> labels) {
+    final String tenantId = userService.currentTenantId();
 
-        log.debug("Creating new resource for tenant={}", tenantId);
-        creates.increment();
+    log.debug("Creating new resource for tenant={}", tenantId);
+    creates.increment();
 
-        return envoyResourceManagement.create(tenantId, new ResourceInfo()
-            .setResourceId(resourceId)
-            .setLabels(convertToLabelMap(labels)))
-                .thenApply(Converters::convertToResponse);
-    }
+    return resourceService.create(tenantId, resourceId, labels);
+  }
 
-    @GraphQLMutation
-    public CompletableFuture<DeleteResult> deleteResource(@GraphQLNonNull String resourceId) {
-        final String tenantId = userService.currentTenantId();
+  @GraphQLMutation
+  public DeleteResult deleteResource(@GraphQLNonNull String resourceId) {
+    final String tenantId = userService.currentTenantId();
 
-        log.debug("Deleting resource with resourceId={} for tenant={}",
-                resourceId, tenantId);
-        deletes.increment();
+    log.debug("Deleting resource with resourceId={} for tenant={}",
+        resourceId, tenantId
+    );
+    deletes.increment();
 
-        return envoyResourceManagement.delete(tenantId, resourceId)
-                .thenApply(deleteResponse -> new DeleteResult().setSuccess(deleteResponse != null));
-    }
+    resourceService.delete(tenantId, resourceId);
 
-    @GraphQLQuery
-    public CompletableFuture<List<Resource>> resources() {
-        final String tenantId = userService.currentTenantId();
+    return new DeleteResult().setSuccess(true);
+  }
 
-        log.debug("Querying resources for tenant={}", tenantId);
+  @GraphQLQuery
+  public PagedContent<Resource> resources(
+      @GraphQLArgument(name = "size", defaultValue = "100") int size,
+      @GraphQLArgument(name = "page", defaultValue = "0") int page) {
+    final String tenantId = userService.currentTenantId();
 
-        return envoyResourceManagement.getAll(tenantId)
-            .thenApply(Converters::convertToResourceResponse);
-    }
+    log.debug("Querying resources for tenant={}", tenantId);
 
-    @GraphQLQuery
-    public CompletableFuture<List<Resource>> resources(@GraphQLArgument(name = "resourceId") String resourceId) {
-        final String tenantId = userService.currentTenantId();
+    return resourceService.getAll(tenantId, size, page);
+  }
 
-        log.debug("Querying resources for tenant={}", tenantId);
+  @GraphQLQuery
+  public PagedContent<Resource> resources(@GraphQLArgument(name = "resourceId") String resourceId,
+                                          @GraphQLArgument(name = "size", defaultValue = "100") int size,
+                                          @GraphQLArgument(name = "page", defaultValue = "0") int page) {
+    // NOTE: SPQR wants size and page to be present when using resourceId argument
 
-        return envoyResourceManagement.getOne(tenantId, resourceId)
-            .thenApply(Converters::convertToResourceResponse);
-    }
+    final String tenantId = userService.currentTenantId();
+
+    log.debug("Querying resources for tenant={}", tenantId);
+
+    return PagedContent.ofSingleton(
+        resourceService.getOne(tenantId, resourceId)
+    );
+  }
 
 }

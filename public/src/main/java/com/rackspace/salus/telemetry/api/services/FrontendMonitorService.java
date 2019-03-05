@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.monitor_management.web.model.MonitorCreate;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import com.rackspace.salus.telemetry.api.model.BackendRestException;
 import com.rackspace.salus.telemetry.api.model.CreatedMonitor;
 import com.rackspace.salus.telemetry.api.model.LocalMonitorConfigs;
 import com.rackspace.salus.telemetry.api.model.MonitorConfigs;
@@ -113,7 +114,7 @@ public class FrontendMonitorService {
 
     if (response.getStatusCode().isError()) {
       log.warn("Failed to retrieve monitors for tenant={}, response={}", tenantId, response);
-      throw new IllegalStateException("Failed to retrieve monitors");
+      throw new BackendRestException("Failed to retrieve monitors", response);
     }
 
     return response.getBody().map(this::convertToRetrieveMonitor);
@@ -163,5 +164,16 @@ public class FrontendMonitorService {
 
   public void delete(String tenantId, String id) {
     monitorManagementRest.delete("/api/tenant/{tenantId}/monitors/{uuid}", tenantId, id);
+  }
+
+  public RetrievedMonitor retrieveOne(String tenantId, String id) {
+
+    final Monitor monitor = monitorManagementRest.getForObject(
+        "/api/tenant/{tenantId}/monitors/{uuid}",
+        Monitor.class,
+        tenantId, id
+    );
+
+    return convertToRetrieveMonitor(monitor);
   }
 }

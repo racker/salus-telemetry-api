@@ -98,6 +98,17 @@ public class MonitorApi {
   }
 
   @GraphQLQuery
+  public PagedContent<RetrievedMonitor> monitors(String id,
+                                                 @GraphQLArgument(name = "size", defaultValue = "100") int size,
+                                                 @GraphQLArgument(name = "page", defaultValue = "0") int page) {
+    // NOTE: SPQR wants size and page to be present when using id argument
+    final String tenantId = userService.currentTenantId();
+    return PagedContent.ofSingleton(
+        monitorService.retrieveOne(tenantId, id)
+    );
+  }
+
+  @GraphQLQuery
   public String configJson(@GraphQLContext UsingLocalTelegraf usingLocalTelegraf) {
     return monitorService.convertToJson(usingLocalTelegraf);
   }

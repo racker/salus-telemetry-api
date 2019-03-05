@@ -103,42 +103,39 @@ mutation {
 ### Create a resource
 
 ```graphql
-mutation CreateResource($r:ResourceInput!) {
-  createResource(resource:$r) {
-    identifierName
-    identifierValue
-    envoyId
-    address
-  }
-}
-```
-
-given
-
-```json
-{
-  "r": {
-    "identifierName": "myid",
-    "labels": {
-      "name": "myid",
-      "value": "thingsandstuff"
-    }
+mutation {
+  createResource(resourceId:"testing2", 
+    labels:[{name:"test",value:"true"}]) {
+    resourceId
+    id
   }
 }
 ```
 
 ### Get all resources
 ```graphql
-query GetAllResources {
+{
   resources {
-    tenantId
-    identifierName
-    identifierValue
-    address
-    envoyId
-    labels {
-      name
-      value
+    content {
+      id
+      resourceId
+      labels
+    }
+  }
+}
+```
+
+### Get a page of resources
+```graphql
+{
+  resources(size:1, page:1) {
+    first
+    last
+    totalPages
+    content {
+      id
+      resourceId
+      labels
     }
   }
 }
@@ -148,18 +145,9 @@ query GetAllResources {
 Must specify the identifierName and value.
 
 ```graphql
-mutation DeleteResource ($i:String!, $iv:String!) {
-  deleteResource(identifierName:$i, identifierValue:$iv) {
+mutation {
+  deleteResource(resourceId:"testing2") {
     success
   }
-}
-```
-
-given
-
-```json
-{
-  "i": "arch",
-  "iv": "X86_64"
 }
 ```
