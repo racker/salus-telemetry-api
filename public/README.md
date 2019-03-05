@@ -13,7 +13,7 @@ of [Repose KeystoneV2](https://repose.atlassian.net/wiki/spaces/REPOSE/pages/342
 
 # Example GraphQL operations
 
-## Agent Releases Operations
+## Agent Installation Operations
 
 ### Install Agent Release
 
@@ -40,80 +40,51 @@ given
 }
 ```
 
-## AgentConfig Operations
+## Monitor Operations
 
-### Create AgentConfig
+### Create monitor
 
 ```graphql
-mutation CreateAgentConfig($config:AgentConfigInput!)
-{
-  createAgentConfig(config:$config) {
-    id
-  }
-}
-```
-
-given
-
-```json
-{
-  "config": {
-    "agentType": "TELEGRAF",
-    "selectorScope": "ALL_OF",
-    "content": "[[inputs.cpu]]\n[[inputs.disk]]\n  mount_points=[\"/\"]\n[[inputs.mem]]\n",
-    "labels": [
-      {
-        "name": "os",
-        "value": "DARWIN"
+mutation {
+  createLocalMonitor(
+    matchingLabels: [{ name: "os", value: "DARWIN" }]
+    configs: {
+      usingTelegraf: { 
+        mem: { enabled: true }, 
+        cpu: { enabled: true },
+      	disk: { enabled:true, mountPoints:"/var/lib" }
       }
-    ]
-  }
-}
-```
-
-### Get all AgentConfigs
-
-```graphql
-query GetAllAgentConfigs
-{
-  agentConfigs {
+    }
+  ) {
     id
-    agentType
-    content
   }
 }
 ```
 
-### Get a specific AgentConfig with inline ID
+### Get all monitors
 
 ```graphql
 {
-  agentConfigs(id:"d9c3991b-f206-4a30-bf46-6f0cf690bf04") {
-    id
-    agentType
-    content
+  monitors {
+    totalElements
+    first
+    last
+    content {
+      id
+      matchingLabels {
+        name
+        value
+      }
+      configs {
+        local {
+          usingTelegraf {
+            enabled
+            configJson
+          }
+        }
+      }
+    }
   }
-}
-```
-
-### Get a specific AgentConfig with query variables
-
-```graphql
-query GetSpecificAgentConfig($id:String!)
-{
-  agentConfigs(id:$id) {
-    id
-    agentType
-    content
-  }
-}
-```
-
-given 
-
-```json
-{
-  "id": "d9c3991b-f206-4a30-bf46-6f0cf690bf04"
 }
 ```
 
