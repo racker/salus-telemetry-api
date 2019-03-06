@@ -16,6 +16,13 @@
 
 package com.rackspace.salus.telemetry.api.model.telegraf;
 
-public class Cpu extends LocalTelegrafPlugin {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data @EqualsAndHashCode(callSuper = true)
+public class Cpu extends LocalTelegrafPlugin {
+  boolean percpu;
+  boolean totalcpu;
+  boolean collectCpuTime;
+  boolean reportActive;
 }
