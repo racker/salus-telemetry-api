@@ -14,38 +14,19 @@
  * limitations under the License.
  */
 
-package com.rackspace.salus.telemetry.api.model.input;
+package com.rackspace.salus.telemetry.api.model;
 
-import com.rackspace.salus.telemetry.model.AgentType;
 import com.rackspace.salus.telemetry.model.Label;
-import io.leangen.graphql.annotations.GraphQLNonNull;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Setter;
 
 @Data
-@Setter(onParam = @__({@GraphQLNonNull})) // GraphQL SPQR only looks at the setter property for required-field calculation
-public class AgentRelease {
-  @NotBlank
-  String version;
+public class RetrievedMonitor {
 
-  @NotNull
-  AgentType type;
+  String id;
 
-  @NotNull
-  List<@GraphQLNonNull Label> labels;
+  MonitorConfigs configs;
 
-  @NotBlank
-  String url;
+  List<Label> matchingLabels;
 
-  @NotNull
-  ExpectedChecksum checksum;
-
-  /**
-   * Path to the agent's executable within the package
-   */
-  @NotBlank
-  String exe;
 }

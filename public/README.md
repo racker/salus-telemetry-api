@@ -13,7 +13,7 @@ of [Repose KeystoneV2](https://repose.atlassian.net/wiki/spaces/REPOSE/pages/342
 
 # Example GraphQL operations
 
-## Agent Releases Operations
+## Agent Installation Operations
 
 ### Install Agent Release
 
@@ -40,80 +40,61 @@ given
 }
 ```
 
-## AgentConfig Operations
+## Monitor Operations
 
-### Create AgentConfig
+### Create monitor
 
 ```graphql
-mutation CreateAgentConfig($config:AgentConfigInput!)
-{
-  createAgentConfig(config:$config) {
-    id
-  }
-}
-```
-
-given
-
-```json
-{
-  "config": {
-    "agentType": "TELEGRAF",
-    "selectorScope": "ALL_OF",
-    "content": "[[inputs.cpu]]\n[[inputs.disk]]\n  mount_points=[\"/\"]\n[[inputs.mem]]\n",
-    "labels": [
-      {
-        "name": "os",
-        "value": "DARWIN"
+mutation {
+  createLocalMonitor(
+    matchingLabels: [{ name: "os", value: "DARWIN" }]
+    configs: {
+      usingTelegraf: { 
+        mem: { enabled: true }, 
+        cpu: { enabled: true },
+      	disk: { enabled:true, mountPoints:"/var/lib" }
       }
-    ]
-  }
-}
-```
-
-### Get all AgentConfigs
-
-```graphql
-query GetAllAgentConfigs
-{
-  agentConfigs {
+    }
+  ) {
     id
-    agentType
-    content
   }
 }
 ```
 
-### Get a specific AgentConfig with inline ID
+### Get all monitors
 
 ```graphql
 {
-  agentConfigs(id:"d9c3991b-f206-4a30-bf46-6f0cf690bf04") {
-    id
-    agentType
-    content
+  monitors {
+    totalElements
+    first
+    last
+    content {
+      id
+      matchingLabels {
+        name
+        value
+      }
+      configs {
+        local {
+          usingTelegraf {
+            enabled
+            configJson
+          }
+        }
+      }
+    }
   }
 }
 ```
 
-### Get a specific AgentConfig with query variables
+### Delete monitor
 
 ```graphql
-query GetSpecificAgentConfig($id:String!)
-{
-  agentConfigs(id:$id) {
-    id
-    agentType
-    content
+mutation {
+  deleteMonitor(id:"e20d16c0-c1dd-46f6-8cac-577100c0f341") {
+    success
   }
-}
-```
-
-given 
-
-```json
-{
-  "id": "d9c3991b-f206-4a30-bf46-6f0cf690bf04"
 }
 ```
 
@@ -122,42 +103,39 @@ given
 ### Create a resource
 
 ```graphql
-mutation CreateResource($r:ResourceInput!) {
-  createResource(resource:$r) {
-    identifierName
-    identifierValue
-    envoyId
-    address
-  }
-}
-```
-
-given
-
-```json
-{
-  "r": {
-    "identifierName": "myid",
-    "labels": {
-      "name": "myid",
-      "value": "thingsandstuff"
-    }
+mutation {
+  createResource(resourceId:"testing2", 
+    labels:[{name:"test",value:"true"}]) {
+    resourceId
+    id
   }
 }
 ```
 
 ### Get all resources
 ```graphql
-query GetAllResources {
+{
   resources {
-    tenantId
-    identifierName
-    identifierValue
-    address
-    envoyId
-    labels {
-      name
-      value
+    content {
+      id
+      resourceId
+      labels
+    }
+  }
+}
+```
+
+### Get a page of resources
+```graphql
+{
+  resources(size:1, page:1) {
+    first
+    last
+    totalPages
+    content {
+      id
+      resourceId
+      labels
     }
   }
 }
@@ -167,18 +145,9 @@ query GetAllResources {
 Must specify the identifierName and value.
 
 ```graphql
-mutation DeleteResource ($i:String!, $iv:String!) {
-  deleteResource(identifierName:$i, identifierValue:$iv) {
+mutation {
+  deleteResource(resourceId:"testing2") {
     success
   }
-}
-```
-
-given
-
-```json
-{
-  "i": "arch",
-  "iv": "X86_64"
 }
 ```

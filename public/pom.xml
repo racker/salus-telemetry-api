@@ -57,13 +57,23 @@
         <dependency>
             <groupId>io.leangen.graphql</groupId>
             <artifactId>graphql-spqr-spring-boot-starter</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </dependency>
 
         <dependency>
             <groupId>com.rackspace.salus</groupId>
             <artifactId>salus-telemetry-model</artifactId>
             <version>0.1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-jdbc</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-jdbc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.rackspace.salus</groupId>
@@ -74,6 +84,44 @@
             <groupId>com.rackspace.salus</groupId>
             <artifactId>salus-common</artifactId>
             <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rackspace.salus</groupId>
+            <artifactId>salus-telemetry-monitor-management</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>client</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.rackspace.salus</groupId>
+            <artifactId>salus-telemetry-resource-management</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>client</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.rackspace.salus</groupId>
+            <artifactId>salus-event-engine-management</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>client</classifier>
+            <exclusions>
+                <!-- There doesn't seem to be a way to exclude all the normal transitives via the
+                  client jar build, so we'll exclude them all here -->
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

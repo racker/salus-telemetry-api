@@ -14,38 +14,24 @@
  * limitations under the License.
  */
 
-package com.rackspace.salus.telemetry.api.model.input;
+package com.rackspace.salus.telemetry.api.model.telegraf;
 
-import com.rackspace.salus.telemetry.model.AgentType;
-import com.rackspace.salus.telemetry.model.Label;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
-@Data
-@Setter(onParam = @__({@GraphQLNonNull})) // GraphQL SPQR only looks at the setter property for required-field calculation
-public class AgentRelease {
-  @NotBlank
-  String version;
+@Data @EqualsAndHashCode(callSuper = true)
+public class Ping extends RemoteTelegrafPlugin {
+  @Setter(onParam = @__({@GraphQLNonNull}))
+  List<@GraphQLNonNull String> urls;
+  Integer count;
+  Integer pingInterval;
+  Integer timeout;
+  Integer deadline;
+  String interfaceOrAddress;
 
-  @NotNull
-  AgentType type;
-
-  @NotNull
-  List<@GraphQLNonNull Label> labels;
-
-  @NotBlank
-  String url;
-
-  @NotNull
-  ExpectedChecksum checksum;
-
-  /**
-   * Path to the agent's executable within the package
-   */
-  @NotBlank
-  String exe;
+  // DO NOT include 'binary' or 'arguments' from telegraf raw config since those would expose an
+  // exploitable attack vector on the customer servers
 }
