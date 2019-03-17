@@ -16,10 +16,13 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
+import java.util.Map;
+import lombok.Data;
 
-import io.leangen.graphql.annotations.types.GraphQLUnion;
-
-@GraphQLUnion(name = "Using", possibleTypeAutoDiscovery = true)
-public abstract class Using {
-
+@Data
+public class DetailedMonitorOutput {
+  String id;
+  String name;
+  Map<String,String> labels;
+  MonitorDetails details;
 }

@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.rackspace.salus.telemetry.api.model.telegraf;
+package com.rackspace.salus.telemetry.api.model;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * Telegraf plugins extending from this perform remote monitoring where the target resource
- * differs from the monitoring system identified by the matching labels.
- */
-@Data @EqualsAndHashCode(callSuper = true)
-public class RemoteTelegrafPlugin extends TelegrafPlugin {
-
+@Data @EqualsAndHashCode(callSuper = false)
+public class LocalMonitorDetails extends MonitorDetails {
+  @NotNull @Valid
+  LocalPlugin plugin;
 }

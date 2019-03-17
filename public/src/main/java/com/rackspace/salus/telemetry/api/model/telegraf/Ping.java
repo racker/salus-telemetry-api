@@ -16,16 +16,19 @@
 
 package com.rackspace.salus.telemetry.api.model.telegraf;
 
-import io.leangen.graphql.annotations.GraphQLNonNull;
+import com.rackspace.salus.telemetry.api.model.ApplicableAgentType;
+import com.rackspace.salus.telemetry.api.model.RemotePlugin;
+import com.rackspace.salus.telemetry.model.AgentType;
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 
 @Data @EqualsAndHashCode(callSuper = true)
-public class Ping extends RemoteTelegrafPlugin {
-  @Setter(onParam = @__({@GraphQLNonNull}))
-  List<@GraphQLNonNull String> urls;
+@ApplicableAgentType(AgentType.TELEGRAF)
+public class Ping extends RemotePlugin {
+  @NotEmpty
+  List<String> urls;
   Integer count;
   Integer pingInterval;
   Integer timeout;

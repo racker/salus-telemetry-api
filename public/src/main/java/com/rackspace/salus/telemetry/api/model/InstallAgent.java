@@ -16,10 +16,15 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
+import java.util.Map;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class CreatedResource {
-  Long id;
-  String resourceId;
+public class InstallAgent {
+  @NotEmpty
+  String agentReleaseId;
+
+  @NotEmpty
+  Map<String,String> matchingLabels;
 }

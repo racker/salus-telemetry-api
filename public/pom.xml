@@ -30,6 +30,10 @@
         <relativePath>../../salus-app-base</relativePath>
     </parent>
 
+    <properties>
+        <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,10 +52,8 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security.extensions</groupId>
-            <artifactId>spring-security-saml2-core</artifactId>
-            <!--NOTE 1.0.4 caused application context to fail early -->
-            <version>1.0.3.RELEASE</version>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gateway-mvc</artifactId>
         </dependency>
 
         <dependency>
@@ -85,44 +87,6 @@
             <artifactId>salus-common</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.rackspace.salus</groupId>
-            <artifactId>salus-telemetry-monitor-management</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <classifier>client</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.rackspace.salus</groupId>
-            <artifactId>salus-telemetry-resource-management</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <classifier>client</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.rackspace.salus</groupId>
-            <artifactId>salus-event-engine-management</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <classifier>client</classifier>
-            <exclusions>
-                <!-- There doesn't seem to be a way to exclude all the normal transitives via the
-                  client jar build, so we'll exclude them all here -->
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -140,6 +104,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

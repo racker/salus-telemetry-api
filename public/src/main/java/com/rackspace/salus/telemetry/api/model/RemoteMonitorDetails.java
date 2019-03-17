@@ -16,17 +16,24 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
-import com.rackspace.salus.telemetry.model.Label;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class RetrievedMonitor {
+@EqualsAndHashCode(callSuper = false)
+public class RemoteMonitorDetails extends MonitorDetails {
+  @NotEmpty
+  String targetResourceId;
 
-  String id;
+  /**
+   * If not specified, a set of default zones will be used for remote monitoring.
+   */
+  List<String> monitoringZones;
 
-  MonitorConfigs configs;
-
-  List<Label> matchingLabels;
-
+  @NotNull @Valid
+  RemotePlugin plugin;
 }

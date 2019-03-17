@@ -16,11 +16,15 @@
 
 package com.rackspace.salus.telemetry.api.model.telegraf;
 
+import com.rackspace.salus.telemetry.api.model.ApplicableAgentType;
+import com.rackspace.salus.telemetry.api.model.LocalPlugin;
+import com.rackspace.salus.telemetry.model.AgentType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data @EqualsAndHashCode(callSuper = true)
-public class Cpu extends LocalTelegrafPlugin {
+@ApplicableAgentType(AgentType.TELEGRAF)
+public class Cpu extends LocalPlugin {
   boolean percpu;
   boolean totalcpu;
   boolean collectCpuTime;

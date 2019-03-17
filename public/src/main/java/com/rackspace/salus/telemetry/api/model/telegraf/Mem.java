@@ -16,6 +16,11 @@
 
 package com.rackspace.salus.telemetry.api.model.telegraf;
 
-public class Mem extends LocalTelegrafPlugin {
+import com.rackspace.salus.telemetry.api.model.ApplicableAgentType;
+import com.rackspace.salus.telemetry.api.model.LocalPlugin;
+import com.rackspace.salus.telemetry.model.AgentType;
+
+@ApplicableAgentType(AgentType.TELEGRAF)
+public class Mem extends LocalPlugin {
 
 }

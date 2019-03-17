@@ -44,7 +44,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
-        .antMatchers("/graphql")
+        .antMatchers("/api/**")
         .hasAnyRole(apiPublicProperties.getRoles());
   }
 }
