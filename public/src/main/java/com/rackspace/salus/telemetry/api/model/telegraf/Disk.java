@@ -16,12 +16,16 @@
 
 package com.rackspace.salus.telemetry.api.model.telegraf;
 
+import com.rackspace.salus.telemetry.api.model.ApplicableAgentType;
+import com.rackspace.salus.telemetry.api.model.LocalPlugin;
+import com.rackspace.salus.telemetry.model.AgentType;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data @EqualsAndHashCode(callSuper = true)
-public class Disk extends LocalTelegrafPlugin {
+@ApplicableAgentType(AgentType.TELEGRAF)
+public class Disk extends LocalPlugin {
   List<String> mountPoints;
   List<String> ignoreFs;
 }

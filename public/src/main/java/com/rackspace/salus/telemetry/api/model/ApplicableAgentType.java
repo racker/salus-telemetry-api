@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.rackspace.salus.telemetry.api.model.telegraf;
+package com.rackspace.salus.telemetry.api.model;
 
-import lombok.Data;
+import com.rackspace.salus.telemetry.model.AgentType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Data
-public abstract class TelegrafPlugin {
-  boolean enabled;
+/**
+ * This annotation helps the API gateway determine how to construct the backend monitor object.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ApplicableAgentType {
+  AgentType value();
 }

@@ -1,47 +1,59 @@
-package com.rackspace.salus.telemetry.api.graphql;
+/*
+ * Copyright 2019 Rackspace US, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.model.AgentInstallation;
+import com.rackspace.salus.telemetry.api.model.InstallAgent;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
 import com.rackspace.salus.telemetry.etcd.types.AgentInstallSelector;
-import com.rackspace.salus.telemetry.model.AgentRelease;
 import com.rackspace.salus.telemetry.model.Label;
-import io.leangen.graphql.annotations.GraphQLContext;
-import io.leangen.graphql.annotations.GraphQLMutation;
-import io.leangen.graphql.annotations.GraphQLNonNull;
-import io.leangen.graphql.annotations.GraphQLQuery;
-import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Service
+/**
+ * NOTE: this controller's API will soon be moved to the internal-admin API to enable support
+ * personnel to manage deployment of agent releases for their customers.
+ */
+@RestController
+@RequestMapping("/api/agentInstalls")
 @Slf4j
-@GraphQLApi
-public class AgentInstallationApi {
+public class AgentInstallationController {
 
   private final AgentsCatalogService agentsCatalogService;
   private final UserService userService;
-  private final Counter agentInstalls;
-  private final Counter agentUninstalls;
 
   @Autowired
-  public AgentInstallationApi(AgentsCatalogService agentsCatalogService, UserService userService,
-                              MeterRegistry meterRegistry) {
+  public AgentInstallationController(AgentsCatalogService agentsCatalogService, UserService userService) {
     this.agentsCatalogService = agentsCatalogService;
     this.userService = userService;
-
-    agentInstalls = meterRegistry.counter("agentInstalls");
-    agentUninstalls = meterRegistry.counter("agentUninstalls");
   }
 
-  @GraphQLQuery
-  public CompletableFuture<List<AgentInstallation>> agentInstallations() {
+  @GetMapping
+  public CompletableFuture<List<AgentInstallation>> getAllAgentInstallations() {
     final String tenantId = userService.currentTenantId();
 
     return agentsCatalogService.getInstallations(tenantId)
@@ -57,25 +69,20 @@ public class AgentInstallationApi {
         );
   }
 
-  @GraphQLQuery
-  public CompletableFuture<AgentRelease> agentRelease(@GraphQLContext AgentInstallation agentInstallation) {
-    //IMPLEMENT ME
-    return null;
-  }
-
-  @GraphQLMutation
-  public CompletableFuture<AgentInstallation> installAgentRelease(@GraphQLNonNull String agentReleaseId,
-      List<Label> matchingLabels) {
+  @PostMapping
+  public CompletableFuture<AgentInstallation> installAgentRelease(
+      @RequestBody @Valid InstallAgent install) {
     final String tenantId = userService.currentTenantId();
 
+    final String agentReleaseId = install.getAgentReleaseId();
+
     log.debug("Installing agent release={} for tenant={}", agentReleaseId, tenantId);
-    agentInstalls.increment();
 
     return agentsCatalogService.install(
         tenantId,
         new AgentInstallSelector()
             .setAgentReleaseId(agentReleaseId)
-            .setLabels(Label.convertToMap(matchingLabels))
+            .setLabels(install.getMatchingLabels())
     )
         .thenApply(result ->
             new AgentInstallation()

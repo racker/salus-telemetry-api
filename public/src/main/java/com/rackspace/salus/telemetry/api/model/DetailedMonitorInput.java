@@ -16,10 +16,19 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class MonitorConfigs {
-  LocalMonitorConfigs local;
-  RemoteMonitorConfigs remote;
+public class DetailedMonitorInput {
+  String name;
+
+  @NotEmpty
+  Map<String,String> labels;
+
+  @NotNull @Valid
+  MonitorDetails details;
 }

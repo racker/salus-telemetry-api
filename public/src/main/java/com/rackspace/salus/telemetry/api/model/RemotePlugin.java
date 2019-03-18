@@ -16,28 +16,16 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.rackspace.salus.telemetry.api.model.telegraf.Ping;
 
-/**
- * Indicates that a call to a backend web service failed.
- */
-public class BackendRestException extends RuntimeException {
-  private ResponseEntity responseEntity;
+@JsonTypeInfo(use = Id.NAME, property = "type")
+@JsonSubTypes({
+    @Type(name = "ping", value = Ping.class)
+})
+public abstract class RemotePlugin {
 
-  public BackendRestException(String message) {
-    super(message);
-  }
-
-  public BackendRestException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public BackendRestException(String message, ResponseEntity responseEntity) {
-    super(message);
-    this.responseEntity = responseEntity;
-  }
-
-  public ResponseEntity getResponseEntity() {
-    return responseEntity;
-  }
 }

@@ -16,10 +16,16 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
-import com.rackspace.salus.telemetry.api.model.telegraf.UsingRemoteTelegraf;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-@Data
-public class RemoteMonitorConfigs {
-  UsingRemoteTelegraf usingTelegraf;
+@JsonTypeInfo(use = Id.NAME, property = "type")
+@JsonSubTypes({
+    @Type(name = "local", value = LocalMonitorDetails.class),
+    @Type(name = "remote", value=RemoteMonitorDetails.class)
+})
+public abstract class MonitorDetails {
+
 }
