@@ -68,7 +68,7 @@ public class MonitorConversionService {
         localPlugin = objectMapper
             .readValue(monitor.getContent(), LocalPlugin.class);
       } catch (IOException e) {
-        log.warn("Failed to deserialize LocalPlugin for monitor={}", monitor);
+        log.warn("Failed to deserialize LocalPlugin for monitor={}", monitor, e);
         throw new IllegalStateException("Failed to deserialize LocalPlugin");
       }
 
@@ -115,7 +115,7 @@ public class MonitorConversionService {
             objectMapper.writeValueAsString(plugin)
         );
       } catch (JsonProcessingException e) {
-        log.warn("While creating, failed to serialize plugin details of monitor={}", create);
+        log.warn("While creating, failed to serialize plugin details of monitor={}", create, e);
         throw new IllegalStateException("Failed to serialize plugin details");
       }
     }
