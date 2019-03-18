@@ -23,12 +23,16 @@ import com.rackspace.salus.telemetry.api.model.DetailedMonitorOutput;
 import com.rackspace.salus.telemetry.api.model.LocalMonitorDetails;
 import com.rackspace.salus.telemetry.api.model.LocalPlugin;
 import com.rackspace.salus.telemetry.api.model.telegraf.Cpu;
+import com.rackspace.salus.telemetry.api.model.telegraf.Disk;
+import com.rackspace.salus.telemetry.api.model.telegraf.DiskIo;
+import com.rackspace.salus.telemetry.api.model.telegraf.Mem;
 import com.rackspace.salus.telemetry.model.AgentType;
 import com.rackspace.salus.telemetry.model.ConfigSelectorScope;
 import com.rackspace.salus.telemetry.model.Monitor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -110,6 +114,152 @@ public class MonitorConversionServiceTest {
     assertThat(result.getMonitorName()).isEqualTo("name-a");
     assertThat(result.getSelectorScope()).isEqualTo(ConfigSelectorScope.ALL_OF);
     final String content = readContent("/MonitorConversionServiceTest_cpu.json");
+    JSONAssert.assertEquals(content, result.getContent(), true);
+  }
+
+  @Test
+  public void convertToOutput_disk() throws IOException {
+    // NOTE: this unit test is purposely abbreviated compared convertToOutput
+
+    final String content = readContent("/MonitorConversionServiceTest_disk.json");
+
+    Monitor monitor = new Monitor()
+        .setId(UUID.randomUUID())
+        .setAgentType(AgentType.TELEGRAF)
+        .setSelectorScope(ConfigSelectorScope.ALL_OF)
+        .setLabels(Collections.singletonMap("os","linux"))
+        .setContent(content);
+
+    final DetailedMonitorOutput result = conversionService.convertToOutput(monitor);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getDetails()).isInstanceOf(LocalMonitorDetails.class);
+
+    final LocalPlugin plugin = ((LocalMonitorDetails) result.getDetails()).getPlugin();
+    assertThat(plugin).isInstanceOf(Disk.class);
+
+    final Disk specificPlugin = (Disk) plugin;
+    assertThat(specificPlugin.getMountPoints()).contains("/var/lib");
+    assertThat(specificPlugin.getIgnoreFs()).contains("/dev");
+  }
+
+  @Test
+  public void convertFromInput_disk() throws JSONException, IOException {
+    // NOTE: this unit test is purposely abbreviated compared convertFromInput
+
+    final String content = readContent("/MonitorConversionServiceTest_disk.json");
+
+    final Disk plugin = new Disk();
+    plugin.setMountPoints(Collections.singletonList("/var/lib"));
+    plugin.setIgnoreFs(Collections.singletonList("/dev"));
+
+    final LocalMonitorDetails details = new LocalMonitorDetails();
+    details.setPlugin(plugin);
+
+    DetailedMonitorInput input = new DetailedMonitorInput()
+        .setLabels(Collections.singletonMap("os","linux"))
+        .setDetails(details);
+    final Monitor result = conversionService.convertFromInput(input);
+
+    assertThat(result).isNotNull();
+    JSONAssert.assertEquals(content, result.getContent(), true);
+  }
+
+  @Test
+  public void convertToOutput_diskio() throws IOException {
+    // NOTE: this unit test is purposely abbreviated compared convertToOutput
+
+    final String content = readContent("/MonitorConversionServiceTest_diskio.json");
+
+    Monitor monitor = new Monitor()
+        .setId(UUID.randomUUID())
+        .setAgentType(AgentType.TELEGRAF)
+        .setSelectorScope(ConfigSelectorScope.ALL_OF)
+        .setLabels(Collections.singletonMap("os","linux"))
+        .setContent(content);
+
+    final DetailedMonitorOutput result = conversionService.convertToOutput(monitor);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getDetails()).isInstanceOf(LocalMonitorDetails.class);
+
+    final LocalPlugin plugin = ((LocalMonitorDetails) result.getDetails()).getPlugin();
+    assertThat(plugin).isInstanceOf(DiskIo.class);
+
+    final DiskIo specificPlugin = (DiskIo) plugin;
+    assertThat(specificPlugin.getDevices()).contains("sda");
+    assertThat(specificPlugin.getSkipSerialNumber()).isTrue();
+    assertThat(specificPlugin.getDeviceTags()).contains("ID_FS_TYPE");
+    assertThat(specificPlugin.getNameTemplates()).contains("$ID_FS_LABEL");
+
+  }
+
+  @Test
+  public void convertFromInput_diskio() throws JSONException, IOException {
+    // NOTE: this unit test is purposely abbreviated compared convertFromInput
+
+    final String content = readContent("/MonitorConversionServiceTest_diskio.json");
+
+    final DiskIo plugin = new DiskIo();
+    plugin.setDevices(Collections.singletonList("sda"));
+    plugin.setSkipSerialNumber(true);
+    plugin.setDeviceTags(Collections.singletonList("ID_FS_TYPE"));
+    plugin.setNameTemplates(Collections.singletonList("$ID_FS_LABEL"));
+
+
+    final LocalMonitorDetails details = new LocalMonitorDetails();
+    details.setPlugin(plugin);
+
+    DetailedMonitorInput input = new DetailedMonitorInput()
+        .setLabels(Collections.singletonMap("os","linux"))
+        .setDetails(details);
+    final Monitor result = conversionService.convertFromInput(input);
+
+    assertThat(result).isNotNull();
+    JSONAssert.assertEquals(content, result.getContent(), true);
+  }
+
+  @Test
+  public void convertToOutput_mem() throws IOException {
+    // NOTE: this unit test is purposely abbreviated compared convertToOutput
+
+    final String content = readContent("/MonitorConversionServiceTest_mem.json");
+
+    Monitor monitor = new Monitor()
+        .setId(UUID.randomUUID())
+        .setAgentType(AgentType.TELEGRAF)
+        .setSelectorScope(ConfigSelectorScope.ALL_OF)
+        .setLabels(Collections.singletonMap("os","linux"))
+        .setContent(content);
+
+    final DetailedMonitorOutput result = conversionService.convertToOutput(monitor);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getDetails()).isInstanceOf(LocalMonitorDetails.class);
+
+    final LocalPlugin plugin = ((LocalMonitorDetails) result.getDetails()).getPlugin();
+    assertThat(plugin).isInstanceOf(Mem.class);
+    // no config to validate
+  }
+
+  @Test
+  public void convertFromInput_mem() throws JSONException, IOException {
+    // NOTE: this unit test is purposely abbreviated compared convertFromInput
+
+    final String content = readContent("/MonitorConversionServiceTest_mem.json");
+
+    final Mem plugin = new Mem();
+    // no config to set
+
+    final LocalMonitorDetails details = new LocalMonitorDetails();
+    details.setPlugin(plugin);
+
+    DetailedMonitorInput input = new DetailedMonitorInput()
+        .setLabels(Collections.singletonMap("os","linux"))
+        .setDetails(details);
+    final Monitor result = conversionService.convertFromInput(input);
+
+    assertThat(result).isNotNull();
     JSONAssert.assertEquals(content, result.getContent(), true);
   }
 

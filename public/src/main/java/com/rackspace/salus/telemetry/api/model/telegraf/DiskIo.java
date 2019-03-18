@@ -16,6 +16,8 @@
 
 package com.rackspace.salus.telemetry.api.model.telegraf;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.rackspace.salus.telemetry.api.model.ApplicableAgentType;
 import com.rackspace.salus.telemetry.api.model.LocalPlugin;
 import com.rackspace.salus.telemetry.model.AgentType;
@@ -25,9 +27,10 @@ import lombok.EqualsAndHashCode;
 
 @Data @EqualsAndHashCode(callSuper = true)
 @ApplicableAgentType(AgentType.TELEGRAF)
+@JsonInclude(Include.NON_NULL)
 public class DiskIo extends LocalPlugin {
   List<String> devices;
-  boolean skipSerialNumber;
+  Boolean skipSerialNumber;
   List<String> deviceTags;
   List<String> nameTemplates;
 }

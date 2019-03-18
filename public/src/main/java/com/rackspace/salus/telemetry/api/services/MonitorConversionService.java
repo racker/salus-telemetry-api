@@ -58,6 +58,7 @@ public class MonitorConversionService {
     final AgentType agentType = monitor.getAgentType();
     final ConfigSelectorScope selectorScope = monitor.getSelectorScope();
 
+    // NOTE: this conditional needs to be updated when support for remote monitors is added to backend
     if (selectorScope == ConfigSelectorScope.ALL_OF && agentType == AgentType.TELEGRAF) {
       final LocalMonitorDetails monitorDetails = new LocalMonitorDetails();
       detailedMonitorOutput.setDetails(monitorDetails);
@@ -96,6 +97,8 @@ public class MonitorConversionService {
         .setLabels(create.getLabels());
 
     final MonitorDetails details = create.getDetails();
+
+    // NOTE: this conditional needs to be updated when support for remote monitors is added to backend
     if (details instanceof LocalMonitorDetails) {
       monitor.setSelectorScope(ConfigSelectorScope.ALL_OF);
 
