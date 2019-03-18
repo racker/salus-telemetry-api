@@ -18,7 +18,6 @@ package com.rackspace.salus.telemetry.api.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.rackspace.salus.telemetry.api.model.ApplicableAgentType;
 import com.rackspace.salus.telemetry.api.model.DetailedMonitorInput;
 import com.rackspace.salus.telemetry.api.model.DetailedMonitorOutput;
@@ -41,12 +40,10 @@ import org.springframework.stereotype.Service;
 public class MonitorConversionService {
 
   private final ObjectMapper objectMapper;
-  private final JsonNodeFactory nodeFactory;
 
   @Autowired
   public MonitorConversionService(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
-    nodeFactory = objectMapper.getNodeFactory();
   }
 
   public DetailedMonitorOutput convertToOutput(Monitor monitor) {
