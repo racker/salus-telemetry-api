@@ -17,11 +17,9 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.model.DetailedMonitorInput;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.model.Monitor;
 import com.rackspace.salus.telemetry.model.PagedContent;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -31,7 +29,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,8 +67,7 @@ public class MonitorsController {
   }
 
   @PostMapping("/monitors")
-  public ResponseEntity<?> create(ProxyExchange<Monitor> proxy,
-                                                      @RequestBody @Valid DetailedMonitorInput input) {
+  public ResponseEntity<?> create(ProxyExchange<Monitor> proxy) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -86,8 +82,7 @@ public class MonitorsController {
 
   @PutMapping("/monitors/{id}")
   public ResponseEntity<?> update(ProxyExchange<Monitor> proxy,
-                                                      @PathVariable String id,
-                                                      @RequestBody @Valid DetailedMonitorInput input) {
+                                                      @PathVariable String id) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
