@@ -53,7 +53,7 @@ public class MonitorsController {
   }
 
   @GetMapping("/monitors")
-  public ResponseEntity<PagedContent<Monitor>> getAll(ProxyExchange<PagedContent<Monitor>> proxy,
+  public ResponseEntity<?> getAll(ProxyExchange<PagedContent<Monitor>> proxy,
                                                                     @RequestParam(defaultValue = "100") int size,
                                                                     @RequestParam(defaultValue = "0") int page) {
     final String tenantId = userService.currentTenantId();
@@ -70,7 +70,7 @@ public class MonitorsController {
   }
 
   @PostMapping("/monitors")
-  public ResponseEntity<Monitor> create(ProxyExchange<Monitor> proxy,
+  public ResponseEntity<?> create(ProxyExchange<Monitor> proxy,
                                                       @RequestBody @Valid DetailedMonitorInput input) {
     final String tenantId = userService.currentTenantId();
 
@@ -81,12 +81,11 @@ public class MonitorsController {
         .toString();
 
     return proxy.uri(backendUri)
-        .body(input)
         .post();
   }
 
   @PutMapping("/monitors/{id}")
-  public ResponseEntity<Monitor> update(ProxyExchange<Monitor> proxy,
+  public ResponseEntity<?> update(ProxyExchange<Monitor> proxy,
                                                       @PathVariable String id,
                                                       @RequestBody @Valid DetailedMonitorInput input) {
     final String tenantId = userService.currentTenantId();
@@ -98,7 +97,6 @@ public class MonitorsController {
         .toString();
 
     return proxy.uri(backendUri)
-        .body(input)
         .put();
   }
 
