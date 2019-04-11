@@ -17,13 +17,9 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.model.DetailedMonitorInput;
-import com.rackspace.salus.telemetry.api.model.DetailedMonitorOutput;
-import com.rackspace.salus.telemetry.api.services.MonitorConversionService;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.model.Monitor;
 import com.rackspace.salus.telemetry.model.PagedContent;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -33,7 +29,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,18 +42,15 @@ public class MonitorsController {
 
   private final UserService userService;
   private final ServicesProperties servicesProperties;
-  private final MonitorConversionService monitorConversionService;
 
   @Autowired
-  public MonitorsController(UserService userService, ServicesProperties servicesProperties,
-                            MonitorConversionService monitorConversionService) {
+  public MonitorsController(UserService userService, ServicesProperties servicesProperties) {
     this.userService = userService;
     this.servicesProperties = servicesProperties;
-    this.monitorConversionService = monitorConversionService;
   }
 
   @GetMapping("/monitors")
-  public ResponseEntity<PagedContent<DetailedMonitorOutput>> getAll(ProxyExchange<PagedContent<Monitor>> proxy,
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
                                                                     @RequestParam(defaultValue = "100") int size,
                                                                     @RequestParam(defaultValue = "0") int page) {
     final String tenantId = userService.currentTenantId();
@@ -71,27 +63,11 @@ public class MonitorsController {
         .build(tenantId)
         .toString();
 
-    return proxy.uri(backendUri).get(responseEntity -> {
-
-      if (responseEntity.getBody() == null) {
-        log.warn("Got null response body for request={}", backendUri);
-        return ResponseEntity.noContent()
-            .headers(responseEntity.getHeaders())
-            .build();
-      }
-
-      final PagedContent<DetailedMonitorOutput> responsePage = responseEntity.getBody()
-          .map(monitorConversionService::convertToOutput);
-
-      return ResponseEntity.status(responseEntity.getStatusCode())
-          .headers(responseEntity.getHeaders())
-          .body(responsePage);
-    });
+    return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/monitors")
-  public ResponseEntity<DetailedMonitorOutput> create(ProxyExchange<Monitor> proxy,
-                                                      @RequestBody @Valid DetailedMonitorInput input) {
+  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -101,19 +77,12 @@ public class MonitorsController {
         .toString();
 
     return proxy.uri(backendUri)
-        .body(monitorConversionService.convertFromInput(input))
-        .post(responseEntity -> {
-
-      return ResponseEntity.status(responseEntity.getStatusCode())
-          .headers(responseEntity.getHeaders())
-          .body(monitorConversionService.convertToOutput(responseEntity.getBody()));
-    });
+        .post();
   }
 
   @PutMapping("/monitors/{id}")
-  public ResponseEntity<DetailedMonitorOutput> update(ProxyExchange<Monitor> proxy,
-                                                      @PathVariable String id,
-                                                      @RequestBody @Valid DetailedMonitorInput input) {
+  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+                                                      @PathVariable String id) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -123,13 +92,7 @@ public class MonitorsController {
         .toString();
 
     return proxy.uri(backendUri)
-        .body(monitorConversionService.convertFromInput(input))
-        .put(responseEntity -> {
-
-          return ResponseEntity.status(responseEntity.getStatusCode())
-              .headers(responseEntity.getHeaders())
-              .body(monitorConversionService.convertToOutput(responseEntity.getBody()));
-        });
+        .put();
   }
 
   @DeleteMapping("/monitors/{id}")
