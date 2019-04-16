@@ -142,7 +142,7 @@ public class ResourcesControllerTest {
                         "  \"region\": null\n" +
                         "}"))
                     .andExpect(status().isOk())
-                    .andDo(document("getResources", /*requestParameters(resourceCreate),*/responseFields(resource)));
+                    .andDo(document("createResources", requestParameters(resourceCreate),responseFields(resource)));
     }
 
     @Test
@@ -167,7 +167,7 @@ public class ResourcesControllerTest {
                 "  \"region\": null\n" +
                 "}"))
                     .andExpect(status().isOk())
-                    .andDo(document("getResources", responseFields(resource)));
+                    .andDo(document("updateResource", responseFields(resource)));
     }
 
     @Test
@@ -181,6 +181,6 @@ public class ResourcesControllerTest {
 
         mockMvc.perform(delete("/api/resources/abcd"))
                 .andExpect(status().isOk())
-                .andDo(document("getResources"));
+                .andDo(document("deleteResources"));
     }
 }
