@@ -93,7 +93,8 @@ public class ResourcesControllerTest {
     final FieldDescriptor[] resourceUpdate = new FieldDescriptor[] {
             subsectionWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
             subsectionWithPath("metadata").description(""),
-            fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring")
+            fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring"),
+            fieldWithPath("region").description("The Region that this Resource lives in")
     };
 
     final FieldDescriptor[] resource = new FieldDescriptor[] {
@@ -190,7 +191,7 @@ public class ResourcesControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                     .andExpect(status().isOk())
-                    .andDo(document("updateResource", responseFields(resource)));
+                    .andDo(document("updateResource",requestFields(resourceUpdate), responseFields(resource)));
     }
 
     @Test
