@@ -104,7 +104,7 @@ public class ResourcesController {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
-        .path("/api/{tenantId}/resources/{resourceId}")
+        .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .build(tenantId, resourceId)
         .toString();
 

@@ -1,7 +1,0 @@
-{
-  "type": "cpu",
-  "collectCpuTime": false,
-  "percpu": false,
-  "reportActive": false,
-  "totalcpu": false
-}
