@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -44,6 +45,14 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ResourcesController.class)
@@ -71,6 +80,10 @@ public class ResourcesControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+
+
+    //eventually the following FieldDescriptor code should
+
     final FieldDescriptor[] resourceCreate = new FieldDescriptor[] {
             fieldWithPath("resourceId").description("Machine readable identifier for this Resource"),
             fieldWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
@@ -95,24 +108,50 @@ public class ResourcesControllerTest {
     };
 
     final FieldDescriptor[] pagedResource = new FieldDescriptor[] {
-            fieldWithPath("resourceId").description("Machine readable identifier for this Resource"),
-            fieldWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
-            fieldWithPath("metadata ").description("Information about the server useful for Monitor Templating"),
-            fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring"),
-            fieldWithPath("tenantId").description("The id of the account that owns this Resource"),
-            fieldWithPath("region").description("Region that this Resource lives in"),
-            fieldWithPath("id").description("System unique identifier")
+            fieldWithPath("content.[].resourceId").description("Machine readable identifier for this Resource"),
+            subsectionWithPath("content.[].labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
+            subsectionWithPath("content.[].metadata").description("Information about the server useful for Monitor Templating"),
+            fieldWithPath("content.[].presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring"),
+            fieldWithPath("content.[].tenantId").description("The id of the account that owns this Resource"),
+            fieldWithPath("content.[].region").description("Region that this Resource lives in"),
+            fieldWithPath("content.[].id").description("System unique identifier"),
+            //start of the pageable object
+            fieldWithPath("first").description(""),
+            fieldWithPath("empty").description(""),
+            fieldWithPath("last").description(""),
+            fieldWithPath("totalElements").description(""),
+            fieldWithPath("totalPages").description(""),
+            fieldWithPath("size").description(""),
+            fieldWithPath("number").description(""),
+            fieldWithPath("numberOfElements").description(""),
+            fieldWithPath("sort.sorted").description(""),
+            fieldWithPath("sort.unsorted").description(""),
+            fieldWithPath("sort.empty").description(""),
+            fieldWithPath("pageable.sort.sorted").description(""),
+            fieldWithPath("pageable.sort.unsorted").description(""),
+            fieldWithPath("pageable.sort.empty").description(""),
+            fieldWithPath("pageable.offset").description(""),
+            fieldWithPath("pageable.pageSize").description(""),
+            fieldWithPath("pageable.pageNumber").description(""),
+            fieldWithPath("pageable.paged").description(""),
+            fieldWithPath("pageable.unpaged").description("")
     };
 
+    @Before
+    public void setup() {
+
+    }
 
     @Test
-    public void testGetAllMonitors() throws Exception {
+    public void testGetAllResources() throws Exception {
+
+        final String content = readContent("/resourceOutput.json");
 
         when(userService.currentTenantId())
                 .thenReturn("t-1");
 
         server.expect(requestTo("/api/tenant/t-1/resources?size=100&page=0"))
-                .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(content, MediaType.APPLICATION_JSON));
 
         mockMvc.perform(get("/api/resources"))
                 .andExpect(status().isOk())
@@ -142,7 +181,7 @@ public class ResourcesControllerTest {
                         "  \"region\": null\n" +
                         "}"))
                     .andExpect(status().isOk())
-                    .andDo(document("createResources", requestParameters(resourceCreate),responseFields(resource)));
+                    .andDo(document("createResources", /*requestParameters(resourceCreate),*/responseFields(resource)));
     }
 
     @Test
@@ -182,5 +221,11 @@ public class ResourcesControllerTest {
         mockMvc.perform(delete("/api/resources/abcd"))
                 .andExpect(status().isOk())
                 .andDo(document("deleteResources"));
+    }
+
+    private static String readContent(String resource) throws IOException {
+        try (InputStream in = new ClassPathResource(resource).getInputStream()) {
+            return FileCopyUtils.copyToString(new InputStreamReader(in));
+        }
     }
 }

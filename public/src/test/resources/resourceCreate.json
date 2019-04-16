@@ -1,0 +1,11 @@
+{
+  "resourceId": "testing",
+  "labels": {
+    "pingable": "true"
+  },
+  "metadata": {
+    "ping_ip": "localhost"
+  },
+  "presenceMonitoringEnabled": true,
+  "region": null
+}

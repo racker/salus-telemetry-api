@@ -1,0 +1,59 @@
+{
+  "content": [
+    {
+      "id": 26,
+      "resourceId": "development:0",
+      "labels": {
+        "agent.discovered.hostname": "MS90HCG8WL",
+        "agent.discovered.os": "darwin",
+        "agent.environment": "localdev",
+        "pingable": "true",
+        "agent.discovered.arch": "amd64"
+      },
+      "metadata": {
+        "ping_ip": "127.0.0.1"
+      },
+      "tenantId": "aaaaaa",
+      "presenceMonitoringEnabled": true,
+      "region": null
+    },
+    {
+      "id": 27,
+      "resourceId": "testing",
+      "labels": {
+        "pingable": "true"
+      },
+      "metadata": {
+        "ping_ip": "localhost"
+      },
+      "tenantId": "aaaaaa",
+      "presenceMonitoringEnabled": true,
+      "region": null
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": false,
+      "unsorted": true,
+      "empty": true
+    },
+    "offset": 0,
+    "pageSize": 100,
+    "pageNumber": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": true,
+  "totalElements": 2,
+  "totalPages": 1,
+  "size": 100,
+  "number": 0,
+  "numberOfElements": 2,
+  "sort": {
+    "sorted": false,
+    "unsorted": true,
+    "empty": true
+  },
+  "first": true,
+  "empty": false
+}
