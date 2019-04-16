@@ -18,9 +18,9 @@ package com.rackspace.salus.telemetry.api.web;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -46,13 +46,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StreamUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ResourcesController.class)
@@ -81,26 +79,27 @@ public class ResourcesControllerTest {
     MockMvc mockMvc;
 
 
-
+    String resourceIdDescription = "Machine readable identifier for this Resource";
     //eventually the following FieldDescriptor code should
 
     final FieldDescriptor[] resourceCreate = new FieldDescriptor[] {
             fieldWithPath("resourceId").description("Machine readable identifier for this Resource"),
-            fieldWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
-            fieldWithPath("metadata ").description(""),
-            fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring")
+            subsectionWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
+            subsectionWithPath("metadata").description(""),
+            fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring"),
+            fieldWithPath("region").description("The Region that this Resource lives in")
     };
 
     final FieldDescriptor[] resourceUpdate = new FieldDescriptor[] {
-            fieldWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
-            fieldWithPath("metadata ").description(""),
+            subsectionWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
+            subsectionWithPath("metadata").description(""),
             fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring")
     };
 
     final FieldDescriptor[] resource = new FieldDescriptor[] {
             fieldWithPath("resourceId").description("Machine readable identifier for this Resource"),
-            fieldWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
-            fieldWithPath("metadata ").description("Information about the server useful for Monitor Templating"),
+            subsectionWithPath("labels").description("JSON list of tuples that will be used to link Monitors to the Resource"),
+            subsectionWithPath("metadata").description("Information about the server useful for Monitor Templating"),
             fieldWithPath("presenceMonitoringEnabled").description("Boolean determining whether to enable presence monitoring"),
             fieldWithPath("tenantId").description("The id of the account that owns this Resource"),
             fieldWithPath("region").description("Region that this Resource lives in"),
@@ -160,51 +159,36 @@ public class ResourcesControllerTest {
 
     @Test
     public void testCreateResource() throws Exception {
+        final String content = readContent("/resourceCreate.json");
+        final String outputContent = readContent("/nonPagedResource.json");
 
         when(userService.currentTenantId())
                 .thenReturn("t-1");
 
         server.expect(requestTo("/api/tenant/t-1/resources"))
-                .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(outputContent, MediaType.APPLICATION_JSON));
 
         mockMvc.perform(post("/api/resources").
                 contentType(MediaType.APPLICATION_JSON)
-                .content("{\n" +
-                        "  \"resourceId\": \"testing\",\n" +
-                        "  \"labels\": {\n" +
-                        "    \"pingable\": \"true\"\n" +
-                        "  },\n" +
-                        "  \"metadata\": {\n" +
-                        "    \"ping_ip\": \"localhost\"\n" +
-                        "  },\n" +
-                        "  \"presenceMonitoringEnabled\": true,\n" +
-                        "  \"region\": null\n" +
-                        "}"))
+                .content(content))
                     .andExpect(status().isOk())
-                    .andDo(document("createResources", /*requestParameters(resourceCreate),*/responseFields(resource)));
+                    .andDo(document("createResources", requestFields(resourceCreate), responseFields(resource)));
     }
 
     @Test
     public void testUpdateResource() throws Exception {
+        final String content = readContent("/resourceUpdate.json");
+        final String outputContent = readContent("/nonPagedResource.json");
 
         when(userService.currentTenantId())
                 .thenReturn("t-1");
 
         server.expect(requestTo("/api/tenant/t-1/resources/abcd"))
-                .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(outputContent, MediaType.APPLICATION_JSON));
 
         mockMvc.perform(put("/api/resources/abcd")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\n" +
-                "  \"labels\": {\n" +
-                "    \"pingable\": \"true\"\n" +
-                "  },\n" +
-                "  \"metadata\": {\n" +
-                "    \"ping_ip\": \"127.0.0.1\"\n" +
-                "  },\n" +
-                "  \"presenceMonitoringEnabled\": true,\n" +
-                "  \"region\": null\n" +
-                "}"))
+                .content(content))
                     .andExpect(status().isOk())
                     .andDo(document("updateResource", responseFields(resource)));
     }
@@ -214,13 +198,15 @@ public class ResourcesControllerTest {
 
         when(userService.currentTenantId())
                 .thenReturn("t-1");
-
-        server.expect(requestTo("/api/tenant/t-1/resources/abcd"))
+        String resourceId = "abcd";
+        server.expect(requestTo("/api/tenant/t-1/resources/" + resourceId))
                 .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
 
-        mockMvc.perform(delete("/api/resources/abcd"))
+        mockMvc.perform(delete("/api/resources/{resourceId}", resourceId))
                 .andExpect(status().isOk())
-                .andDo(document("deleteResources"));
+                .andDo(document("deleteResources", pathParameters(
+                        parameterWithName("resourceId").description(resourceIdDescription)
+                )));
     }
 
     private static String readContent(String resource) throws IOException {

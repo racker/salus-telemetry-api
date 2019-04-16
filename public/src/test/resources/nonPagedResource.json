@@ -1,0 +1,17 @@
+{
+  "id": 26,
+  "resourceId": "development:0",
+  "labels": {
+    "agent.discovered.hostname": "MS90HCG8WL",
+    "agent.discovered.os": "darwin",
+    "agent.environment": "localdev",
+    "pingable": "true",
+    "agent.discovered.arch": "amd64"
+  },
+  "metadata": {
+    "ping_ip": "127.0.0.1"
+  },
+  "tenantId": "aaaaaa",
+  "presenceMonitoringEnabled": true,
+  "region": null
+}
