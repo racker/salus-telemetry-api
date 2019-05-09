@@ -18,12 +18,11 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.services.UserService;
-import com.rackspace.salus.telemetry.model.Monitor;
-import com.rackspace.salus.telemetry.model.PagedContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,15 +50,13 @@ public class MonitorsController {
 
   @GetMapping("/monitors")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
-                                                                    @RequestParam(defaultValue = "100") int size,
-                                                                    @RequestParam(defaultValue = "0") int page) {
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
-        .queryParam("size", size)
-        .queryParam("page", page)
+        .queryParams(queryParams)
         .build(tenantId)
         .toString();
 
@@ -108,4 +105,20 @@ public class MonitorsController {
 
     return proxy.uri(backendUri).delete();
   }
+
+  @GetMapping("/boundMonitors")
+  public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
+                                               @RequestParam MultiValueMap<String,String> queryParams) {
+    final String tenantId = userService.currentTenantId();
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/boundMonitors")
+        .queryParams(queryParams)
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
 }
