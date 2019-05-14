@@ -21,6 +21,7 @@ import com.rackspace.salus.telemetry.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -39,15 +40,13 @@ public class ZonesController {
 
   @GetMapping("/zones")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
-                                  @RequestParam(defaultValue = "100") int size,
-                                  @RequestParam(defaultValue = "0") int page) {
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones")
-        .queryParam("size", size)
-        .queryParam("page", page)
+        .queryParams(queryParams)
         .build(tenantId)
         .toString();
 
