@@ -27,39 +27,31 @@ steps:
     - name: user.home
       path: /root
 
-  - id: ADMIN_INTEGRATION_TEST
-    name: gcr.io/cloud-builders/mvn
-    args: ['integration-test', '-s', '../.mvn/settings.xml', '-B', '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn']
-    dir: 'admin'
-    waitFor:
-      - PULL_DOWN_CACHE
-
-  - id: DEPLOY_ADMIN
+  - id: VERIFY_ADMIN
     name: 'gcr.io/cloud-builders/mvn'
-    args: ['deploy', "-Dmaven.test.skip=true", "-s", "../.mvn/settings.xml", '-B', '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn']
+    args: ['verify', "-Dmaven.test.skip=true", "-s", "../.mvn/settings.xml", '-B', '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn']
     dir: 'admin'
     volumes:
     - name: user.home
       path: /root
+    waitFor:
+      - PULL_DOWN_CACHE
 
-  - id: PUBLIC_INTEGRATION_TEST
-    name: gcr.io/cloud-builders/mvn
-    args: ['integration-test', '-s', '../.mvn/settings.xml', '-B', '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn']
-    dir: 'admin'
-
-  - id: DEPLOY_PUBLIC
+  - id: VERIFY_PUBLIC
     name: 'gcr.io/cloud-builders/mvn'
-    args: ['deploy', "-Dmaven.test.skip=true", "-s", "../.mvn/settings.xml", '-B', '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn']
+    args: ['verify', "-Dmaven.test.skip=true", "-s", "../.mvn/settings.xml", '-B', '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn']
     dir: 'public'
     volumes:
     - name: user.home
       path: /root
+    waitFor:
+      - PULL_DOWN_CACHE
 
   # Saves the files to the GCS cache.
   - id: PUSH_UP_CACHE
     waitFor:
-      - DEPLOY_ADMIN
-      - DEPLOY_PUBLIC
+      - VERIFY_ADMIN
+      - VERIFY_PUBLIC
     name: gcr.io/cloud-builders/gsutil
     dir: /root
     entrypoint: bash
