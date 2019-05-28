@@ -119,18 +119,26 @@ mutation DeclareAgentRelease($release:AgentReleaseInput!) {
 given
 ```json
 {
-  "release": {
-    "type": "TELEGRAF",
-    "os": "DARWIN",
-    "arch": "X86_64",
-    "version": "1.8.0",
-    "url": "https://homebrew.bintray.com/bottles/telegraf-1.8.0.high_sierra.bottle.tar.gz",
-    "exe": "telegraf/1.8.0/bin/telegraf",
-    "checksum": {
-      "value": "655234590790c420dc8a442c78d71e247d39698525d8fad05a05b67006eb07c7875e6b6e7f184203b59a9a82ee3b91af6b24396a4760b3eb9d236470591e6f89",
-      "type": "SHA512"
-    }
-  }
+	"release": {
+		"type": "TELEGRAF",
+		"version": "1.9.4",
+		"labelSelector": [
+			{
+				"name": "agent_discovered_os",
+				"value": "darwin"
+			},
+			{
+				"name": "agent_discovered_arch",
+				"value": "amd64"
+			}
+		],
+		"url": "https://homebrew.bintray.com/bottles/telegraf-1.9.4.high_sierra.bottle.tar.gz",
+		"exe": "telegraf/1.9.4/bin/telegraf",
+		"checksum": {
+			"value": "",
+			"type": "SHA512"
+		}
+	}
 }
 ```
 
