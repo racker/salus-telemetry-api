@@ -1,7 +1,6 @@
 package com.rackspace.salus.telemetry.api.model;
 
-import com.rackspace.salus.telemetry.model.Label;
-import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -10,5 +9,5 @@ public class AgentInstallation {
 
   String agentReleaseId;
 
-  List<Label> matchingLabels;
+  Map<String,String> labelSelector;
 }

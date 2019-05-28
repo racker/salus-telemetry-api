@@ -15,139 +15,43 @@ of [Repose KeystoneV2](https://repose.atlassian.net/wiki/spaces/REPOSE/pages/342
 
 ## Agent Installation Operations
 
-### Install Agent Release
+### Get Agent Releases
 
-```graphql
-mutation InstallAgentRelease($releaseId:String!, $labels:[LabelInput!]!)
-{
-  installAgentRelease(agentReleaseId:$releaseId, labels:$labels) {
-    id
-  }
-}
+```
+GET localhost:8080/api/agentReleases
 ```
 
-given
+### Install Agent Release
 
-```json
+```
+POST localhost:8080/api/agentInstalls
+Content-Type: application/json
+
 {
-  "releaseId": "ea99d592-fbc3-452a-9b17-5b0e0b1325bd",
-  "labels": [
-    {
-      "name": "os",
-      "value": "DARWIN"
-    }
-  ]
+	"agentReleaseId": "e93149f7-79de-4517-940c-4c956166e5e3",
+	"labelSelector": {
+		"agent_discovered_os": "darwin"
+	}
 }
 ```
 
 ## Monitor Operations
 
-### Create monitor
+To be documented...
 
-```graphql
-mutation {
-  createLocalMonitor(
-    matchingLabels: [{ name: "os", value: "DARWIN" }]
-    configs: {
-      usingTelegraf: { 
-        mem: { enabled: true }, 
-        cpu: { enabled: true },
-      	disk: { enabled:true, mountPoints:"/var/lib" }
-      }
-    }
-  ) {
-    id
-  }
-}
-```
+### Create monitor
 
 ### Get all monitors
 
-```graphql
-{
-  monitors {
-    totalElements
-    first
-    last
-    content {
-      id
-      matchingLabels {
-        name
-        value
-      }
-      configs {
-        local {
-          usingTelegraf {
-            enabled
-            configJson
-          }
-        }
-      }
-    }
-  }
-}
-```
-
 ### Delete monitor
 
-```graphql
-mutation {
-  deleteMonitor(id:"e20d16c0-c1dd-46f6-8cac-577100c0f341") {
-    success
-  }
-}
-```
 
 ## Resource Operations
 
+To be documented...
+
 ### Create a resource
 
-```graphql
-mutation {
-  createResource(resourceId:"testing2", 
-    labels:[{name:"test",value:"true"}]) {
-    resourceId
-    id
-  }
-}
-```
-
 ### Get all resources
-```graphql
-{
-  resources {
-    content {
-      id
-      resourceId
-      labels
-    }
-  }
-}
-```
-
-### Get a page of resources
-```graphql
-{
-  resources(size:1, page:1) {
-    first
-    last
-    totalPages
-    content {
-      id
-      resourceId
-      labels
-    }
-  }
-}
-```
 
 ### Delete a resource
-Must specify the identifierName and value.
-
-```graphql
-mutation {
-  deleteResource(resourceId:"testing2") {
-    success
-  }
-}
-```

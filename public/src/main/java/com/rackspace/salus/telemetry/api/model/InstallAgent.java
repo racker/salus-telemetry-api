@@ -26,5 +26,5 @@ public class InstallAgent {
   String agentReleaseId;
 
   @NotEmpty
-  Map<String,String> matchingLabels;
+  Map<String,String> labelSelector;
 }
