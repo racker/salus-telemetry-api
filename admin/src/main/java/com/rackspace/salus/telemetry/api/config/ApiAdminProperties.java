@@ -16,6 +16,9 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
+import com.rackspace.salus.telemetry.model.LabelNamespaces;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -33,4 +36,13 @@ public class ApiAdminProperties {
   String userHeader = "x-user-id";
 
   String groupsHeader = "x-groups";
+
+  /**
+   * When registering an agent release, these are the labels that are required to be present
+   * in the selector.
+   */
+  List<String> requiredAgentLabels = Arrays.asList(
+      LabelNamespaces.applyNamespace(LabelNamespaces.AGENT, "discovered_os"),
+      LabelNamespaces.applyNamespace(LabelNamespaces.AGENT, "discovered_arch")
+  );
 }

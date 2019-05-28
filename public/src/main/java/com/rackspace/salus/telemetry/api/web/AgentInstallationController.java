@@ -21,7 +21,6 @@ import com.rackspace.salus.telemetry.api.model.InstallAgent;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
 import com.rackspace.salus.telemetry.etcd.types.AgentInstallSelector;
-import com.rackspace.salus.telemetry.model.Label;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -63,7 +62,7 @@ public class AgentInstallationController {
                     new AgentInstallation()
                         .setId(selector.getId())
                         .setAgentReleaseId(selector.getAgentReleaseId())
-                        .setMatchingLabels(Label.convertToLabelList(selector.getLabels()))
+                        .setLabelSelector(selector.getLabels())
                 )
                 .collect(Collectors.toList())
         );
@@ -82,13 +81,13 @@ public class AgentInstallationController {
         tenantId,
         new AgentInstallSelector()
             .setAgentReleaseId(agentReleaseId)
-            .setLabels(install.getMatchingLabels())
+            .setLabels(install.getLabelSelector())
     )
         .thenApply(result ->
             new AgentInstallation()
                 .setId(result.getId())
                 .setAgentReleaseId(result.getAgentReleaseId())
-                .setMatchingLabels(Label.convertToLabelList(result.getLabels()))
+                .setLabelSelector(result.getLabels())
         );
   }
 }

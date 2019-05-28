@@ -1,39 +1,43 @@
 package com.rackspace.salus.telemetry.api.graphql;
 
+import com.rackspace.salus.telemetry.api.config.ApiAdminProperties;
 import com.rackspace.salus.telemetry.api.model.SuccessResult;
 import com.rackspace.salus.telemetry.api.model.input.AgentRelease;
 import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
-import com.rackspace.salus.telemetry.model.Architecture;
 import com.rackspace.salus.telemetry.model.Checksum;
 import com.rackspace.salus.telemetry.model.Label;
-import com.rackspace.salus.telemetry.model.OperatingSystem;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 @Service
 @GraphQLApi
 public class AgentsCatalogMutation {
 
   private final AgentsCatalogService agentsCatalogService;
+  private final ApiAdminProperties properties;
 
   @Autowired
-  public AgentsCatalogMutation(AgentsCatalogService agentsCatalogService) {
+  public AgentsCatalogMutation(AgentsCatalogService agentsCatalogService, ApiAdminProperties properties) {
     this.agentsCatalogService = agentsCatalogService;
+    this.properties = properties;
   }
 
   @GraphQLMutation
   public CompletableFuture<com.rackspace.salus.telemetry.model.AgentRelease> declareAgentRelease(AgentRelease input) {
-    Assert.isTrue(containsLabel(input, OperatingSystem.NAME), "Missing required label: "+OperatingSystem.NAME);
-    Assert.isTrue(containsLabel(input, Architecture.NAME), "Missing required label: "+Architecture.NAME);
+    if (!properties.getRequiredAgentLabels().stream()
+        .allMatch(s -> containsLabel(input, s))) {
+      throw new IllegalArgumentException(
+          "AgentRelease is missing one or more required labels: " + properties.getRequiredAgentLabels()
+      );
+    };
 
     final com.rackspace.salus.telemetry.model.AgentRelease agentRelease = new com.rackspace.salus.telemetry.model.AgentRelease()
         .setType(input.getType())
         .setUrl(input.getUrl())
-        .setLabels(Label.convertToMap(input.getLabels()))
+        .setLabels(Label.convertToMap(input.getLabelSelector()))
         .setVersion(input.getVersion())
         .setExe(input.getExe())
         ;
@@ -50,11 +54,11 @@ public class AgentsCatalogMutation {
   }
 
   private static boolean containsLabel(AgentRelease input, String name) {
-    if (input.getLabels() == null) {
+    if (input.getLabelSelector() == null) {
       return false;
     }
 
-    for (Label label : input.getLabels()) {
+    for (Label label : input.getLabelSelector()) {
       if (label.getName().equals(name)) {
         return true;
       }
