@@ -35,7 +35,7 @@ public class AgentRelease {
   AgentType type;
 
   @NotNull
-  List<@GraphQLNonNull Label> labels;
+  List<@GraphQLNonNull Label> labelSelector;
 
   @NotBlank
   String url;
