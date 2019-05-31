@@ -22,7 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -94,5 +101,37 @@ public class ZonesController {
         .toString();
 
     return proxy.uri(backendUri).delete();
+  }
+
+  @GetMapping("/zone-assignment-counts/{name}")
+  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
+                                                          @PathVariable String name) {
+    final String tenantId = userService.currentTenantId();
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/zone-assignment-counts/{name}")
+        .build(tenantId, name)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @PostMapping("/rebalance-zone/{name}")
+  public ResponseEntity<?> rebalancePrivateZone(ProxyExchange<?> proxy,
+                                                @PathVariable String name) {
+    final String tenantId = userService.currentTenantId();
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/rebalance-zone/{name}")
+        .build(tenantId, name)
+        .toString();
+
+    return proxy.uri(backendUri)
+        // no body needed for this operation, but proxy wants to resolve one
+        .body("")
+        .post();
+
   }
 }
