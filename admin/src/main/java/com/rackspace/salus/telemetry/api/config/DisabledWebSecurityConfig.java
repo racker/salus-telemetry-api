@@ -22,7 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@Profile("!secured & !proxied-auth")
+@Profile("!secured")
 public class DisabledWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override

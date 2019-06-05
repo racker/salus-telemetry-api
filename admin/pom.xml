@@ -58,12 +58,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jul</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security.extensions</groupId>
-            <artifactId>spring-security-saml2-core</artifactId>
-            <!--NOTE 1.0.4 caused application context to fail early -->
-            <version>1.0.3.RELEASE</version>
-        </dependency>
 
         <dependency>
             <groupId>io.leangen.graphql</groupId>
