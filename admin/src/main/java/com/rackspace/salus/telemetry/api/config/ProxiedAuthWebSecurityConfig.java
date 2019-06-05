@@ -25,7 +25,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-@Profile("proxied-auth")
+@Profile("secured")
 public class ProxiedAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiAdminProperties properties;
