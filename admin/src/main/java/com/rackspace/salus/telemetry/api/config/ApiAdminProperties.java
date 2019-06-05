@@ -30,6 +30,8 @@ public class ApiAdminProperties {
 
   /**
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of admin APIs.
+   * The proxy authentication filter will translate the SAML provided groups into roles by
+   * converting to uppercase and replacing colons and dashes with underscore.
    */
   String[] roles = new String[]{"LNX_CLOUD_MMI_ENGINEERS"};
 

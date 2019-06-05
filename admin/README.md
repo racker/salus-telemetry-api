@@ -15,94 +15,10 @@ mvn package
 With the default configuration and the Spring "dev" profile activated, 
 the Admin API application will run non-secure and bind to port 8888.
 
-# Using SAML based authentication for local testing
-
-**NOTE** the approach described in this section is only needed for testing the SAML authentication
-locally. In most cases, you can run non-secure in local development using the previous section.
-
-## Creating the metadata XML and SAML keystore for development
-
-Using [this wiki page](https://one.rackspace.com/display/GET/Integrating+Your+App+with+AD+FS)
-download the IdP metadata XML and save it as `FederationMetadata.xml` in the working directory.
-
-Using [this tool](https://www.rcfed.com/SAMLWSFed/MetadataCertificateExtract) paste the
-content of that metadata XML into the field "Extract certificates from Metadata".
-
-Towards the bottom of the output, locate the section "Usage: SAML IDP signing", expand it,
-and click download to download the "cer" file.
-
-In this module's working directory copy/convert the baseline keystore:
-
-```bash
-keytool -importkeystore \
-  -srckeystore src/main/resources/keystore.p12 -srcstorepass devonly \
-  -destkeystore samlKeystore.jks -deststoretype jks -deststorepass devonly \
-  -keypass devonly
-```
-
-Now import the IdP's (identity provider) certificate that was extracted from the IdP metadata:
-```bash
-keytool -importcert \
-  -alias idpTokenSigning \
-  -trustcacerts -noprompt \
-  -keystore samlKeystore.jks \
-  -storepass devonly \
-  -file pathToExtractedAndDownloaded.cer
-```
-
-> **NOTE** If you use different keystore and key passwords, which you **MUST** in production, you will 
-> need to set the application properties `saml.keystore-password` and `saml.key-password` accordingly.
-
-## Running the application
-
-After establishing the files in the previous section, you can run the `TelemetryAdminApiApplication`
-entry point with a working directory set to the directory where those files were established.
-You will also need to enable the Spring profiles:
-
-* secured
-* ssl
-
-With that running you can access the endpoints **in a browser** via HTTPS on port 8443, such as:
-
-    https://salus-telemetry-admin-local.area51.rax.io:8443/admin/profile
-
-
-# SAML setup for registering with Identity Provider (IdP), such as AD FS
-
-> **NOTE** The process in this section has already been conducted, but is noted here when the 
-> need arises to re-configure this in the IdP.
-
-The following is the SP metadata that was provided to the ADFS team:
-
-```xml
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="salus-telemetry-admin-local.area51.rax.io">
-   <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" 
-       Location="https://salus-telemetry-admin-local.area51.rax.io:8443/saml/SSO" index="1" />
-   </md:SPSSODescriptor>
-</md:EntityDescriptor>
-```
-
-The public certificate, which was also provided to the ADFS team, was exported using
-
-```bash
-keytool -exportcert -keystore keystore.p12 -alias boot -rfc -storepass devonly
-```
-
-## Generating the server certificate for local development
-
-If the development-time, self-signed certificate expires or needs to be recreated, then the 
-following was used to generate the server's HTTPS keystore `src/main/resources/keystore.p12`
-
-```
-keytool -genkey -alias boot \
-  -storetype PKCS12 -keyalg RSA -keysize 2048 \
-  -keystore keystore.p12 -validity 3650 \
-  -storepass devonly
-```
-
-When prompted for "your first and last name" enter "salus-telemetry-admin-local.area51.rax.io"
-to correspond with the SAML callback location.
+If you want to simulate the behavior of running behind a SAML authentication proxy, then
+you can can activate the "proxied-auth" Spring profile. The user and groups need to
+be passed with each request via the headers configured via binding of 
+`com.rackspace.salus.telemetry.api.config.ApiAdminProperties`.
 
 # Example Queries
 
