@@ -27,8 +27,12 @@ import org.springframework.stereotype.Component;
 @Data
 public class ApiPublicProperties {
 
+  private static final String serviceAdminRole = "MONITORING_SERVICE_ADMIN";
+  private static final String accountOwnerRole = "IDENTITY_USER_ADMIN";
+  private static final String accountDefaultRole = "IDENTITY_DEFAULT";
+
   /**
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
    */
-  String[] roles = new String[]{"COMPUTE_USER"};
+  String[] roles = new String[]{};
 }
