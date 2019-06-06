@@ -34,5 +34,5 @@ public class ApiPublicProperties {
   /**
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
    */
-  String[] roles = new String[]{};
+  String[] roles = new String[]{serviceAdminRole, accountOwnerRole, accountDefaultRole};
 }
