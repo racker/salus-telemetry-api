@@ -33,6 +33,7 @@ public class ApiPublicProperties {
 
   /**
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
+   * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
   String[] roles = new String[]{serviceAdminRole, accountOwnerRole, accountDefaultRole};
 }
