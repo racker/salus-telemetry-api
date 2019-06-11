@@ -126,7 +126,7 @@ public class ZonesController {
   }
 
   @PostMapping("/rebalance-zone/**")
-  public ResponseEntity<?> rebalancePrivateZone(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> rebalancePublicZone(ProxyExchange<?> proxy) {
     String zone = proxy.path("/api/rebalance-zone/");
 
     final String backendUri = UriComponentsBuilder

@@ -106,8 +106,8 @@ public class ZonesControllerTest {
   }
 
   @Test
-  public void testRebalancePrivateZone() {
-    zonesController.rebalancePrivateZone(proxyExchange);
+  public void testRebalancePublicZone() {
+    zonesController.rebalancePublicZone(proxyExchange);
     verify(proxyExchange).uri("http://test/api/admin/rebalance-zone/public/dev");
   }
 }
