@@ -29,15 +29,12 @@ import org.springframework.stereotype.Component;
 public class ApiAdminProperties {
 
   /**
-   * The roles (without "ROLE_" prefix) that are required to allow the user to make use of admin APIs.
-   * The proxy authentication filter will translate the SAML provided groups into roles by
-   * converting to uppercase and replacing colons and dashes with underscore.
+   * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
+   * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
-  String[] roles = new String[]{"LNX_CLOUD_MMI_ENGINEERS"};
-
-  String userHeader = "x-user-id";
-
-  String groupsHeader = "x-groups";
+  String[] roles = new String[]{};
+  // we should maybe have a new role created in identity and assigned to our own service account
+  // if we don't do that we'd always have to use saml to auth
 
   /**
    * When registering an agent release, these are the labels that are required to be present

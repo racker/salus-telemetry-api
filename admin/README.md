@@ -18,7 +18,7 @@ the Admin API application will run non-secure and bind to port 8888.
 If you want to simulate the behavior of running behind a SAML authentication proxy, then
 you can can activate the "proxied-auth" Spring profile. The user and groups need to
 be passed with each request via the headers configured via binding of 
-`com.rackspace.salus.telemetry.api.config.ApiAdminProperties`.
+`ApiAdminProperties`.
 
 # Example Queries
 

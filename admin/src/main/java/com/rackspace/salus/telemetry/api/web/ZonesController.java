@@ -17,14 +17,12 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,116 +34,109 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class ZonesController {
-  private final UserService userService;
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public ZonesController(UserService userService, ServicesProperties servicesProperties) {
-    this.userService = userService;
+  public ZonesController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/zones")
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
-                                  @RequestParam MultiValueMap<String,String> queryParams) {
-    final String tenantId = userService.currentTenantId();
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/zones")
-        .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
-
-    return proxy.uri(backendUri).get();
-  }
-
   @GetMapping("/zones/**")
-  public ResponseEntity<?> get(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
+  public ResponseEntity<?> get(ProxyExchange<?> proxy,
+                               @RequestParam MultiValueMap<String,String> queryParams) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/zones/{name}")
-        .buildAndExpand(tenantId, zone)
+        .path("/api/admin/zones/{name}")
+        .queryParams(queryParams)
+        .buildAndExpand(zone)
         .toUriString();
 
     return proxy.uri(backendUri).get();
   }
 
-  @PostMapping("/zones")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
+  @GetMapping("/zones")
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/zones")
-        .build(tenantId)
+        .path("/api/admin/zones")
+        .queryParams(queryParams)
+        .build()
+        .toString();
+
+    return proxy.uri(backendUri)
+        .get();
+  }
+
+  @PostMapping("/zones")
+  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/admin/zones")
+        .build()
         .toString();
 
     return proxy.uri(backendUri)
         .post();
   }
 
-  @PutMapping("/zones/{name}")
-  public ResponseEntity<?> update(ProxyExchange<?> proxy,
-                                  @PathVariable String name) {
-    final String tenantId = userService.currentTenantId();
+  @PutMapping("/zones/**")
+  public ResponseEntity<?> update(ProxyExchange<?> proxy) {
+    final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/zones/{name}")
-        .build(tenantId, name)
-        .toString();
+        .path("/api/admin/zones/{name}")
+        .buildAndExpand(zone)
+        .toUriString();
 
     return proxy.uri(backendUri)
         .put();
   }
 
-  @DeleteMapping("/zones/{name}")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
-                                  @PathVariable String name) {
-    final String tenantId = userService.currentTenantId();
+  @DeleteMapping("/zones/**")
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy) {
+    final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/zones/{name}")
-        .build(tenantId, name)
-        .toString();
+        .path("/api/admin/zones/{name}")
+        .buildAndExpand(zone)
+        .toUriString();
 
     return proxy.uri(backendUri).delete();
   }
 
-  @GetMapping("/zone-assignment-counts/{name}")
-  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
-                                                          @PathVariable String name) {
-    final String tenantId = userService.currentTenantId();
+  @GetMapping("/zone-assignment-counts/**")
+  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy) {
+    String zone = proxy.path("/api/zone-assignment-counts/");
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/zone-assignment-counts/{name}")
-        .build(tenantId, name)
-        .toString();
+        .path("/api/admin/zone-assignment-counts/{name}")
+        .buildAndExpand(zone)
+        .toUriString();
 
     return proxy.uri(backendUri).get();
   }
 
-  @PostMapping("/rebalance-zone/{name}")
-  public ResponseEntity<?> rebalancePrivateZone(ProxyExchange<?> proxy,
-                                                @PathVariable String name) {
-    final String tenantId = userService.currentTenantId();
+  @PostMapping("/rebalance-zone/**")
+  public ResponseEntity<?> rebalancePrivateZone(ProxyExchange<?> proxy) {
+    String zone = proxy.path("/api/rebalance-zone/");
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/rebalance-zone/{name}")
-        .build(tenantId, name)
-        .toString();
+        .path("/api/admin/rebalance-zone/{name}")
+        .buildAndExpand(zone)
+        .toUriString();
 
     return proxy.uri(backendUri)
         // no body needed for this operation, but proxy wants to resolve one
         .body("")
         .post();
-
   }
 }

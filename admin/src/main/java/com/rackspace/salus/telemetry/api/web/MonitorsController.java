@@ -18,69 +18,59 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/event-tasks")
+@RequestMapping("/api")
+@Slf4j
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
-public class EventTasksController {
+public class MonitorsController {
 
-  private final UserService userService;
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public EventTasksController(UserService userService, ServicesProperties servicesProperties) {
-    this.userService = userService;
+  public MonitorsController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @PostMapping
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
+  @GetMapping("/monitors")
+  public ResponseEntity<?> getAllMonitors(ProxyExchange<?> proxy,
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getEventManagementUrl())
-        .path("/api/tenant/{tenantId}/tasks")
-        .build(tenantId)
-        .toString();
-
-    return proxy.uri(backendUri).post();
-  }
-
-  @GetMapping
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getEventManagementUrl())
-        .path("/api/tenant/{tenantId}/tasks")
-        .build(tenantId)
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/admin/monitors")
+        .queryParams(queryParams)
+        .build()
         .toString();
 
     return proxy.uri(backendUri).get();
   }
 
-  @DeleteMapping("/{taskId}")
-  public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
-                                  @PathVariable String taskId) {
-    final String tenantId = userService.currentTenantId();
+  @GetMapping("/bound-monitors")
+  public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
+                                               @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getEventManagementUrl())
-        .path("/api/tenant/{tenantId}/tasks/{taskId}")
-        .build(tenantId, taskId)
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/admin/bound-monitors")
+        .queryParams(queryParams)
+        .build()
         .toString();
 
-    return proxy.uri(backendUri).delete();
-
+    return proxy.uri(backendUri).get();
   }
 }

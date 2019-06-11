@@ -78,8 +78,7 @@ public class MonitorsController {
   }
 
   @PutMapping("/monitors/{id}")
-  public ResponseEntity<?> update(ProxyExchange<?> proxy,
-                                                      @PathVariable String id) {
+  public ResponseEntity<?> update(ProxyExchange<?> proxy, @PathVariable String id) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -93,8 +92,7 @@ public class MonitorsController {
   }
 
   @DeleteMapping("/monitors/{id}")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
-                                  @PathVariable String id) {
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy, @PathVariable String id) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -106,14 +104,14 @@ public class MonitorsController {
     return proxy.uri(backendUri).delete();
   }
 
-  @GetMapping("/boundMonitors")
+  @GetMapping("/bound-monitors")
   public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
                                                @RequestParam MultiValueMap<String,String> queryParams) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/boundMonitors")
+        .path("/api/tenant/{tenantId}/bound-monitors")
         .queryParams(queryParams)
         .build(tenantId)
         .toString();
