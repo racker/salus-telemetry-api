@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+
 @RestController
 @RequestMapping("/api")
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
@@ -43,7 +44,7 @@ public class ZonesController {
 
   @GetMapping("/zones/**")
   public ResponseEntity<?> get(ProxyExchange<?> proxy,
-                               @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -58,7 +59,7 @@ public class ZonesController {
 
   @GetMapping("/zones")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
-                                  @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
