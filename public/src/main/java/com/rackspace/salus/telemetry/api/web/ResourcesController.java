@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,15 +53,13 @@ public class ResourcesController {
 
   @GetMapping("/resources")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
-                                  @RequestParam(defaultValue = "100") int size,
-                                  @RequestParam(defaultValue = "0") int page) {
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
-        .queryParam("size", size)
-        .queryParam("page", page)
+        .queryParams(queryParams)
         .build(tenantId)
         .toString();
 

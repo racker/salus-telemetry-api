@@ -16,7 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
-import com.rackspace.salus.common.web.PreAuthenticatedFilter;
+import com.rackspace.salus.common.web.ReposeHeaderFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -26,13 +26,13 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @Profile("secured")
-public class ProxiedAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final ApiAdminProperties properties;
+  private final ApiAdminProperties apiAdminProperties;
 
   @Autowired
-  public ProxiedAuthWebSecurityConfig(ApiAdminProperties properties) {
-    this.properties = properties;
+  public TenantWebSecurityConfig(ApiAdminProperties apiAdminProperties) {
+    this.apiAdminProperties = apiAdminProperties;
   }
 
   @Override
@@ -40,12 +40,11 @@ public class ProxiedAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .csrf().disable()
         .addFilterBefore(
-            new PreAuthenticatedFilter(properties.getUserHeader(), properties.getGroupsHeader()),
+            new ReposeHeaderFilter(),
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
-        .antMatchers("/graphql")
-        .hasAnyRole(properties.getRoles());
+        .antMatchers("/api/**")
+        .hasAnyRole(apiAdminProperties.getRoles());
   }
-
 }

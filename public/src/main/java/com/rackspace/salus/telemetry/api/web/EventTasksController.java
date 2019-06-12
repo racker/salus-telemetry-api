@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/eventTasks")
+@RequestMapping("/api/event-tasks")
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class EventTasksController {
 
@@ -49,7 +49,7 @@ public class EventTasksController {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
-        .path("/api/tasks/{tenantId}")
+        .path("/api/tenant/{tenantId}/tasks")
         .build(tenantId)
         .toString();
 
@@ -62,7 +62,7 @@ public class EventTasksController {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
-        .path("/api/tasks/{tenantId}")
+        .path("/api/tenant/{tenantId}/tasks")
         .build(tenantId)
         .toString();
 
@@ -76,7 +76,7 @@ public class EventTasksController {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
-        .path("/api/tasks/{tenantId}/{taskId}")
+        .path("/api/tenant/{tenantId}/tasks/{taskId}")
         .build(tenantId, taskId)
         .toString();
 
