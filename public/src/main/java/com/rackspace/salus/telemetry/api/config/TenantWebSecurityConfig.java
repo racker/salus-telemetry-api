@@ -44,7 +44,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
-        .antMatchers("/api/**")
+        .antMatchers("/api/dummy-endpoint-to-bypass-auth-for-everything-else")
         .hasAnyRole(apiPublicProperties.getRoles());
   }
 }
