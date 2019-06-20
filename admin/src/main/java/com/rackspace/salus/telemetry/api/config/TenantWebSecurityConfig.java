@@ -17,6 +17,7 @@
 package com.rackspace.salus.telemetry.api.config;
 
 import com.rackspace.salus.common.web.ReposeHeaderFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -25,6 +26,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
+@Slf4j
 @Profile("secured")
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -37,6 +39,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    log.debug("Configuring tenant web security to authorize roles: {}", apiAdminProperties.getRoles());
     http
         .csrf().disable()
         .addFilterBefore(
