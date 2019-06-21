@@ -33,8 +33,6 @@ public class ApiAdminProperties {
    * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
   String[] roles = new String[]{};
-  // we should maybe have a new role created in identity and assigned to our own service account
-  // if we don't do that we'd always have to use saml to auth
 
   /**
    * When registering an agent release, these are the labels that are required to be present

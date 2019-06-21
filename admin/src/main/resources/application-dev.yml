@@ -2,8 +2,9 @@ server:
   port: 8888
 logging:
   level:
-    com.rackspace.salus.telemetry.api: debug
+    com.rackspace.salus: debug
 services:
   monitor-management-url: http://localhost:8089
   resource-management-url: http://localhost:8085
   event-management-url: http://localhost:8087
+  presence-monitor-url: http://localhost:8083

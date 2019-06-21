@@ -16,18 +16,15 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
-import com.rackspace.salus.telemetry.api.model.SuccessResult;
-import com.rackspace.salus.telemetry.etcd.services.WorkAllocationPartitionService;
-import com.rackspace.salus.telemetry.etcd.types.KeyRange;
-import com.rackspace.salus.telemetry.etcd.types.WorkAllocationRealm;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 @RestController
@@ -35,22 +32,33 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class PresenceMonitorController {
 
-  private final WorkAllocationPartitionService workAllocationPartitionService;
+  private final ServicesProperties servicesProperties;
 
   @Autowired
-  public PresenceMonitorController(
-      WorkAllocationPartitionService workAllocationPartitionService) {
-    this.workAllocationPartitionService = workAllocationPartitionService;
+  public PresenceMonitorController(ServicesProperties servicesProperties) {
+    this.servicesProperties = servicesProperties;
   }
 
   @GetMapping("/presence-monitor/partitions")
-  public List<KeyRange> presenceMonitorPartitions() {
-    return workAllocationPartitionService.getPartitions(WorkAllocationRealm.PRESENCE_MONITOR).join();
+  public ResponseEntity<?> getPresenceMonitorPartitions(ProxyExchange<?> proxy) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPresenceMonitorUrl())
+        .path("/api/admin/presence-monitor/partitions")
+        .buildAndExpand()
+        .toUriString();
+
+    return proxy.uri(backendUri).get();
   }
 
   @PutMapping("/presence-monitor/partitions")
-  public SuccessResult changePresenceMonitorPartitions(@RequestBody int count) {
-    return workAllocationPartitionService.changePartitions(WorkAllocationRealm.PRESENCE_MONITOR, count)
-        .thenApply(result -> new SuccessResult().setSuccess(result)).join();
+  public ResponseEntity<?> changePresenceMonitorPartitions(ProxyExchange<?> proxy) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPresenceMonitorUrl())
+        .path("/api/admin/presence-monitor/partitions")
+        .buildAndExpand()
+        .toUriString();
+
+    return proxy.uri(backendUri).put();
   }
 }
