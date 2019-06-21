@@ -14,10 +14,3 @@ management:
         host: ${statsd.host:localhost}
         port: ${statsd.port:8086}
         enabled: ${influx.enabled:false}
-graphql:
-  spqr:
-    gui:
-      enabled: true
-logging:
-  level:
-    graphql.servlet.internal.ApolloSubscriptionKeepAliveRunner: error
