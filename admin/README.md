@@ -44,21 +44,3 @@ POST localhost:8888/api/agent-releases
   "exe": "telegraf/1.11.0/bin/telegraf"
 }
 ```
-
-## Agent installs
-
-### Get all for tenant
-```http request
-GET localhost:8888/api/agent-installs
-```
-
-### Install agent for tenant
-```http request
-POST localhost:8888/api/agent-installs
-{
-  "agentReleaseId": "$agentReleaseId",
-  "labels": {
-    "agent_discovered_os": "darwin"
-  }
-}
-```

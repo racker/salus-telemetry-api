@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  * personnel to manage deployment of agent releases for their customers.
  */
 @RestController
-@RequestMapping("/api/agentInstalls")
+@RequestMapping("/api/agent-installs")
 @Slf4j
 public class AgentInstallationController {
 
