@@ -19,7 +19,7 @@ package com.rackspace.salus.telemetry.api.web;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.cloud.gateway.webflux.ProxyExchange;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/event-tasks")
@@ -44,7 +45,7 @@ public class EventTasksController {
   }
 
   @PostMapping
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
+  public Mono<ResponseEntity<Object>> create(ProxyExchange<Object> proxy) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -52,12 +53,11 @@ public class EventTasksController {
         .path("/api/tenant/{tenantId}/tasks")
         .build(tenantId)
         .toString();
-
     return proxy.uri(backendUri).post();
   }
 
   @GetMapping
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy) {
+  public Mono<ResponseEntity<byte[]>> getAll(ProxyExchange<byte[]> proxy) {
     final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
@@ -65,12 +65,11 @@ public class EventTasksController {
         .path("/api/tenant/{tenantId}/tasks")
         .build(tenantId)
         .toString();
-
     return proxy.uri(backendUri).get();
   }
 
   @DeleteMapping("/{taskId}")
-  public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+  public Mono<ResponseEntity<byte[]>> getOne(ProxyExchange<byte[]> proxy,
                                   @PathVariable String taskId) {
     final String tenantId = userService.currentTenantId();
 
