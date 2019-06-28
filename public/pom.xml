@@ -36,18 +36,18 @@
 
     <dependencies>
         <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-web</artifactId>
-          <exclusions>
-            <exclusion>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-starter-tomcat</artifactId>
-            </exclusion>
-          </exclusions>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-jetty</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jetty</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -65,7 +65,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gateway-mvc</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.rackspace.salus</groupId>
             <artifactId>salus-telemetry-model</artifactId>
