@@ -16,82 +16,78 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
-import com.rackspace.salus.telemetry.api.config.ApiAdminProperties;
-import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
-import com.rackspace.salus.telemetry.model.AgentRelease;
-import com.rackspace.salus.telemetry.model.NotFoundException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import javax.validation.Valid;
+import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api")
 public class AgentReleasesController {
 
-  private final AgentsCatalogService agentsCatalogService;
-  private final ApiAdminProperties apiAdminProperties;
+  private final ServicesProperties servicesProperties;
 
   @Autowired
-  public AgentReleasesController(AgentsCatalogService agentsCatalogService,
-                                 ApiAdminProperties apiAdminProperties) {
+  public AgentReleasesController(ServicesProperties servicesProperties) {
+    this.servicesProperties = servicesProperties;
 
-    this.agentsCatalogService = agentsCatalogService;
-    this.apiAdminProperties = apiAdminProperties;
   }
 
   @GetMapping("/agent-releases")
-  public CompletableFuture<List<AgentRelease>> getAll() {
-    return agentsCatalogService.queryAgentReleases(null, null);
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/admin/agent-releases")
+        .queryParams(queryParams)
+        .build()
+        .toString();
+
+    return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/agent-releases/{id}")
-  public CompletableFuture<AgentRelease> getOne(@PathVariable String id) {
-    return agentsCatalogService.queryAgentReleases(id, null)
-        .thenApply(agentReleases -> {
-          // NOTE queryAgentReleases will normally be the one that throws NotFound, but
-          // we'll handle an emtpy response also, just to be safe
-          if (agentReleases.isEmpty()) {
-            throw new NotFoundException("Unable to find agent release by ID");
-          }
+  @GetMapping("/agent-releases/{agentReleaseId}")
+  public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+                                                @PathVariable String agentReleaseId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/admin/agent-releases/{agentReleaseId}")
+        .build(agentReleaseId)
+        .toString();
 
-          return agentReleases.get(0);
-        });
+    return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/agent-releases")
-  public CompletableFuture<AgentRelease> declareAgentRelease(
-      @RequestBody @Valid AgentRelease agentRelease) {
+  public ResponseEntity<?> declareAgentRelease(ProxyExchange<?> proxy) {
 
-    // quick and simple validation of required agent release labels
-    if (!apiAdminProperties.getRequiredAgentLabels().stream()
-        .allMatch(s -> agentRelease.getLabels().containsKey(s))) {
-      throw new IllegalArgumentException(
-          "AgentRelease is missing one or more required labels: " +
-              apiAdminProperties.getRequiredAgentLabels()
-      );
-    };
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/admin/agent-releases")
+        .build()
+        .toString();
 
-    return agentsCatalogService.declare(agentRelease);
+    return proxy.uri(backendUri).post();
   }
 
-  @DeleteMapping("/agent-releases/{id}")
-  public CompletableFuture<Void> deleteOne(@PathVariable String id) {
-    return agentsCatalogService.deleteAgentRelease(id)
-        .thenApply(exists -> {
-          if (exists) {
-            return null;
-          }
-          else {
-            throw new NotFoundException("Unable to find agent release by ID");
-          }
-        });
+  @DeleteMapping("/agent-releases/{agentReleaseId}")
+  public ResponseEntity<?> deleteOne(ProxyExchange<?> proxy,
+                                           @PathVariable String agentReleaseId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/admin/agent-releases/{agentReleaseId}")
+        .build(agentReleaseId)
+        .toString();
+
+    return proxy.uri(backendUri).delete();
   }
 }

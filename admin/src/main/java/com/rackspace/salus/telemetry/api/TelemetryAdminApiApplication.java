@@ -16,12 +16,10 @@
 
 package com.rackspace.salus.telemetry.api;
 
-import com.rackspace.salus.telemetry.etcd.EnableEtcd;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableEtcd
 public class TelemetryAdminApiApplication {
 
     public static void main(String[] args) {
