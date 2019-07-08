@@ -50,7 +50,7 @@ public class AgentReleasesController {
         .path("/api/admin/agent-releases")
         .queryParams(queryParams)
         .build()
-        .toString();
+        .toUriString();
 
     return proxy.uri(backendUri).get();
   }
@@ -74,7 +74,7 @@ public class AgentReleasesController {
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/admin/agent-releases")
         .build()
-        .toString();
+        .toUriString();
 
     return proxy.uri(backendUri).post();
   }
