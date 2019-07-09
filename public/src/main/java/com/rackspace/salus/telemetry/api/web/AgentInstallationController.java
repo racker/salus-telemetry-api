@@ -16,22 +16,21 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
-import com.rackspace.salus.telemetry.api.model.AgentInstallation;
-import com.rackspace.salus.telemetry.api.model.InstallAgent;
+import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.services.UserService;
-import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
-import com.rackspace.salus.telemetry.etcd.types.AgentInstallSelector;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * NOTE: this controller's API will soon be moved to the internal-admin API to enable support
@@ -42,52 +41,55 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AgentInstallationController {
 
-  private final AgentsCatalogService agentsCatalogService;
+  private final ServicesProperties servicesProperties;
   private final UserService userService;
 
   @Autowired
-  public AgentInstallationController(AgentsCatalogService agentsCatalogService, UserService userService) {
-    this.agentsCatalogService = agentsCatalogService;
+  public AgentInstallationController(ServicesProperties servicesProperties,
+                                     UserService userService) {
+    this.servicesProperties = servicesProperties;
     this.userService = userService;
   }
 
   @GetMapping
-  public CompletableFuture<List<AgentInstallation>> getAllAgentInstallations() {
+  public ResponseEntity<?> getAllAgentInstallations(ProxyExchange<?> proxy,
+                                                    @RequestParam MultiValueMap<String,String> queryParams) {
     final String tenantId = userService.currentTenantId();
 
-    return agentsCatalogService.getInstallations(tenantId)
-        .thenApply(results ->
-            results.stream()
-                .map(selector ->
-                    new AgentInstallation()
-                        .setId(selector.getId())
-                        .setAgentReleaseId(selector.getAgentReleaseId())
-                        .setLabelSelector(selector.getLabels())
-                )
-                .collect(Collectors.toList())
-        );
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/tenant/{tenantId}/agent-installs")
+        .queryParams(queryParams)
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
   }
 
   @PostMapping
-  public CompletableFuture<AgentInstallation> installAgentRelease(
-      @RequestBody @Valid InstallAgent install) {
+  public ResponseEntity<?> installAgentRelease(ProxyExchange<?> proxy) {
     final String tenantId = userService.currentTenantId();
 
-    final String agentReleaseId = install.getAgentReleaseId();
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/tenant/{tenantId}/agent-installs")
+        .build(tenantId)
+        .toString();
 
-    log.debug("Installing agent release={} for tenant={}", agentReleaseId, tenantId);
+    return proxy.uri(backendUri).post();
+  }
 
-    return agentsCatalogService.install(
-        tenantId,
-        new AgentInstallSelector()
-            .setAgentReleaseId(agentReleaseId)
-            .setLabels(install.getLabelSelector())
-    )
-        .thenApply(result ->
-            new AgentInstallation()
-                .setId(result.getId())
-                .setAgentReleaseId(result.getAgentReleaseId())
-                .setLabelSelector(result.getLabels())
-        );
+  @DeleteMapping("/{agentInstallId}")
+  public ResponseEntity<?> uninstallAgentRelease(ProxyExchange<?> proxy,
+                                                 @PathVariable String agentInstallId) {
+    final String tenantId = userService.currentTenantId();
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/tenant/{tenantId}/agent-installs/{agentInstallId}")
+        .build(tenantId, agentInstallId)
+        .toString();
+
+    return proxy.uri(backendUri).delete();
   }
 }

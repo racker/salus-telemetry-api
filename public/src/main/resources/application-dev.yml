@@ -6,3 +6,4 @@ services:
   monitor-management-url: http://localhost:8089
   resource-management-url: http://localhost:8085
   event-management-url: http://localhost:8087
+  agent-catalog-management-url: http://localhost:8090

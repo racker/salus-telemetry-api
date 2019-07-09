@@ -16,36 +16,59 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
-import com.rackspace.salus.telemetry.etcd.services.AgentsCatalogService;
-import com.rackspace.salus.telemetry.model.AgentRelease;
-import com.rackspace.salus.telemetry.model.AgentType;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import com.rackspace.salus.telemetry.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/agent-releases")
 public class AgentReleaseController {
 
-  private final AgentsCatalogService agentsCatalogService;
+  private final UserService userService;
+  private final ServicesProperties servicesProperties;
 
   @Autowired
-  public AgentReleaseController(AgentsCatalogService agentsCatalogService) {
-    this.agentsCatalogService = agentsCatalogService;
+  public AgentReleaseController(UserService userService,
+                                ServicesProperties servicesProperties) {
+    this.userService = userService;
+    this.servicesProperties = servicesProperties;
   }
 
   @GetMapping
-  public CompletableFuture<List<AgentRelease>> agentReleases(@RequestParam(required = false) AgentType type) {
-    return agentsCatalogService.queryAgentReleases(null, type);
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
+    final String tenantId = userService.currentTenantId();
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/tenant/{tenantId}/agent-releases")
+        .queryParams(queryParams)
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/{id}")
-  public CompletableFuture<List<AgentRelease>> agentReleases(@PathVariable String id) {
-    return agentsCatalogService.queryAgentReleases(id, null);
+  @GetMapping("/{agentReleaseId}")
+  public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+                                  @PathVariable String agentReleaseId) {
+    final String tenantId = userService.currentTenantId();
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
+        .path("/api/tenant/{tenantId}/agent-releases/{agentReleaseId}")
+        .build(tenantId, agentReleaseId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
   }
 }
