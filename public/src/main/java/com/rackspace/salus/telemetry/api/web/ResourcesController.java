@@ -17,7 +17,6 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.services.UserService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -38,24 +36,20 @@ import org.springframework.web.util.UriComponentsBuilder;
  * to proxy calls to the resource-management service.
  */
 @RestController
-@RequestMapping("/api")
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class ResourcesController {
 
-  private final UserService userService;
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public ResourcesController(UserService userService, ServicesProperties servicesProperties) {
-    this.userService = userService;
+  public ResourcesController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/resources")
+  @GetMapping("/tenant/{tenantId}/resources")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
@@ -66,11 +60,10 @@ public class ResourcesController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/resourcesByLabel")
+  @GetMapping("/tenant/{tenantId}/resourcesByLabel")
   public ResponseEntity<?> getResourcesWithLabels(ProxyExchange<?> proxy,
+                                                  @PathVariable String tenantId,
                                                   @RequestParam Map<String, String> labels) {
-    final String tenantId = userService.currentTenantId();
-
     final UriComponentsBuilder builder = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resourceLabels");
@@ -84,10 +77,8 @@ public class ResourcesController {
     return proxy.uri(backendUri).get();
   }
 
-  @PostMapping("/resources")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
-
+  @PostMapping("/tenant/{tenantId}/resources")
+  public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
@@ -97,10 +88,10 @@ public class ResourcesController {
     return proxy.uri(backendUri).post();
   }
 
-  @PutMapping("/resources/{resourceId}")
-  public ResponseEntity<?> update(ProxyExchange<?> proxy, @PathVariable String resourceId) {
-    final String tenantId = userService.currentTenantId();
-
+  @PutMapping("/tenant/{tenantId}/resources/{resourceId}")
+  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @PathVariable String resourceId) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/{tenantId}/resources/{resourceId}")
@@ -110,9 +101,10 @@ public class ResourcesController {
     return proxy.uri(backendUri).put();
   }
 
-  @DeleteMapping("/resources/{resourceId}")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy, @PathVariable String resourceId) {
-    final String tenantId = userService.currentTenantId();
+  @DeleteMapping("/tenant/{tenantId}/resources/{resourceId}")
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @PathVariable String resourceId) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())

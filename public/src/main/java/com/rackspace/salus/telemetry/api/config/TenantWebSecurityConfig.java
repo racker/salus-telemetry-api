@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @Slf4j
-@Profile("secured")
+@Profile("!unsecured")
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiPublicProperties apiPublicProperties;
@@ -47,7 +47,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
-        .antMatchers("/api/**")
+        .antMatchers("/tenant/**")
         .hasAnyRole(apiPublicProperties.getRoles());
   }
 }
