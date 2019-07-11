@@ -16,13 +16,16 @@
 
 package com.rackspace.salus.telemetry.api;
 
+import com.rackspace.salus.common.util.DumpConfigProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class TelemetryPublicApiApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(TelemetryPublicApiApplication.class, args);
-    }
+  public static void main(String[] args) {
+    DumpConfigProperties.process(args);
+
+    SpringApplication.run(TelemetryPublicApiApplication.class, args);
+  }
 }
