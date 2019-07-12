@@ -60,7 +60,7 @@ public class ResourcesController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/tenant/{tenantId}/resourcesByLabel")
+  @GetMapping("/tenant/{tenantId}/resources-by-label")
   public ResponseEntity<?> getResourcesWithLabels(ProxyExchange<?> proxy,
                                                   @PathVariable String tenantId,
                                                   @RequestParam Map<String, String> labels) {
