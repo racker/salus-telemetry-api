@@ -9,4 +9,4 @@ services:
   agent-catalog-management-url: http://localhost:8090
 spring:
   profiles:
-    active: "unsecured"
+    include: "unsecured"
