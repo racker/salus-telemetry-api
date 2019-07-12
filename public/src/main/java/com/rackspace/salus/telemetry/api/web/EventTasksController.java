@@ -17,7 +17,6 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
@@ -25,28 +24,22 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/event-tasks")
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class EventTasksController {
 
-  private final UserService userService;
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public EventTasksController(UserService userService, ServicesProperties servicesProperties) {
-    this.userService = userService;
+  public EventTasksController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @PostMapping
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
-
+  @PostMapping("/tenant/{tenantId}/event-tasks")
+  public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
@@ -56,10 +49,8 @@ public class EventTasksController {
     return proxy.uri(backendUri).post();
   }
 
-  @GetMapping
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
-
+  @GetMapping("/tenant/{tenantId}/event-tasks")
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy, @PathVariable String tenantId) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
@@ -69,11 +60,10 @@ public class EventTasksController {
     return proxy.uri(backendUri).get();
   }
 
-  @DeleteMapping("/{taskId}")
+  @DeleteMapping("/tenant/{tenantId}/event-tasks/{taskId}")
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @PathVariable String taskId) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")

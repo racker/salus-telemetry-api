@@ -17,37 +17,30 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/agent-releases")
 public class AgentReleaseController {
 
-  private final UserService userService;
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public AgentReleaseController(UserService userService,
-                                ServicesProperties servicesProperties) {
-    this.userService = userService;
+  public AgentReleaseController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping
+  @GetMapping("/tenant/{tenantId}/agent-releases")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-releases")
@@ -58,11 +51,10 @@ public class AgentReleaseController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/{agentReleaseId}")
+  @GetMapping("/tenant/{tenantId}/event-tasks/agent-releases/{agentReleaseId}")
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @PathVariable String agentReleaseId) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-releases/{agentReleaseId}")

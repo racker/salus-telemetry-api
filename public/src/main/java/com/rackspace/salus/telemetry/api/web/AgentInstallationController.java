@@ -17,7 +17,6 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -37,24 +35,20 @@ import org.springframework.web.util.UriComponentsBuilder;
  * personnel to manage deployment of agent releases for their customers.
  */
 @RestController
-@RequestMapping("/api/agent-installs")
 @Slf4j
 public class AgentInstallationController {
 
   private final ServicesProperties servicesProperties;
-  private final UserService userService;
 
   @Autowired
-  public AgentInstallationController(ServicesProperties servicesProperties,
-                                     UserService userService) {
+  public AgentInstallationController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
-    this.userService = userService;
   }
 
-  @GetMapping
+  @GetMapping("/tenant/{tenantId}/agent-installs")
   public ResponseEntity<?> getAllAgentInstallations(ProxyExchange<?> proxy,
+                                                    @PathVariable String tenantId,
                                                     @RequestParam MultiValueMap<String,String> queryParams) {
-    final String tenantId = userService.currentTenantId();
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
@@ -66,9 +60,8 @@ public class AgentInstallationController {
     return proxy.uri(backendUri).get();
   }
 
-  @PostMapping
-  public ResponseEntity<?> installAgentRelease(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
+  @PostMapping("/tenant/{tenantId}/agent-installs")
+  public ResponseEntity<?> installAgentRelease(ProxyExchange<?> proxy, @PathVariable String tenantId) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
@@ -79,11 +72,10 @@ public class AgentInstallationController {
     return proxy.uri(backendUri).post();
   }
 
-  @DeleteMapping("/{agentInstallId}")
+  @DeleteMapping("/tenant/{tenantId}/agent-installs/{agentInstallId}")
   public ResponseEntity<?> uninstallAgentRelease(ProxyExchange<?> proxy,
+                                                 @PathVariable String tenantId,
                                                  @PathVariable String agentInstallId) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-installs/{agentInstallId}")

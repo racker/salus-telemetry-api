@@ -17,7 +17,6 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import com.rackspace.salus.telemetry.api.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -28,31 +27,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api")
 @Slf4j
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class MonitorsController {
 
-  private final UserService userService;
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public MonitorsController(UserService userService, ServicesProperties servicesProperties) {
-    this.userService = userService;
+  public MonitorsController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/monitors")
+  @GetMapping("/tenant/{tenantId}/monitors")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
@@ -63,10 +57,8 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
-  @PostMapping("/monitors")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
-    final String tenantId = userService.currentTenantId();
-
+  @PostMapping("/tenant/{tenantId}/monitors")
+  public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
@@ -77,10 +69,10 @@ public class MonitorsController {
         .post();
   }
 
-  @PutMapping("/monitors/{id}")
-  public ResponseEntity<?> update(ProxyExchange<?> proxy, @PathVariable String id) {
-    final String tenantId = userService.currentTenantId();
-
+  @PutMapping("/tenant/{tenantId}/monitors/{id}")
+  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @PathVariable String id) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
@@ -91,10 +83,10 @@ public class MonitorsController {
         .put();
   }
 
-  @DeleteMapping("/monitors/{id}")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy, @PathVariable String id) {
-    final String tenantId = userService.currentTenantId();
-
+  @DeleteMapping("/tenant/{tenantId}/monitors/{id}")
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @PathVariable String id) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
@@ -104,11 +96,10 @@ public class MonitorsController {
     return proxy.uri(backendUri).delete();
   }
 
-  @GetMapping("/bound-monitors")
+  @GetMapping("/tenant/{tenantId}/bound-monitors")
   public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
+                                               @PathVariable String tenantId,
                                                @RequestParam MultiValueMap<String,String> queryParams) {
-    final String tenantId = userService.currentTenantId();
-
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/bound-monitors")

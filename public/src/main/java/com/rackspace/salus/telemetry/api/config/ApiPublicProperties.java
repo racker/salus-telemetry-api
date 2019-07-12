@@ -32,4 +32,6 @@ public class ApiPublicProperties {
    * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
   String[] roles = new String[]{};
+
+  String version = "1.0";
 }
