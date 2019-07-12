@@ -37,7 +37,7 @@ public class AgentReleaseController {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/tenant/{tenantId}/event-tasks/agent-releases")
+  @GetMapping("/tenant/{tenantId}/agent-releases")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
