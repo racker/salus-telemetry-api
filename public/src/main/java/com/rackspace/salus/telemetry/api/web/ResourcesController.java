@@ -66,7 +66,7 @@ public class ResourcesController {
                                                   @RequestParam Map<String, String> labels) {
     final UriComponentsBuilder builder = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
-        .path("/api/tenant/{tenantId}/resourceLabels");
+        .path("/api/tenant/{tenantId}/resources-by-label");
 
     labels.forEach(builder::queryParam);
 
