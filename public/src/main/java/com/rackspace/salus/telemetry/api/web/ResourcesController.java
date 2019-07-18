@@ -77,6 +77,42 @@ public class ResourcesController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/resource-labels")
+  public ResponseEntity<?> getResourceLabels(ProxyExchange<?> proxy,
+                                             @PathVariable String tenantId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getResourceManagementUrl())
+        .path("/api/tenant/{tenantId}/resource-labels")
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/resource-metadata-keys")
+  public ResponseEntity<?> getResourceMetadataKeys(ProxyExchange<?> proxy,
+                                                   @PathVariable String tenantId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getResourceManagementUrl())
+        .path("/api/tenant/{tenantId}/resource-metadata-keys")
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/resource-label-namespaces")
+  public ResponseEntity<?> getLabelNamespaces(ProxyExchange<?> proxy,
+                                              @PathVariable String tenantId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getResourceManagementUrl())
+        .path("/api/tenant/{tenantId}/resource-label-namespaces")
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
   @PostMapping("/tenant/{tenantId}/resources")
   public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
     final String backendUri = UriComponentsBuilder

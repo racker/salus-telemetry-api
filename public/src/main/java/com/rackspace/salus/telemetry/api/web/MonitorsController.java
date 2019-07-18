@@ -96,6 +96,18 @@ public class MonitorsController {
     return proxy.uri(backendUri).delete();
   }
 
+  @GetMapping("/tenant/{tenantId}/monitor-label-selectors")
+  public ResponseEntity<?> getMonitorLabelSelectors(ProxyExchange<?> proxy,
+                                                    @PathVariable String tenantId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/monitor-label-selectors")
+        .build(tenantId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
   @GetMapping("/tenant/{tenantId}/bound-monitors")
   public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
                                                @PathVariable String tenantId,
