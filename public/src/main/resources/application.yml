@@ -1,9 +1,10 @@
 
-api:
-  public:
-    version: "1.0"
-etcd:
-  url: http://localhost:2479
+salus:
+  api:
+    public:
+      version: "1.0"
+  etcd:
+    url: http://localhost:2479
 management.endpoints.web.exposure.include: "health,jolokia,metrics"
 management:
   metrics:

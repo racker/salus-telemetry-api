@@ -1,4 +1,4 @@
-etcd:
+salus.etcd:
   url: http://localhost:2479
 management.endpoints.web.exposure.include: "health,jolokia,metrics"
 management:

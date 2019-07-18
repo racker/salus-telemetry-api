@@ -3,12 +3,12 @@ server:
 logging:
   level:
     com.rackspace.salus: debug
-services:
-  monitor-management-url: http://localhost:8089
-  resource-management-url: http://localhost:8085
-  event-management-url: http://localhost:8087
-  presence-monitor-url: http://localhost:8083
-  agent-catalog-management-url: http://localhost:8090
+salus.services:
+    monitor-management-url: http://localhost:8089
+    resource-management-url: http://localhost:8085
+    event-management-url: http://localhost:8087
+    presence-monitor-url: http://localhost:8083
+    agent-catalog-management-url: http://localhost:8090
 spring:
   profiles:
     active: unsecured
