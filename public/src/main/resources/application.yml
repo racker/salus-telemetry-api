@@ -21,4 +21,4 @@ management:
         enabled: ${influx.enabled:false}
 server:
   servlet:
-    context-path: "/v${api.public.version}"
+    context-path: "/v${salus.api.public.version}"
