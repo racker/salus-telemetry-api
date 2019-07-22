@@ -23,7 +23,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("api.admin")
+@ConfigurationProperties("salus.api.admin")
 @Component
 @Data
 public class ApiAdminProperties {

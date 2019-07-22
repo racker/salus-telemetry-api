@@ -22,7 +22,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("api.public")
+@ConfigurationProperties("salus.api.public")
 @Component
 @Data
 public class ApiPublicProperties {
