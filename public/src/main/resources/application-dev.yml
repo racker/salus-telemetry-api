@@ -7,6 +7,7 @@ salus.services:
   resource-management-url: http://localhost:8085
   event-management-url: http://localhost:8087
   agent-catalog-management-url: http://localhost:8090
+  policy-management-url: http://localhost:8091
 spring:
   profiles:
     include: "unsecured"

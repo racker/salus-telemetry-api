@@ -35,4 +35,6 @@ public class ServicesProperties {
   String presenceMonitorUrl = "http://presence-monitor:8080";
   @NotEmpty
   String agentCatalogManagementUrl = "http://agent-catalog-management:8080";
+  @NotEmpty
+  String policyManagementUrl = "http://policy-management:8080";
 }
