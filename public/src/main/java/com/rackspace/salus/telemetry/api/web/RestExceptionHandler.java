@@ -1,5 +1,6 @@
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.errors.ResponseMessages;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -21,7 +22,7 @@ public class RestExceptionHandler extends com.rackspace.salus.common.web.Abstrac
   @ExceptionHandler({ResourceAccessException.class})
   public ResponseEntity<?> handleBadRequest(
       HttpServletRequest request) {
-    return respondWith(request, HttpStatus.INTERNAL_SERVER_ERROR, "The API is currently experiencing a problem. Please try again in a few minutes.");
+    return respondWith(request, HttpStatus.BAD_GATEWAY, ResponseMessages.apiResourceAccessException);
   }
 
 }
