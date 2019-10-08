@@ -60,8 +60,21 @@ public class EventTasksController {
     return proxy.uri(backendUri).get();
   }
 
-  @DeleteMapping("/tenant/{tenantId}/event-tasks/{taskId}")
+  @GetMapping("/tenant/{tenantId}/event-tasks/{taskId}")
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable String taskId) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getEventManagementUrl())
+        .path("/api/tenant/{tenantId}/tasks/{taskId}")
+        .build(tenantId, taskId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @DeleteMapping("/tenant/{tenantId}/event-tasks/{taskId}")
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
                                   @PathVariable String taskId) {
     final String backendUri = UriComponentsBuilder
@@ -71,6 +84,5 @@ public class EventTasksController {
         .toString();
 
     return proxy.uri(backendUri).delete();
-
   }
 }

@@ -57,6 +57,19 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/monitors/{id}")
+  public ResponseEntity<?> get(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable String id) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/monitors/{uuid}")
+        .build(tenantId, id)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
   @PostMapping("/tenant/{tenantId}/monitors")
   public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
     final String backendUri = UriComponentsBuilder

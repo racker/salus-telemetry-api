@@ -60,6 +60,21 @@ public class ResourcesController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/resources/{resourceId}")
+  public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable String resourceId) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getResourceManagementUrl())
+        .path("/api/tenant/{tenantId}/resources/{resourceId}")
+        .build(tenantId, resourceId)
+        .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
+
   @GetMapping("/tenant/{tenantId}/resources-by-label")
   public ResponseEntity<?> getResourcesWithLabels(ProxyExchange<?> proxy,
                                                   @PathVariable String tenantId,
