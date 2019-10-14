@@ -157,7 +157,7 @@ public class MonitorPolicyController {
   public ResponseEntity<?> deletePolicy(ProxyExchange<?> proxy,
       @PathVariable UUID uuid) {
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors/{uuid}")
         .build(uuid)
         .toString();
