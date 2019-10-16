@@ -20,10 +20,12 @@ import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -50,10 +52,13 @@ public class EventTasksController {
   }
 
   @GetMapping("/tenant/{tenantId}/event-tasks")
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy, @PathVariable String tenantId) {
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
+        .queryParams(queryParams)
         .build(tenantId)
         .toString();
 
