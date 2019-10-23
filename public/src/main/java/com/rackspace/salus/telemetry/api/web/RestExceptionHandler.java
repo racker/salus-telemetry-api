@@ -42,7 +42,7 @@ public class RestExceptionHandler extends AbstractRestExceptionHandler {
    * is properly converted into a 502 status externally.
    */
   @ExceptionHandler({NestedServletException.class})
-  public ResponseEntity<?> handleNotFound(
+  public ResponseEntity<?> handleNestedServletException(
       HttpServletRequest request, Exception e) {
     logRequestFailure(request, e);
 
