@@ -55,17 +55,4 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/bound-monitors")
-  public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
-                                               @RequestParam MultiValueMap<String,String> queryParams) {
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/bound-monitors")
-        .queryParams(queryParams)
-        .build()
-        .toString();
-
-    return proxy.uri(backendUri).get();
-  }
 }
