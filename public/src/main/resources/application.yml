@@ -16,3 +16,6 @@ management:
 server:
   servlet:
     context-path: "/v${salus.api.public.version}"
+spring:
+  zipkin:
+    enabled: false
