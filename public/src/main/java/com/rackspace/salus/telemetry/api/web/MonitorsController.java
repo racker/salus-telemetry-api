@@ -116,7 +116,7 @@ public class MonitorsController {
    * @return The String deserialization of the monitor.
    */
   @PatchMapping(path = "/tenant/{tenantId}/monitors/{id}",
-                consumes = {PATCH_MEDIA_TYPE_VALUE})
+                consumes = PATCH_MEDIA_TYPE_VALUE)
   public ResponseEntity<String> patch(@RequestHeader MultiValueMap<String, String> originalHeaders,
                                  @RequestBody String body,
                                  @PathVariable String tenantId,
