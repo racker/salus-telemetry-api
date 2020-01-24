@@ -17,24 +17,35 @@
 package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @Slf4j
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class MonitorsController {
+  private static final String PATCH_MEDIA_TYPE_VALUE = "application/json-patch+json";
 
   private final ServicesProperties servicesProperties;
 
@@ -94,6 +105,36 @@ public class MonitorsController {
 
     return proxy.uri(backendUri)
         .put();
+  }
+
+  /**
+   * Proxy exchange does not work with PATCH so we must reconstruct the request instead.
+   *
+   * Related issue: https://github.com/spring-cloud/spring-cloud-netflix/issues/1777
+   *
+   * @param body The request body to pass along
+   * @param tenantId The tenant id from the url path
+   * @param id The monitor id to update from the url path
+   * @return The String deserialization of the monitor.
+   */
+  @PatchMapping(path = "/tenant/{tenantId}/monitors/{id}",
+                consumes = {PATCH_MEDIA_TYPE_VALUE})
+  public ResponseEntity<String> patch(@RequestHeader MultiValueMap<String, String> originalHeaders,
+                                 @RequestBody String body,
+                                 @PathVariable String tenantId,
+                                 @PathVariable String id) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/monitors/{uuid}")
+        .build(tenantId, id)
+        .toString();
+
+    HttpHeaders headers = new HttpHeaders(originalHeaders);
+    HttpEntity<String> entity = new HttpEntity<>(body, headers);
+    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+    RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+    return restTemplate.exchange(backendUri, HttpMethod.PATCH, entity, String.class);
   }
 
   @DeleteMapping("/tenant/{tenantId}/monitors/{id}")
