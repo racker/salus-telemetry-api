@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class MonitorsController {
   @GetMapping("/tenant/{tenantId}/monitors")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -63,12 +65,15 @@ public class MonitorsController {
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/tenant/{tenantId}/monitors/{id}")
   public ResponseEntity<?> get(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
       @PathVariable String id) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -76,16 +81,22 @@ public class MonitorsController {
         .build(tenantId, id)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/tenant/{tenantId}/monitors")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
+  public ResponseEntity<?> create(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
         .build(tenantId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri)
         .post();
@@ -94,12 +105,15 @@ public class MonitorsController {
   @PutMapping("/tenant/{tenantId}/monitors/{id}")
   public ResponseEntity<?> update(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers,
                                   @PathVariable String id) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
         .build(tenantId, id)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri)
         .put();
@@ -117,7 +131,7 @@ public class MonitorsController {
    */
   @PatchMapping(path = "/tenant/{tenantId}/monitors/{id}",
                 consumes = PATCH_MEDIA_TYPE_VALUE)
-  public ResponseEntity<String> patch(@RequestHeader MultiValueMap<String, String> originalHeaders,
+  public ResponseEntity<String> patch(@RequestHeader HttpHeaders headers,
                                  @RequestBody String body,
                                  @PathVariable String tenantId,
                                  @PathVariable String id) {
@@ -127,7 +141,6 @@ public class MonitorsController {
         .build(tenantId, id)
         .toString();
 
-    HttpHeaders headers = new HttpHeaders(originalHeaders);
     HttpEntity<String> entity = new HttpEntity<>(body, headers);
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
     RestTemplate restTemplate = new RestTemplate(requestFactory);
@@ -138,6 +151,7 @@ public class MonitorsController {
   @DeleteMapping("/tenant/{tenantId}/monitors/{id}")
   public ResponseEntity<?> delete(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers,
                                   @PathVariable String id) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -145,17 +159,22 @@ public class MonitorsController {
         .build(tenantId, id)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).delete();
   }
 
   @GetMapping("/tenant/{tenantId}/monitor-label-selectors")
   public ResponseEntity<?> getMonitorLabelSelectors(ProxyExchange<?> proxy,
-                                                    @PathVariable String tenantId) {
+                                                    @PathVariable String tenantId,
+                                                    @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitor-label-selectors")
         .build(tenantId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }
@@ -163,6 +182,7 @@ public class MonitorsController {
   @GetMapping("/tenant/{tenantId}/bound-monitors")
   public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
                                                @PathVariable String tenantId,
+                                               @RequestHeader HttpHeaders headers,
                                                @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -170,6 +190,8 @@ public class MonitorsController {
         .queryParams(queryParams)
         .build(tenantId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }

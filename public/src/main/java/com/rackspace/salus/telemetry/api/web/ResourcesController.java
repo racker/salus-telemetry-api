@@ -16,10 +16,12 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -49,6 +52,7 @@ public class ResourcesController {
   @GetMapping("/tenant/{tenantId}/resources")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
@@ -57,12 +61,15 @@ public class ResourcesController {
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/tenant/{tenantId}/resources/{resourceId}")
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
       @PathVariable String resourceId) {
 
     final String backendUri = UriComponentsBuilder
@@ -71,13 +78,15 @@ public class ResourcesController {
         .build(tenantId, resourceId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
-
 
   @GetMapping("/tenant/{tenantId}/resources-by-label")
   public ResponseEntity<?> getResourcesWithLabels(ProxyExchange<?> proxy,
                                                   @PathVariable String tenantId,
+                                                  @RequestHeader HttpHeaders headers,
                                                   @RequestParam Map<String, String> labels) {
     final UriComponentsBuilder builder = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
@@ -89,52 +98,67 @@ public class ResourcesController {
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/tenant/{tenantId}/resource-labels")
   public ResponseEntity<?> getResourceLabels(ProxyExchange<?> proxy,
-                                             @PathVariable String tenantId) {
+                                             @PathVariable String tenantId,
+                                             @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-labels")
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/tenant/{tenantId}/resource-metadata-keys")
   public ResponseEntity<?> getResourceMetadataKeys(ProxyExchange<?> proxy,
-                                                   @PathVariable String tenantId) {
+                                                   @PathVariable String tenantId,
+                                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-metadata-keys")
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/tenant/{tenantId}/resource-label-namespaces")
   public ResponseEntity<?> getLabelNamespaces(ProxyExchange<?> proxy,
-                                              @PathVariable String tenantId) {
+                                              @PathVariable String tenantId,
+                                              @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-label-namespaces")
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/tenant/{tenantId}/resources")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
+  public ResponseEntity<?> create(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
         .build(tenantId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).post();
   }
@@ -142,12 +166,15 @@ public class ResourcesController {
   @PutMapping("/tenant/{tenantId}/resources/{resourceId}")
   public ResponseEntity<?> update(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
-                                  @PathVariable String resourceId) {
+                                  @PathVariable String resourceId,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .build(tenantId, resourceId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).put();
   }
@@ -155,13 +182,16 @@ public class ResourcesController {
   @DeleteMapping("/tenant/{tenantId}/resources/{resourceId}")
   public ResponseEntity<?> delete(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
-                                  @PathVariable String resourceId) {
+                                  @PathVariable String resourceId,
+                                  @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .build(tenantId, resourceId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
   }

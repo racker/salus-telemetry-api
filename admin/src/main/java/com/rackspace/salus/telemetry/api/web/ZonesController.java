@@ -16,15 +16,18 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +47,7 @@ public class ZonesController {
 
   @GetMapping("/zones/**")
   public ResponseEntity<?> get(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String zone = proxy.path("/api/zones/");
 
@@ -53,12 +57,15 @@ public class ZonesController {
         .queryParams(queryParams)
         .buildAndExpand(zone)
         .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/zones")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
@@ -68,12 +75,15 @@ public class ZonesController {
         .build()
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri)
         .get();
   }
 
   @PostMapping("/zones")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> create(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -81,12 +91,15 @@ public class ZonesController {
         .build()
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri)
         .post();
   }
 
   @PutMapping("/zones/**")
-  public ResponseEntity<?> update(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -94,13 +107,16 @@ public class ZonesController {
         .path("/api/admin/zones/{name}")
         .buildAndExpand(zone)
         .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri)
         .put();
   }
 
   @DeleteMapping("/zones/**")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -109,11 +125,14 @@ public class ZonesController {
         .buildAndExpand(zone)
         .toUriString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).delete();
   }
 
   @GetMapping("/zone-assignment-counts/**")
-  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
     String zone = proxy.path("/api/zone-assignment-counts/");
 
     final String backendUri = UriComponentsBuilder
@@ -122,11 +141,14 @@ public class ZonesController {
         .buildAndExpand(zone)
         .toUriString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/rebalance-zone/**")
-  public ResponseEntity<?> rebalancePublicZone(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> rebalancePublicZone(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
     String zone = proxy.path("/api/rebalance-zone/");
 
     final String backendUri = UriComponentsBuilder
@@ -134,6 +156,8 @@ public class ZonesController {
         .path("/api/admin/rebalance-zone/{name}")
         .buildAndExpand(zone)
         .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri)
         // no body needed for this operation, but proxy wants to resolve one

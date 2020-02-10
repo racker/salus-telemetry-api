@@ -48,6 +48,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
         )
         .authorizeRequests()
         .antMatchers("/tenant/**")
-        .hasAnyRole(apiPublicProperties.getRoles());
+        .permitAll();
+//        .hasAnyRole(apiPublicProperties.getRoles());
   }
 }

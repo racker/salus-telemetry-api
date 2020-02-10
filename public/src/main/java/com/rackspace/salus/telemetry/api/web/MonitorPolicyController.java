@@ -16,15 +16,18 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,6 +47,7 @@ public class MonitorPolicyController {
   @GetMapping("/tenant/{tenantId}/policy-monitors")
   public ResponseEntity<?> getAllForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -52,6 +56,8 @@ public class MonitorPolicyController {
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
@@ -59,6 +65,7 @@ public class MonitorPolicyController {
   public ResponseEntity<?> getOneForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @PathVariable UUID uuid,
+      @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -66,6 +73,8 @@ public class MonitorPolicyController {
         .queryParams(queryParams)
         .build(tenantId, uuid)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }

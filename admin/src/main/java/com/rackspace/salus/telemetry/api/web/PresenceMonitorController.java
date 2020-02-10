@@ -16,12 +16,15 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -40,24 +43,30 @@ public class PresenceMonitorController {
   }
 
   @GetMapping("/presence-monitor/partitions")
-  public ResponseEntity<?> getPresenceMonitorPartitions(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> getPresenceMonitorPartitions(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPresenceMonitorUrl())
         .path("/api/admin/presence-monitor/partitions")
         .buildAndExpand()
         .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }
 
   @PutMapping("/presence-monitor/partitions")
-  public ResponseEntity<?> changePresenceMonitorPartitions(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> changePresenceMonitorPartitions(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPresenceMonitorUrl())
         .path("/api/admin/presence-monitor/partitions")
         .buildAndExpand()
         .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).put();
   }
