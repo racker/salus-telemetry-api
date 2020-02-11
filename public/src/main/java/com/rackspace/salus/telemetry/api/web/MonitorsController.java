@@ -160,11 +160,11 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/schema/monitor/plugins")
+  @GetMapping("/tenant/{tenantId}/schema/monitor-plugins")
   public ResponseEntity<?> getMonitorPluginsSchema(ProxyExchange<?> proxy) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/schema/monitor/plugins")
+        .path("/schema/monitor-plugins")
         .toUriString();
 
     return proxy.uri(backendUri).get();
