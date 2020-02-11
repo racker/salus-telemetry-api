@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,6 +156,16 @@ public class MonitorsController {
         .path("/api/tenant/{tenantId}/monitor-label-selectors")
         .build(tenantId)
         .toString();
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/schema/monitor-plugins")
+  public ResponseEntity<?> getMonitorPluginsSchema(ProxyExchange<?> proxy) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/schema/monitor-plugins")
+        .toUriString();
 
     return proxy.uri(backendUri).get();
   }
