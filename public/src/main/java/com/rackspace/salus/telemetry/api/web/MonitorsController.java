@@ -180,11 +180,14 @@ public class MonitorsController {
   }
 
   @GetMapping("/tenant/{tenantId}/schema/monitor-plugins")
-  public ResponseEntity<?> getMonitorPluginsSchema(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> getMonitorPluginsSchema(ProxyExchange<?> proxy,
+                                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/schema/monitor-plugins")
         .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }
