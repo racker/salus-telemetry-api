@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
@@ -71,43 +72,43 @@ public class ZonesControllerTest {
 
   @Test
   public void testAllGetPublicZones() {
-    zonesController.getAll(proxyExchange, new LinkedMultiValueMap<>());
+    zonesController.getAll(proxyExchange, new HttpHeaders(), new LinkedMultiValueMap<>());
     verify(proxyExchange).uri("http://test/api/admin/zones");
   }
 
   @Test
   public void testGetPublicZone() {
-    zonesController.get(proxyExchange, new LinkedMultiValueMap<>());
+    zonesController.get(proxyExchange, new HttpHeaders(), new LinkedMultiValueMap<>());
     verify(proxyExchange).uri("http://test/api/admin/zones/public/dev");
   }
 
   @Test
   public void testCreatePublicZone() {
-    zonesController.create(proxyExchange);
+    zonesController.create(proxyExchange, new HttpHeaders());
     verify(proxyExchange).uri("http://test/api/admin/zones");
   }
 
   @Test
   public void testUpdatePublicZone() {
-    zonesController.update(proxyExchange);
+    zonesController.update(proxyExchange, new HttpHeaders());
     verify(proxyExchange).uri("http://test/api/admin/zones/public/dev");
   }
 
   @Test
   public void testDeletePublicZone() {
-    zonesController.delete(proxyExchange);
+    zonesController.delete(proxyExchange, new HttpHeaders());
     verify(proxyExchange).uri("http://test/api/admin/zones/public/dev");
   }
 
   @Test
   public void testGetPrivateZoneAssignmentCounts() {
-    zonesController.getPrivateZoneAssignmentCounts(proxyExchange);
+    zonesController.getPrivateZoneAssignmentCounts(proxyExchange, new HttpHeaders());
     verify(proxyExchange).uri("http://test/api/admin/zone-assignment-counts/public/dev");
   }
 
   @Test
   public void testRebalancePublicZone() {
-    zonesController.rebalancePublicZone(proxyExchange);
+    zonesController.rebalancePublicZone(proxyExchange, new HttpHeaders());
     verify(proxyExchange).uri("http://test/api/admin/rebalance-zone/public/dev");
   }
 }

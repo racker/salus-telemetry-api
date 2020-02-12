@@ -16,16 +16,19 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +49,7 @@ public class MonitorTranslationController {
 
   @GetMapping("/monitor-translations")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @RequestHeader HttpHeaders headers,
                                   @RequestParam MultiValueMap<String, String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
@@ -55,38 +59,51 @@ public class MonitorTranslationController {
         .build()
         .toUriString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/monitor-translations/{id}")
-  public ResponseEntity<?> getById(ProxyExchange<?> proxy, @PathVariable String id) {
+  public ResponseEntity<?> getById(ProxyExchange<?> proxy,
+                                   @PathVariable String id,
+                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations/{id}")
         .build(id)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/monitor-translations")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy) {
+  public ResponseEntity<?> create(ProxyExchange<?> proxy,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations")
         .build()
         .toUriString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).post();
   }
 
   @DeleteMapping("/monitor-translations/{id}")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy, @PathVariable String id) {
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
+                                  @PathVariable String id,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations/{id}")
         .build(id)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
   }

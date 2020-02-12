@@ -16,12 +16,15 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -36,12 +39,16 @@ public class TestMonitorController {
   }
 
   @PostMapping("/tenant/{tenantId}/test-monitor")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy, @PathVariable String tenantId) {
+  public ResponseEntity<?> create(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/test-monitor")
         .build(tenantId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri)
         .post();

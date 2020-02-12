@@ -16,13 +16,16 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -40,6 +43,7 @@ public class AgentReleaseController {
   @GetMapping("/tenant/{tenantId}/agent-releases")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
@@ -48,18 +52,23 @@ public class AgentReleaseController {
         .build(tenantId)
         .toString();
 
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
     return proxy.uri(backendUri).get();
   }
 
   @GetMapping("/tenant/{tenantId}/event-tasks/agent-releases/{agentReleaseId}")
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
-                                  @PathVariable String agentReleaseId) {
+                                  @PathVariable String agentReleaseId,
+                                  @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-releases/{agentReleaseId}")
         .build(tenantId, agentReleaseId)
         .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
   }
