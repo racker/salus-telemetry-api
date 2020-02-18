@@ -17,6 +17,7 @@
 package com.rackspace.salus.telemetry.api.config;
 
 import com.rackspace.salus.telemetry.model.LabelNamespaces;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
@@ -32,7 +33,7 @@ public class ApiAdminProperties {
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
    * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
-  String[] roles = new String[]{};
+  List<String> roles = new ArrayList<>();
 
   /**
    * When registering an agent release, these are the labels that are required to be present
