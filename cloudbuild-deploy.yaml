@@ -1,6 +1,8 @@
 substitutions:
   _GCS_CACHE_BUCKET: salus-cache
   _SALUS_PROJECT: salus-telemetry-api
+  _SALUS_ADMIN_APP: api-admin
+  _SALUS_PUBLIC_APP: api-public
 
 steps:
 
@@ -144,7 +146,7 @@ steps:
 
   - name: 'gcr.io/$PROJECT_ID/helm'
     id: DEPLOY_API_ADMIN
-    args: ['upgrade', '--install', '${_SALUS_APP}', '--namespace', 'salus-development', '/helm-salus-api-admin']
+    args: ['upgrade', '--install', '${_SALUS_ADMIN_APP}', '--namespace', 'salus-development', '/helm-salus-api-admin']
     env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
     - 'CLOUDSDK_CONTAINER_CLUSTER=salus-dev'
@@ -176,7 +178,7 @@ steps:
 
   - name: 'gcr.io/$PROJECT_ID/helm'
     id: DEPLOY_API_PUBLIC
-    args: ['upgrade', '--install', '${_SALUS_APP}', '--namespace', 'salus-development', '/helm-salus-api-public']
+    args: ['upgrade', '--install', '${_SALUS_PUBLIC_APP}', '--namespace', 'salus-development', '/helm-salus-api-public']
     env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
     - 'CLOUDSDK_CONTAINER_CLUSTER=salus-dev'
