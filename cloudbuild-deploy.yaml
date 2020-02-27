@@ -121,3 +121,66 @@ steps:
     - name: user.home
       path: /root
 
+  - name: gcr.io/cloud-builders/git
+    id: GIT_CLONE_ADMIN
+    waitFor:
+    - COMPILE_AND_PUSH_ADMIN_CONTAINER
+    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
+    - PUSH_UP_CACHE
+    args: ['clone', 'https://source.developers.google.com/p/salus-220516/r/github_rackspace-segment-support_helm-salus-api-admin', '/helm-salus-api-admin/']
+    volumes:
+    - name: chart.home
+      path: /helm-salus-api-admin
+
+  - name: gcr.io/cloud-builders/git
+    id: GIT_CHECKOUT_ADMIN
+    waitFor:
+    - GIT_CLONE
+    args: ['checkout', 'master']
+    dir: "/helm-salus-api-admin"
+    volumes:
+    - name: chart.home
+      path: /helm-salus-api-admin
+
+  - name: 'gcr.io/$PROJECT_ID/helm'
+    id: DEPLOY_API_ADMIN
+    args: ['upgrade', '--install', '${_SALUS_APP}', '--namespace', 'salus-development', '/helm-salus-api-admin']
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=salus-dev'
+    - 'TILLERLESS=true'
+    volumes:
+    - name: chart.home
+      path: /helm-salus-api-admin
+
+  - name: gcr.io/cloud-builders/git
+    id: GIT_CLONE_PUBLIC
+    waitFor:
+    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
+    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
+    - PUSH_UP_CACHE
+    args: ['clone', 'https://source.developers.google.com/p/salus-220516/r/github_rackspace-segment-support_helm-salus-api-public', '/helm-salus-api-public/']
+    volumes:
+    - name: chart.home
+      path: /helm-salus-api-public
+
+  - name: gcr.io/cloud-builders/git
+    id: GIT_CHECKOUT_PUBLIC
+    waitFor:
+    - GIT_CLONE
+    args: ['checkout', 'master']
+    dir: "/helm-salus-api-public"
+    volumes:
+    - name: chart.home
+      path: /helm-salus-api-public
+
+  - name: 'gcr.io/$PROJECT_ID/helm'
+    id: DEPLOY_API_PUBLIC
+    args: ['upgrade', '--install', '${_SALUS_APP}', '--namespace', 'salus-development', '/helm-salus-api-public']
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=salus-dev'
+    - 'TILLERLESS=true'
+    volumes:
+    - name: chart.home
+      path: /helm-salus-api-public
