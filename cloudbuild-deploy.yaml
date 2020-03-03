@@ -5,7 +5,6 @@ substitutions:
   _SALUS_PUBLIC_APP: public-admin
   _APP_NAMESPACE: salus-development
   _CLOUDSDK_COMPUTE_ZONE: us-east1-b
-  _CLOUDSDK_COMPUTE_REGION: us-east1
   _CLOUDSDK_CONTAINER_CLUSTER: salus-dev
 
 steps:
@@ -134,6 +133,7 @@ steps:
     - PUSH_UP_CACHE
     args: ['clone', 'https://source.developers.google.com/p/$PROJECT_ID/r/github_rackspace-segment-support_helm-salus-${_SALUS_ADMIN_APP}', '/workspace/helm-salus-${_SALUS_ADMIN_APP}/']
 
+  # Set _CLOUDSDK_COMPUTE_REGION in the build trigger for non-dev clusters
   - name: 'gcr.io/$PROJECT_ID/helm'
     id: DEPLOY_ADMIN_APPLICATION
     args: ['upgrade', '--install', '${_SALUS_ADMIN_APP}', '--namespace', '${_APP_NAMESPACE}', '/workspace/helm-salus-${_SALUS_ADMIN_APP}']
@@ -150,6 +150,7 @@ steps:
     - PUSH_UP_CACHE
     args: ['clone', 'https://source.developers.google.com/p/$PROJECT_ID/r/github_rackspace-segment-support_helm-salus-${_SALUS_PUBLIC_APP}', '/workspace/helm-salus-${_SALUS_PUBLIC_APP}/']
 
+  # Set _CLOUDSDK_COMPUTE_REGION in the build trigger for non-dev clusters
   - name: 'gcr.io/$PROJECT_ID/helm'
     id: DEPLOY_PUBLIC_APPLICATION
     args: ['upgrade', '--install', '${_SALUS_PUBLIC_APP}', '--namespace', '${_APP_NAMESPACE}', '/workspace/helm-salus-${_SALUS_PUBLIC_APP}']
@@ -158,3 +159,6 @@ steps:
     - 'CLOUDSDK_COMPUTE_REGION=${_CLOUDSDK_COMPUTE_REGION}'
     - 'CLOUDSDK_CONTAINER_CLUSTER=${_CLOUDSDK_CONTAINER_CLUSTER}'
     - 'TILLERLESS=true'
+
+options:
+    substitution_option: 'ALLOW_LOOSE'
