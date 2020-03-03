@@ -1,8 +1,11 @@
 substitutions:
   _GCS_CACHE_BUCKET: salus-cache
   _SALUS_PROJECT: salus-telemetry-api
-  _SALUS_ADMIN_APP: api-admin
-  _SALUS_PUBLIC_APP: api-public
+  _SALUS_APP: api-admin
+  _APP_NAMESPACE: salus-development
+  _CLOUDSDK_COMPUTE_ZONE: us-east1-b
+  _CLOUDSDK_COMPUTE_REGION: us-east1
+  _CLOUDSDK_CONTAINER_CLUSTER: salus-dev
 
 steps:
 
@@ -124,65 +127,17 @@ steps:
       path: /root
 
   - name: gcr.io/cloud-builders/git
-    id: GIT_CLONE_ADMIN
+    id: HELM_CLONE
     waitFor:
-    - COMPILE_AND_PUSH_ADMIN_CONTAINER
-    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
+    - COMPILE_AND_PUSH_CONTAINER
     - PUSH_UP_CACHE
-    args: ['clone', 'https://source.developers.google.com/p/salus-220516/r/github_rackspace-segment-support_helm-salus-api-admin', '/helm-salus-api-admin/']
-    volumes:
-    - name: chart.home
-      path: /helm-salus-api-admin
-
-  - name: gcr.io/cloud-builders/git
-    id: GIT_CHECKOUT_ADMIN
-    waitFor:
-    - GIT_CLONE
-    args: ['checkout', 'master']
-    dir: "/helm-salus-api-admin"
-    volumes:
-    - name: chart.home
-      path: /helm-salus-api-admin
+    args: ['clone', 'https://source.developers.google.com/p/$PROJECT_ID/r/github_rackspace-segment-support_helm-salus-${_SALUS_APP}', '/workspace/helm-salus-${_SALUS_APP}/']
 
   - name: 'gcr.io/$PROJECT_ID/helm'
-    id: DEPLOY_API_ADMIN
-    args: ['upgrade', '--install', '${_SALUS_ADMIN_APP}', '--namespace', 'salus-development', '/helm-salus-api-admin']
+    id: DEPLOY_APPLICATION
+    args: ['upgrade', '--install', '${_SALUS_APP}', '--namespace', '${_APP_NAMESPACE}', '/workspace/helm-salus-${_SALUS_APP}']
     env:
-    - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=salus-dev'
+    - 'CLOUDSDK_COMPUTE_ZONE=${_CLOUDSDK_COMPUTE_ZONE}'
+    - 'CLOUDSDK_COMPUTE_REGION=${_CLOUDSDK_COMPUTE_REGION}'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=${_CLOUDSDK_CONTAINER_CLUSTER}'
     - 'TILLERLESS=true'
-    volumes:
-    - name: chart.home
-      path: /helm-salus-api-admin
-
-  - name: gcr.io/cloud-builders/git
-    id: GIT_CLONE_PUBLIC
-    waitFor:
-    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
-    - COMPILE_AND_PUSH_PUBLIC_CONTAINER
-    - PUSH_UP_CACHE
-    args: ['clone', 'https://source.developers.google.com/p/salus-220516/r/github_rackspace-segment-support_helm-salus-api-public', '/helm-salus-api-public/']
-    volumes:
-    - name: chart.home
-      path: /helm-salus-api-public
-
-  - name: gcr.io/cloud-builders/git
-    id: GIT_CHECKOUT_PUBLIC
-    waitFor:
-    - GIT_CLONE
-    args: ['checkout', 'master']
-    dir: "/helm-salus-api-public"
-    volumes:
-    - name: chart.home
-      path: /helm-salus-api-public
-
-  - name: 'gcr.io/$PROJECT_ID/helm'
-    id: DEPLOY_API_PUBLIC
-    args: ['upgrade', '--install', '${_SALUS_PUBLIC_APP}', '--namespace', 'salus-development', '/helm-salus-api-public']
-    env:
-    - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=salus-dev'
-    - 'TILLERLESS=true'
-    volumes:
-    - name: chart.home
-      path: /helm-salus-api-public
