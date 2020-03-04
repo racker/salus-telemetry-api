@@ -2,7 +2,7 @@ substitutions:
   _GCS_CACHE_BUCKET: salus-cache
   _SALUS_PROJECT: salus-telemetry-api
   _SALUS_ADMIN_APP: api-admin
-  _SALUS_PUBLIC_APP: public-admin
+  _SALUS_PUBLIC_APP: api-public
   _APP_NAMESPACE: salus-development
   _CLOUDSDK_COMPUTE_ZONE: us-east1-b
   _CLOUDSDK_CONTAINER_CLUSTER: salus-dev
