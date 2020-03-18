@@ -192,6 +192,19 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/schema/monitors")
+  public ResponseEntity<?> getMonitorsSchema(ProxyExchange<?> proxy,
+                                             @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/schema/monitors")
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
   @GetMapping("/tenant/{tenantId}/bound-monitors")
   public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
                                                @PathVariable String tenantId,
