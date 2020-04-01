@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,4 +33,6 @@ public class ServicesProperties {
   String eventManagementUrl = "http://event-management:8080";
   @NotEmpty
   String agentCatalogManagementUrl = "http://agent-catalog-management:8080";
+  @NotEmpty
+  String authServiceUrl = "http://authserv:8082";
 }
