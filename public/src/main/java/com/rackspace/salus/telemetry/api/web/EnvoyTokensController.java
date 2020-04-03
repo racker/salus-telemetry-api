@@ -76,15 +76,15 @@ public class EnvoyTokensController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/tenant/{tenantId}/envoy-tokens/{token}")
+  @GetMapping("/tenant/{tenantId}/envoy-tokens/{id}")
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
-                                  @PathVariable String token,
+                                  @PathVariable String id,
                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
-        .path("/api/tenant/{tenantId}/envoy-tokens/{token}")
-        .build(tenantId, token)
+        .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
+        .build(tenantId, id)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -92,15 +92,15 @@ public class EnvoyTokensController {
     return proxy.uri(backendUri).get();
   }
 
-  @PutMapping("/tenant/{tenantId}/envoy-tokens/{token}")
+  @PutMapping("/tenant/{tenantId}/envoy-tokens/{id}")
   public ResponseEntity<?> update(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
-                                  @PathVariable String token,
+                                  @PathVariable String id,
                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
-        .path("/api/tenant/{tenantId}/envoy-tokens/{token}")
-        .build(tenantId, token)
+        .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
+        .build(tenantId, id)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -109,15 +109,15 @@ public class EnvoyTokensController {
         .put();
   }
 
-  @DeleteMapping("/tenant/{tenantId}/envoy-tokens/{token}")
+  @DeleteMapping("/tenant/{tenantId}/envoy-tokens/{id}")
   public ResponseEntity<?> delete(ProxyExchange<?> proxy,
                                   @PathVariable String tenantId,
-                                  @PathVariable String token,
+                                  @PathVariable String id,
                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
-        .path("/api/tenant/{tenantId}/envoy-tokens/{token}")
-        .build(tenantId, token)
+        .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
+        .build(tenantId, id)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
