@@ -172,7 +172,7 @@ public class MonitorMetadataPolicyController {
   }
 
   @PostMapping("/policy/metadata/zones")
-  public ResponseEntity<?> createMetadataPolicyForZone(ProxyExchange<?> proxy,
+  public ResponseEntity<?> createMetadataPolicyForZones(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
@@ -188,7 +188,7 @@ public class MonitorMetadataPolicyController {
   }
 
   @PutMapping("/policy/metadata/zones/{region}")
-  public ResponseEntity<?> updateMetadataPolicyForMonitors(ProxyExchange<?> proxy,
+  public ResponseEntity<?> updateMetadataPolicyForZones(ProxyExchange<?> proxy,
       @PathVariable String region,
       @RequestHeader HttpHeaders headers) {
 
@@ -204,7 +204,7 @@ public class MonitorMetadataPolicyController {
   }
 
   @DeleteMapping("/policy/metadata/zones/{region}")
-  public ResponseEntity<?> deleteMetadataPolicyForMonitors(ProxyExchange<?> proxy,
+  public ResponseEntity<?> deleteMetadataPolicyForZones(ProxyExchange<?> proxy,
       @PathVariable String region,
       @RequestHeader HttpHeaders headers) {
 
