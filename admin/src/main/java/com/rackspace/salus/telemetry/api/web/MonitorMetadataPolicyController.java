@@ -170,4 +170,52 @@ public class MonitorMetadataPolicyController {
 
     return proxy.uri(backendUri).get();
   }
+
+  @PostMapping("/policy/metadata/zones")
+  public ResponseEntity<?> createMetadataPolicyForZones(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/metadata/zones")
+        .build()
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri)
+        .post();
+  }
+
+  @PutMapping("/policy/metadata/zones/{region}")
+  public ResponseEntity<?> updateMetadataPolicyForZones(ProxyExchange<?> proxy,
+      @PathVariable String region,
+      @RequestHeader HttpHeaders headers) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/metadata/zones/{region}")
+        .build(region)
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).put();
+  }
+
+  @DeleteMapping("/policy/metadata/zones/{region}")
+  public ResponseEntity<?> deleteMetadataPolicyForZones(ProxyExchange<?> proxy,
+      @PathVariable String region,
+      @RequestHeader HttpHeaders headers) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/metadata/zones/{region}")
+        .build(region)
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).delete();
+  }
 }
