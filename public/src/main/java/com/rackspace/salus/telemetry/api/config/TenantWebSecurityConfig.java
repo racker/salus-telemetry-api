@@ -43,7 +43,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .csrf().disable()
         .addFilterBefore(
-            new ReposeHeaderFilter(),
+            new ReposeHeaderFilter(true),
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
