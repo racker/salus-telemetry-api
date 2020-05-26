@@ -194,4 +194,19 @@ public class MonitorPolicyController {
 
     return proxy.uri(backendUri).delete();
   }
+
+  @PostMapping("/policies/monitors/opt-out")
+  public ResponseEntity<?> optOutPolicy(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/monitors/opt-out")
+        .build()
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri)
+        .post();
+  }
 }
