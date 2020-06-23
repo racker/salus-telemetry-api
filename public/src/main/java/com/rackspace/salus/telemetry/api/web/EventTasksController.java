@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,5 +105,20 @@ public class EventTasksController {
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
+  }
+
+  @PostMapping("/tenant/{tenantId}/test-event-task")
+  public ResponseEntity<?> testEventTask(ProxyExchange<?> proxy,
+                                         @PathVariable String tenantId,
+                                         @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getEventManagementUrl())
+        .path("/api/tenant/{tenantId}/test-task")
+        .build(tenantId)
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).post();
   }
 }
