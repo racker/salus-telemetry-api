@@ -50,8 +50,8 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -67,8 +67,8 @@ public class EventTasksController {
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -83,8 +83,8 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")
-        .build(tenantId, taskId)
-        .toString();
+        .buildAndExpand(tenantId, taskId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -99,8 +99,8 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")
-        .build(tenantId, taskId)
-        .toString();
+        .buildAndExpand(tenantId, taskId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -114,8 +114,8 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/test-task")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
