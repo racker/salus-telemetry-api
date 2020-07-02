@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.rackspace.salus.telemetry.api.web;
@@ -189,6 +190,23 @@ public class ResourcesController {
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .build(tenantId, resourceId)
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).delete();
+  }
+
+  @DeleteMapping("/tenant/{tenantId}/resources/search/{searchCriteria}")
+  public ResponseEntity<?> searchResources(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable String searchCriteria,
+      @RequestHeader HttpHeaders headers) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getResourceManagementUrl())
+        .path("/api/tenant/{tenantId}/search/{searchCriteria}")
+        .build(tenantId, searchCriteria)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
