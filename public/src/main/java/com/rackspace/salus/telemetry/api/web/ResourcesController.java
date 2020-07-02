@@ -211,6 +211,6 @@ public class ResourcesController {
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    return proxy.uri(backendUri).delete();
+    return proxy.uri(backendUri).get();
   }
 }
