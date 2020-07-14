@@ -223,7 +223,7 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/tenant/{tenantId}/monitors/search/{searchCriteria}")
+  @GetMapping("/tenant/{tenantId}/monitors/search/")
   public ResponseEntity<?> searchMonitors(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @PathVariable String searchCriteria,
@@ -231,7 +231,7 @@ public class MonitorsController {
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/search/{searchCriteria}")
+        .path("/api/tenant/{tenantId}/search/")
         .queryParams(queryParams)
         .build(tenantId, searchCriteria)
         .toString();
