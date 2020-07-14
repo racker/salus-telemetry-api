@@ -197,16 +197,17 @@ public class ResourcesController {
     return proxy.uri(backendUri).delete();
   }
 
-  @GetMapping("/tenant/{tenantId}/resources/search/{searchCriteria}")
+  @GetMapping("/tenant/{tenantId}/resources/search/}")
   public ResponseEntity<?> searchResources(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
-      @PathVariable String searchCriteria,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/search/{searchCriteria}")
-        .build(tenantId, searchCriteria)
+        .queryParams(queryParams)
+        .build(tenantId)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
