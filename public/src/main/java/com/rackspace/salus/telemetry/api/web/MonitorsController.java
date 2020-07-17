@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.rackspace.salus.telemetry.api.web;
@@ -215,6 +216,24 @@ public class MonitorsController {
         .path("/api/tenant/{tenantId}/bound-monitors")
         .queryParams(queryParams)
         .build(tenantId)
+        .toString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/monitors/search/")
+  public ResponseEntity<?> searchMonitors(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable String searchCriteria,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/search")
+        .queryParams(queryParams)
+        .build(tenantId, searchCriteria)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
