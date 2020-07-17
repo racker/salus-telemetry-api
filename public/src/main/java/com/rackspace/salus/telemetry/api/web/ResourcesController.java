@@ -205,7 +205,7 @@ public class ResourcesController {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
-        .path("/api/tenant/{tenantId}/search/")
+        .path("/api/tenant/{tenantId}/search")
         .queryParams(queryParams)
         .build(tenantId)
         .toString();

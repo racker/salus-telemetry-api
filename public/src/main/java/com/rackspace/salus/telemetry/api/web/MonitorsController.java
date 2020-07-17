@@ -231,7 +231,7 @@ public class MonitorsController {
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/search/")
+        .path("/api/tenant/{tenantId}/search")
         .queryParams(queryParams)
         .build(tenantId, searchCriteria)
         .toString();
