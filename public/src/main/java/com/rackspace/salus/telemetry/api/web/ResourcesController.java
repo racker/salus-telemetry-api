@@ -197,7 +197,7 @@ public class ResourcesController {
     return proxy.uri(backendUri).delete();
   }
 
-  @GetMapping("/tenant/{tenantId}/resources/search/}")
+  @GetMapping("/tenant/{tenantId}/resources-search/")
   public ResponseEntity<?> searchResources(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
