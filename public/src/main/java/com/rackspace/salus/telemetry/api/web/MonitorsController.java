@@ -226,7 +226,6 @@ public class MonitorsController {
   @GetMapping("/tenant/{tenantId}/monitors/search/")
   public ResponseEntity<?> searchMonitors(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
-      @PathVariable String searchCriteria,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
