@@ -232,7 +232,7 @@ public class MonitorsController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/search")
         .queryParams(queryParams)
-        .build(tenantId, searchCriteria)
+        .build(tenantId)
         .toString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
