@@ -223,7 +223,7 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/tenant/{tenantId}/monitors/search/")
+  @GetMapping("/tenant/{tenantId}/monitors/search")
   public ResponseEntity<?> searchMonitors(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
