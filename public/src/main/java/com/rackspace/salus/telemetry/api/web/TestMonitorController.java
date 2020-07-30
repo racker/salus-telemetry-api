@@ -18,23 +18,26 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
+import com.rackspace.salus.telemetry.api.services.MonitorEventBindingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 public class TestMonitorController {
 
   private final ServicesProperties servicesProperties;
+  private final MonitorEventBindingService monitorEventBindingService;
 
   @Autowired
-  public TestMonitorController(ServicesProperties servicesProperties) {
+  public TestMonitorController(ServicesProperties servicesProperties, MonitorEventBindingService monitorEventBindingService) {
+    this.monitorEventBindingService = monitorEventBindingService;
     this.servicesProperties = servicesProperties;
   }
 
@@ -53,4 +56,13 @@ public class TestMonitorController {
     return proxy.uri(backendUri)
         .post();
   }
+
+  @PostMapping("/tenant/{tenantId}/test-monitor-event-task")
+  public ResponseEntity<?> createTestMonitorAndEventTask(@PathVariable String tenantId,
+                                                         @RequestBody TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
+    return new ResponseEntity<TestMonitorAndEventTaskResponse>(
+            monitorEventBindingService.getTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest),
+            HttpStatus.FOUND);
+  }
+
 }
