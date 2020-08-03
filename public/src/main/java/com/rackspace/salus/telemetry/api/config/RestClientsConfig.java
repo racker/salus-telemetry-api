@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class RestClientsConfig {
     public EventTaskApi eventTaskApi(RestTemplateBuilder restTemplateBuilder) {
         return new EventTaskApiClient(
                 restTemplateBuilder
-                        .rootUri(servicesProperties.eventManagementUrl)
+                        .rootUri(servicesProperties.getEventManagementUrl())
                         .build()
         );
     }
