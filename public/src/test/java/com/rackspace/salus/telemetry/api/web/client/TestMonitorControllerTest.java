@@ -29,6 +29,7 @@ import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.EventData
 import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.SeriesItem;
 import com.rackspace.salus.event.manage.model.kapacitor.Task.Stats;
 import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
+import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
@@ -61,10 +62,7 @@ public class TestMonitorControllerTest {
 
   private PodamFactory podamFactory = new PodamFactoryImpl();
 
-//  @MockBean
-//  TenantWebSecurityConfig tenantWebSecurityConfig;
-
-  @MockBean
+  @Autowired
   TestMonitorController testMonitorController;
 
   @MockBean
@@ -75,6 +73,9 @@ public class TestMonitorControllerTest {
 
   @MockBean
   TestMonitorAndEventTaskService testMonitorAndEventTaskService;
+
+  @MockBean
+  ServicesProperties servicesProperties;
 
   @Test
   public void testCreateTestMonitorAndEventTask_Success() throws Exception {
@@ -113,5 +114,23 @@ public class TestMonitorControllerTest {
             .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
             .characterEncoding("utf-8"))
         .andExpect(status().isOk());
+  }
+
+
+  @Test
+  public void testCreateTestMonitorAndEventTask_Failure() throws Exception {
+    String tenantId = RandomStringUtils.randomAlphabetic(8);
+    TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = podamFactory
+        .manufacturePojo(TestMonitorAndEventTaskRequest.class);
+
+    when(testMonitorAndEventTaskService.getTestMonitorAndEventTask(anyString(), any()))
+        .thenThrow(new IllegalArgumentException("Unable to find matching metric name"));
+
+    mockMvc.perform(
+        MockMvcRequestBuilders.post("/v1.0/api/tenant/{tenantId}/test-monitor-event-task", tenantId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
+            .characterEncoding("utf-8"))
+        .andExpect(status().isBadRequest());
   }
 }
