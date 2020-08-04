@@ -167,4 +167,22 @@ public class TestMonitorControllerTest {
 
     verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
   }
+
+
+  @Test
+  public void testCreateTestMonitorAndEventTask_Failure() throws Exception {
+    String tenantId = RandomStringUtils.randomAlphabetic(8);
+    TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = podamFactory
+        .manufacturePojo(TestMonitorAndEventTaskRequest.class);
+
+    when(testMonitorAndEventTaskService.getTestMonitorAndEventTask(anyString(), any()))
+        .thenThrow(new IllegalArgumentException("Unable to find matching metric name"));
+
+    mockMvc.perform(
+        MockMvcRequestBuilders.post("/v1.0/api/tenant/{tenantId}/test-monitor-event-task", tenantId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
+            .characterEncoding("utf-8"))
+        .andExpect(status().isBadRequest());
+  }
 }
