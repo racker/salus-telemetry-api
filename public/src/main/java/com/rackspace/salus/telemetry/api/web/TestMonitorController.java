@@ -63,7 +63,7 @@ public class TestMonitorController {
         .post();
   }
 
-  @ResponseStatus(HttpStatus.FOUND)
+  @ResponseStatus(HttpStatus.OK)
   @PostMapping("/tenant/{tenantId}/test-monitor-event-task")
   public TestMonitorAndEventTaskResponse createTestMonitorAndEventTask(
       @PathVariable String tenantId,
