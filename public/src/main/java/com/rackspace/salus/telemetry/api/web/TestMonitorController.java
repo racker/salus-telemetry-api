@@ -65,7 +65,7 @@ public class TestMonitorController {
 
   @ResponseStatus(HttpStatus.OK)
   @PostMapping("/tenant/{tenantId}/test-monitor-event-task")
-  public TestMonitorAndEventTaskResponse createTestMonitorAndEventTask(
+  public TestMonitorAndEventTaskResponse performTestMonitorAndEventTask(
       @PathVariable String tenantId,
       @RequestBody TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
     return testMonitorAndEventTaskService
