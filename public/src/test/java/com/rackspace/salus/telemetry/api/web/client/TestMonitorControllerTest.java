@@ -16,77 +16,102 @@
 
 package com.rackspace.salus.telemetry.api.web.client;
 
-import static org.hamcrest.CoreMatchers.is;
+import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.rackspace.salus.telemetry.web.TenantVerification;
-import java.util.Optional;
-import java.util.UUID;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rackspace.salus.event.manage.model.TestTaskResult;
+import com.rackspace.salus.event.manage.model.TestTaskResult.EventResult;
+import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.EventData;
+import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.SeriesItem;
+import com.rackspace.salus.event.manage.model.kapacitor.Task.Stats;
+import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
+import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
+import com.rackspace.salus.telemetry.api.web.TestMonitorController;
+import com.rackspace.salus.telemetry.api.web.TraceResponseFilter;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.co.jemos.podam.api.PodamFactory;
+import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 @RunWith(SpringRunner.class)
-@RestClientTest
+@WebMvcTest(controllers = TestMonitorController.class)
 public class TestMonitorControllerTest {
+
   @Autowired
   MockMvc mockMvc;
+
+  @Autowired
+  ObjectMapper objectMapper;
+
+  private PodamFactory podamFactory = new PodamFactoryImpl();
+
+//  @MockBean
+//  TenantWebSecurityConfig tenantWebSecurityConfig;
+
+  @MockBean
+  TestMonitorController testMonitorController;
+
+  @MockBean
+  TraceResponseFilter traceResponseFilter;
+
+  @MockBean
+  ApiPublicProperties apiPublicProperties;
+
+  @MockBean
+  TestMonitorAndEventTaskService testMonitorAndEventTaskService;
 
   @Test
   public void testCreateTestMonitorAndEventTask_Success() throws Exception {
     String tenantId = RandomStringUtils.randomAlphabetic(8);
-    UUID id = UUID.randomUUID();
-    String url = String.format("/api/tenant/%s/monitors/%s", tenantId, id);
-    String errorMsg = String.format("No monitor found for %s on tenant %s", id, tenantId);
+    TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
+        .readValue(readContent("testCreateTestMonitorAndEventTask_req.json"),
+            TestMonitorAndEventTaskRequest.class);
 
-    when(monitorManagement.getMonitor(anyString(), any()))
-        .thenReturn(Optional.empty());
-    when(tenantMetadataRepository.existsByTenantId(tenantId))
-        .thenReturn(true);
+    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = podamFactory
+        .manufacturePojo(TestMonitorAndEventTaskResponse.class);
 
-    mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)
-        // header must be set to trigger tenant verification
-        .header(TenantVerification.HEADER_TENANT, tenantId))
-        .andExpect(status().isNotFound())
-        .andExpect(content()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.message", is(errorMsg)));
+    final TestTaskResult testTaskResultExpected = new TestTaskResult()
+        .setEvents(List.of(
+            new EventResult()
+                .setData(
+                    new EventData()
+                        .setSeries(List.of(
+                            new SeriesItem()
+                                .setName(testMonitorAndEventTaskRequest.getTask().getMeasurement())
+                        ))
+                )
+                .setLevel("CRITICAL")
+        ))
+        .setStats(
+            new Stats()
+                .setNodeStats(Map.of("alert2", Map.of("crits_triggered", 1)))
+        );
+    testMonitorAndEventTaskResponse.setTask(testTaskResultExpected);
 
-    verify(tenantMetadataRepository).existsByTenantId(tenantId);
-  }
+    when(testMonitorAndEventTaskService.getTestMonitorAndEventTask(anyString(), any()))
+        .thenReturn(testMonitorAndEventTaskResponse);
 
-  @Test
-  public void testCreateTestMonitorAndEventTask_Failure() throws Exception {
-    String tenantId = RandomStringUtils.randomAlphabetic(8);
-    UUID id = UUID.randomUUID();
-    String url = String.format("/api/tenant/%s/monitors/%s", tenantId, id);
-    String errorMsg = String.format("No monitor found for %s on tenant %s", id, tenantId);
-
-    when(monitorManagement.getMonitor(anyString(), any()))
-        .thenReturn(Optional.empty());
-    when(tenantMetadataRepository.existsByTenantId(tenantId))
-        .thenReturn(true);
-
-    mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)
-        // header must be set to trigger tenant verification
-        .header(TenantVerification.HEADER_TENANT, tenantId))
-        .andExpect(status().isNotFound())
-        .andExpect(content()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.message", is(errorMsg)));
-
-    verify(tenantMetadataRepository).existsByTenantId(tenantId);
+    mockMvc.perform(
+        MockMvcRequestBuilders.post("/v1.0/api/tenant/{tenantId}/test-monitor-event-task", tenantId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
+            .characterEncoding("utf-8"))
+        .andExpect(status().isOk());
   }
 }

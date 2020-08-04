@@ -26,7 +26,12 @@ import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -36,15 +41,16 @@ public class TestMonitorController {
   private final TestMonitorAndEventTaskService testMonitorAndEventTaskService;
 
   @Autowired
-  public TestMonitorController(ServicesProperties servicesProperties, TestMonitorAndEventTaskService testMonitorAndEventTaskService) {
+  public TestMonitorController(ServicesProperties servicesProperties,
+      TestMonitorAndEventTaskService testMonitorAndEventTaskService) {
     this.testMonitorAndEventTaskService = testMonitorAndEventTaskService;
     this.servicesProperties = servicesProperties;
   }
 
   @PostMapping("/tenant/{tenantId}/test-monitor")
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
-                                  @PathVariable String tenantId,
-                                  @RequestHeader HttpHeaders headers) {
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/test-monitor")
@@ -57,13 +63,13 @@ public class TestMonitorController {
         .post();
   }
 
+  @ResponseStatus(HttpStatus.FOUND)
   @PostMapping("/tenant/{tenantId}/test-monitor-event-task")
-  public ResponseEntity<?> createTestMonitorAndEventTask(@PathVariable String tenantId,
-                                                         @RequestBody TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
-    return new ResponseEntity<TestMonitorAndEventTaskResponse>(
-            testMonitorAndEventTaskService
-                .getTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest),
-            HttpStatus.FOUND);
+  public TestMonitorAndEventTaskResponse createTestMonitorAndEventTask(
+      @PathVariable String tenantId,
+      @RequestBody TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
+    return testMonitorAndEventTaskService
+        .getTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
   }
 
 }
