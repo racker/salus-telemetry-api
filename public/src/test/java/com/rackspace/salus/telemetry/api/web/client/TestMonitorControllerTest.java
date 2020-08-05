@@ -143,7 +143,7 @@ public class TestMonitorControllerTest {
             readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_res.json"),
             true));
 
-    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(anyString(), any());
+    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
   }
 
 
@@ -165,6 +165,6 @@ public class TestMonitorControllerTest {
             .characterEncoding("utf-8"))
         .andExpect(status().isBadRequest());
 
-    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(anyString(), any());
+    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
   }
 }
