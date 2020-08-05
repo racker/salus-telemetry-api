@@ -17,9 +17,7 @@
 package com.rackspace.salus.telemetry.api.model;
 
 import com.rackspace.salus.event.manage.model.CreateTask;
-import com.rackspace.salus.event.manage.model.TestTaskRequest;
 import com.rackspace.salus.monitor_management.web.model.MonitorDetails;
-import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

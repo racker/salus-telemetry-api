@@ -18,11 +18,14 @@ package com.rackspace.salus.telemetry.api.model;
 
 import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
-import lombok.*;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class TestMonitorAndEventTaskResponse {
     private TestMonitorOutput monitor;
     private TestTaskResult task;
+    List<String> errors;
 }

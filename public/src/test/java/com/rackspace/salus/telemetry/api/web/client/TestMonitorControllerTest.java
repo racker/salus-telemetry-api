@@ -20,6 +20,7 @@ import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,13 +29,14 @@ import com.rackspace.salus.event.manage.model.TestTaskResult.EventResult;
 import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.EventData;
 import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.SeriesItem;
 import com.rackspace.salus.event.manage.model.kapacitor.Task.Stats;
+import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
 import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
 import com.rackspace.salus.telemetry.api.web.TestMonitorController;
-import com.rackspace.salus.telemetry.api.web.TraceResponseFilter;
+import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -44,12 +46,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+@ActiveProfiles({"unsecured"})
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = TestMonitorController.class)
 public class TestMonitorControllerTest {
@@ -66,7 +70,7 @@ public class TestMonitorControllerTest {
   TestMonitorController testMonitorController;
 
   @MockBean
-  TraceResponseFilter traceResponseFilter;
+  brave.Tracer tracer;
 
   @MockBean
   ApiPublicProperties apiPublicProperties;
@@ -78,14 +82,11 @@ public class TestMonitorControllerTest {
   ServicesProperties servicesProperties;
 
   @Test
-  public void testCreateTestMonitorAndEventTask_Success() throws Exception {
+  public void testPerformTestMonitorAndEventTask_Success() throws Exception {
     String tenantId = RandomStringUtils.randomAlphabetic(8);
     TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
-        .readValue(readContent("testCreateTestMonitorAndEventTask_req.json"),
+        .readValue(readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
             TestMonitorAndEventTaskRequest.class);
-
-    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = podamFactory
-        .manufacturePojo(TestMonitorAndEventTaskResponse.class);
 
     final TestTaskResult testTaskResultExpected = new TestTaskResult()
         .setEvents(List.of(
@@ -95,39 +96,63 @@ public class TestMonitorControllerTest {
                         .setSeries(List.of(
                             new SeriesItem()
                                 .setName(testMonitorAndEventTaskRequest.getTask().getMeasurement())
+                                .setColumns(
+                                    List.of("time", "active", "available", "available_percent"))
+                                .setValues(List.of(List.of("2020-08-04T18:47:04.9975142Z",
+                                    Double.valueOf("5743112192"), Double.valueOf("5755633664"),
+                                    Double.valueOf("33.502197265625")
+                                    ))
+                                )
                         ))
                 )
-                .setLevel("CRITICAL")
+                .setLevel("INFO")
         ))
         .setStats(
             new Stats()
                 .setNodeStats(Map.of("alert2", Map.of("crits_triggered", 1)))
+                .setTaskStats(Map.of("throughput", 0))
         );
-    testMonitorAndEventTaskResponse.setTask(testTaskResultExpected);
 
-    when(testMonitorAndEventTaskService.getTestMonitorAndEventTask(anyString(), any()))
+    TestMonitorOutput testMonitorOutput = new TestMonitorOutput()
+        .setErrors(List.of())
+        .setMetrics(List.of(
+            new SimpleNameTagValueMetric()
+                .setTags(Map.of())
+                .setName(testMonitorAndEventTaskRequest.getTask().getMeasurement())
+                .setFvalues(Map.of("available_percent", 33.502197265625))
+                .setIvalues(Map.of())
+                .setSvalues(Map.of())
+        ));
+
+    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(
+        testMonitorOutput, testTaskResultExpected, List.of());
+
+    when(testMonitorAndEventTaskService.performTestMonitorAndEventTask(anyString(), any()))
         .thenReturn(testMonitorAndEventTaskResponse);
 
     mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1.0/api/tenant/{tenantId}/test-monitor-event-task", tenantId)
+        MockMvcRequestBuilders.post("/tenant/{tenantId}/test-monitor-event-task", tenantId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
             .characterEncoding("utf-8"))
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(content().json(
+            readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_res.json"), true));
   }
 
 
   @Test
-  public void testCreateTestMonitorAndEventTask_Failure() throws Exception {
+  public void testPerformTestMonitorAndEventTask_Failure() throws Exception {
     String tenantId = RandomStringUtils.randomAlphabetic(8);
-    TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = podamFactory
-        .manufacturePojo(TestMonitorAndEventTaskRequest.class);
+    TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
+        .readValue(readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
+            TestMonitorAndEventTaskRequest.class);
 
-    when(testMonitorAndEventTaskService.getTestMonitorAndEventTask(anyString(), any()))
+    when(testMonitorAndEventTaskService.performTestMonitorAndEventTask(anyString(), any()))
         .thenThrow(new IllegalArgumentException("Unable to find matching metric name"));
 
     mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1.0/api/tenant/{tenantId}/test-monitor-event-task", tenantId)
+        MockMvcRequestBuilders.post("/tenant/{tenantId}/test-monitor-event-task", tenantId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
             .characterEncoding("utf-8"))

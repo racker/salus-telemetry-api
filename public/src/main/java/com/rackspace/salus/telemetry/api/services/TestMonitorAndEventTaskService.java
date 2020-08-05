@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.services;
 
+import com.rackspace.salus.common.web.RemoteServiceCallException;
 import com.rackspace.salus.event.manage.model.TestTaskRequest;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.manage.web.client.EventTaskApi;
@@ -45,25 +46,33 @@ public class TestMonitorAndEventTaskService {
     this.eventTaskApi = eventTaskApi;
   }
 
-  public TestMonitorAndEventTaskResponse getTestMonitorAndEventTask(String tenantId,
+  public TestMonitorAndEventTaskResponse performTestMonitorAndEventTask(String tenantId,
       TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
-    TestMonitorOutput testMonitorOutput = monitorApi
-        .performTestMonitor(tenantId, new TestMonitorInput()
-            .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
-            .setDetails(testMonitorAndEventTaskRequest.getDetails()));
+    try {
+      TestMonitorOutput testMonitorOutput = monitorApi
+          .performTestMonitor(tenantId, new TestMonitorInput()
+              .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
+              .setDetails(testMonitorAndEventTaskRequest.getDetails()));
 
-    List<SimpleNameTagValueMetric> metrics = testMonitorOutput.getMetrics().stream()
-        .filter(e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
-        .collect(Collectors.toList());
-    if (!CollectionUtils.isEmpty(metrics)) {
+      List<SimpleNameTagValueMetric> metrics = testMonitorOutput.getMetrics().stream()
+          .filter(
+              e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
+          .collect(Collectors.toList());
+      if (CollectionUtils.isEmpty(metrics)) {
+        return new TestMonitorAndEventTaskResponse(testMonitorOutput, null,
+            List.of("Unable to find matching metric name"));
+      }
       TestTaskRequest testTaskRequest = new TestTaskRequest()
           .setTask(testMonitorAndEventTaskRequest.getTask())
           .setMetrics(metrics);
       TestTaskResult testTaskResult = eventTaskApi
           .performTestTask(tenantId, testTaskRequest);
 
-      return new TestMonitorAndEventTaskResponse(testMonitorOutput, testTaskResult);
+      return new TestMonitorAndEventTaskResponse(testMonitorOutput, testTaskResult, null);
+    } catch (RemoteServiceCallException e) {
+      return new TestMonitorAndEventTaskResponse(null, null, List.of(String
+          .format("An unexpected internal error occurred: %s", e.getMessage())));
     }
-    throw new IllegalArgumentException("Unable to find matching metric name");
+
   }
 }

@@ -18,10 +18,11 @@ package com.rackspace.salus.telemetry.api.web.services;
 
 import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
@@ -39,6 +40,7 @@ import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,11 +69,11 @@ public class TestMonitorAndEventTaskServiceTest {
   EventTaskApi eventTaskApi;
 
   @Test
-  public void testGetTestMonitorAndEventTask() throws Exception {
+  public void testPerformTestMonitorAndEventTask() throws Exception {
     TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
-        .readValue(readContent("testCreateTestMonitorAndEventTask_req.json"),
+        .readValue(readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
             TestMonitorAndEventTaskRequest.class);
-    String tenantId = "aaaaaa";
+    String tenantId = RandomStringUtils.randomAlphabetic(8);
 
     TestMonitorOutput testMonitorOutput = new TestMonitorOutput()
         .setMetrics(List.of(
@@ -84,7 +86,7 @@ public class TestMonitorAndEventTaskServiceTest {
         .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
         .setDetails(testMonitorAndEventTaskRequest.getDetails());
 
-    doReturn(testMonitorOutput).when(monitorApi).performTestMonitor(tenantId, testMonitorInput);
+    when(monitorApi.performTestMonitor(tenantId, testMonitorInput)).thenReturn(testMonitorOutput);
 
     TestTaskResult testTaskResult = new TestTaskResult()
         .setEvents(List.of(
@@ -103,11 +105,16 @@ public class TestMonitorAndEventTaskServiceTest {
                 .setNodeStats(Map.of("alert2", Map.of("crits_triggered", 1)))
         );
 
-    doReturn(testTaskResult).when(eventTaskApi).performTestTask(anyString(), any());
+    when(eventTaskApi.performTestTask(anyString(), any())).thenReturn(testTaskResult);
+
+    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(testMonitorOutput, testTaskResult, null);
+
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponseActual = testMonitorAndEventTaskService
-        .getTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
+        .performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
 
     assertThat(testMonitorAndEventTaskResponseActual.getMonitor(), notNullValue());
+    assertThat(testMonitorAndEventTaskResponseActual.getTask(), notNullValue());
+    assertEquals(testMonitorAndEventTaskResponse, testMonitorAndEventTaskResponseActual);
   }
 }
