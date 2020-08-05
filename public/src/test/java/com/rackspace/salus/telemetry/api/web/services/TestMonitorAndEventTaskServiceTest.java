@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rackspace.salus.event.manage.model.TestTaskRequest;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.manage.model.TestTaskResult.EventResult;
 import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.EventData;
@@ -108,18 +109,26 @@ public class TestMonitorAndEventTaskServiceTest {
                 .setNodeStats(Map.of("alert2", Map.of("crits_triggered", 1)))
         );
 
-    when(eventTaskApi.performTestTask(anyString(), any())).thenReturn(testTaskResult);
+    TestTaskRequest testTaskRequest = new TestTaskRequest()
+        .setTask(testMonitorAndEventTaskRequest.getTask())
+        .setMetrics(List.of(
+            new SimpleNameTagValueMetric().setName("mem").setFvalues(Map.of("available_percent", 30.973100662231445))));
+
+    when(eventTaskApi.performTestTask(tenantId, testTaskRequest)).thenReturn(testTaskResult);
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(
         new TestMonitorAndEventTask(testMonitorOutput, testTaskResult), null);
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponseActual = testMonitorAndEventTaskService
         .performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
 
+    System.out.println(objectMapper.writeValueAsString(testMonitorAndEventTaskResponseActual));
+
     assertThat(testMonitorAndEventTaskResponseActual.getData().getMonitor(), notNullValue());
+
     assertThat(testMonitorAndEventTaskResponseActual.getData().getTask(), notNullValue());
     assertEquals(testMonitorAndEventTaskResponse, testMonitorAndEventTaskResponseActual);
 
-    verify(monitorApi).performTestMonitor(tenantId,testMonitorInput);
-    verify(eventTaskApi).performTestTask(anyString(), any());
+    verify(monitorApi).performTestMonitor(tenantId, testMonitorInput);
+    verify(eventTaskApi).performTestTask(tenantId, testTaskRequest);
   }
 }
