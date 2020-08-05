@@ -19,6 +19,7 @@ package com.rackspace.salus.telemetry.api.web.client;
 import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -141,6 +142,8 @@ public class TestMonitorControllerTest {
         .andExpect(content().json(
             readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_res.json"),
             true));
+
+    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(anyString(), any());
   }
 
 
@@ -161,5 +164,7 @@ public class TestMonitorControllerTest {
             .content(objectMapper.writeValueAsString(testMonitorAndEventTaskRequest))
             .characterEncoding("utf-8"))
         .andExpect(status().isBadRequest());
+
+    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(anyString(), any());
   }
 }

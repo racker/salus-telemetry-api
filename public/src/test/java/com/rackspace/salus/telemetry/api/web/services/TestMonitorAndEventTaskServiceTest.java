@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -108,7 +109,6 @@ public class TestMonitorAndEventTaskServiceTest {
         );
 
     when(eventTaskApi.performTestTask(anyString(), any())).thenReturn(testTaskResult);
-
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(
         new TestMonitorAndEventTask(testMonitorOutput, testTaskResult), null);
 
@@ -118,5 +118,8 @@ public class TestMonitorAndEventTaskServiceTest {
     assertThat(testMonitorAndEventTaskResponseActual.getData().getMonitor(), notNullValue());
     assertThat(testMonitorAndEventTaskResponseActual.getData().getTask(), notNullValue());
     assertEquals(testMonitorAndEventTaskResponse, testMonitorAndEventTaskResponseActual);
+
+    verify(monitorApi).performTestMonitor(tenantId,testMonitorInput);
+    verify(eventTaskApi).performTestTask(anyString(), any());
   }
 }
