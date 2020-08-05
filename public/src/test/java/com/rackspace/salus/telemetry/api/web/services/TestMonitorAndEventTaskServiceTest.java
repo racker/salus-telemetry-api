@@ -119,8 +119,6 @@ public class TestMonitorAndEventTaskServiceTest {
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponseActual = testMonitorAndEventTaskService
         .performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
 
-    System.out.println(objectMapper.writeValueAsString(testMonitorAndEventTaskResponseActual));
-
     assertThat(testMonitorAndEventTaskResponseActual.getData().getMonitor(), notNullValue());
 
     assertThat(testMonitorAndEventTaskResponseActual.getData().getTask(), notNullValue());
