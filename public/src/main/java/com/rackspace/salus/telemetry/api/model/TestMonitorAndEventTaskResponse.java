@@ -25,7 +25,15 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class TestMonitorAndEventTaskResponse {
+
+  private TestMonitorAndEventTask data;
+  private List<String> errors;
+
+  @Data
+  @AllArgsConstructor
+  public static class TestMonitorAndEventTask {
+
     private TestMonitorOutput monitor;
     private TestTaskResult task;
-    List<String> errors;
+  }
 }

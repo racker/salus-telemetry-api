@@ -25,6 +25,7 @@ import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +60,8 @@ public class TestMonitorAndEventTaskService {
               e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
           .collect(Collectors.toList());
       if (CollectionUtils.isEmpty(metrics)) {
-        return new TestMonitorAndEventTaskResponse(testMonitorOutput, null,
+        return new TestMonitorAndEventTaskResponse(
+            new TestMonitorAndEventTask(testMonitorOutput, null),
             List.of("Unable to find matching metric name"));
       }
       TestTaskRequest testTaskRequest = new TestTaskRequest()
@@ -68,9 +70,11 @@ public class TestMonitorAndEventTaskService {
       TestTaskResult testTaskResult = eventTaskApi
           .performTestTask(tenantId, testTaskRequest);
 
-      return new TestMonitorAndEventTaskResponse(testMonitorOutput, testTaskResult, null);
+      return new TestMonitorAndEventTaskResponse(
+          new TestMonitorAndEventTask(testMonitorOutput, testTaskResult), null);
     } catch (RemoteServiceCallException e) {
-      return new TestMonitorAndEventTaskResponse(null, null, List.of(String
+      return new TestMonitorAndEventTaskResponse(
+          new TestMonitorAndEventTask(null, null), List.of(String
           .format("An unexpected internal error occurred: %s", e.getMessage())));
     }
 

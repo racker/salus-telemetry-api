@@ -36,6 +36,7 @@ import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
 import java.util.List;
@@ -71,7 +72,8 @@ public class TestMonitorAndEventTaskServiceTest {
   @Test
   public void testPerformTestMonitorAndEventTask() throws Exception {
     TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
-        .readValue(readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
+        .readValue(
+            readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
             TestMonitorAndEventTaskRequest.class);
     String tenantId = RandomStringUtils.randomAlphabetic(8);
 
@@ -107,14 +109,14 @@ public class TestMonitorAndEventTaskServiceTest {
 
     when(eventTaskApi.performTestTask(anyString(), any())).thenReturn(testTaskResult);
 
-    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(testMonitorOutput, testTaskResult, null);
-
+    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(
+        new TestMonitorAndEventTask(testMonitorOutput, testTaskResult), null);
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponseActual = testMonitorAndEventTaskService
         .performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
 
-    assertThat(testMonitorAndEventTaskResponseActual.getMonitor(), notNullValue());
-    assertThat(testMonitorAndEventTaskResponseActual.getTask(), notNullValue());
+    assertThat(testMonitorAndEventTaskResponseActual.getData().getMonitor(), notNullValue());
+    assertThat(testMonitorAndEventTaskResponseActual.getData().getTask(), notNullValue());
     assertEquals(testMonitorAndEventTaskResponse, testMonitorAndEventTaskResponseActual);
   }
 }

@@ -34,6 +34,7 @@ import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
 import com.rackspace.salus.telemetry.api.web.TestMonitorController;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
@@ -85,7 +86,8 @@ public class TestMonitorControllerTest {
   public void testPerformTestMonitorAndEventTask_Success() throws Exception {
     String tenantId = RandomStringUtils.randomAlphabetic(8);
     TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
-        .readValue(readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
+        .readValue(
+            readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
             TestMonitorAndEventTaskRequest.class);
 
     final TestTaskResult testTaskResultExpected = new TestTaskResult()
@@ -113,7 +115,7 @@ public class TestMonitorControllerTest {
                 .setTaskStats(Map.of("throughput", 0))
         );
 
-    TestMonitorOutput testMonitorOutput = new TestMonitorOutput()
+    TestMonitorOutput testMonitorOutputExpected = new TestMonitorOutput()
         .setErrors(List.of())
         .setMetrics(List.of(
             new SimpleNameTagValueMetric()
@@ -125,7 +127,7 @@ public class TestMonitorControllerTest {
         ));
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(
-        testMonitorOutput, testTaskResultExpected, List.of());
+        new TestMonitorAndEventTask(testMonitorOutputExpected, testTaskResultExpected), List.of());
 
     when(testMonitorAndEventTaskService.performTestMonitorAndEventTask(anyString(), any()))
         .thenReturn(testMonitorAndEventTaskResponse);
@@ -137,7 +139,8 @@ public class TestMonitorControllerTest {
             .characterEncoding("utf-8"))
         .andExpect(status().isOk())
         .andExpect(content().json(
-            readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_res.json"), true));
+            readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_res.json"),
+            true));
   }
 
 
@@ -145,7 +148,8 @@ public class TestMonitorControllerTest {
   public void testPerformTestMonitorAndEventTask_Failure() throws Exception {
     String tenantId = RandomStringUtils.randomAlphabetic(8);
     TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest = objectMapper
-        .readValue(readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
+        .readValue(
+            readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_req.json"),
             TestMonitorAndEventTaskRequest.class);
 
     when(testMonitorAndEventTaskService.performTestMonitorAndEventTask(anyString(), any()))
