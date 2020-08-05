@@ -20,6 +20,7 @@ package com.rackspace.salus.telemetry.api.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -39,6 +40,6 @@ public class ApiPublicProperties {
   @NotEmpty
   List<String> roles = new ArrayList<>();
 
-  @NotEmpty
+  @NotBlank
   String version = "1.0";
 }
