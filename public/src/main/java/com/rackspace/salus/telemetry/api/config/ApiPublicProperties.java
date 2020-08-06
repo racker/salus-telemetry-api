@@ -20,20 +20,26 @@ package com.rackspace.salus.telemetry.api.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties("salus.api.public")
 @Component
 @Data
+@Validated
 public class ApiPublicProperties {
 
   /**
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
    * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
+  @NotEmpty
   List<String> roles = new ArrayList<>();
 
+  @NotBlank
   String version = "1.0";
 }

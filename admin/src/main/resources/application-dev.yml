@@ -3,6 +3,10 @@ server:
 logging:
   level:
     com.rackspace.salus: debug
+salus:
+  api:
+    admin:
+      roles: ["MONITORING_SERVICE_ADMIN"]
 salus.services:
     monitor-management-url: http://localhost:8089
     resource-management-url: http://localhost:8085
