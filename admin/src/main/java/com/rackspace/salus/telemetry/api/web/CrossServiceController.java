@@ -53,6 +53,7 @@ public class CrossServiceController {
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
       @PathVariable String tenantId) {
+    queryParams.add("sendEvents", "false");
 
     // delete agent installs
     final String agentCatalogManagementURI = UriComponentsBuilder
