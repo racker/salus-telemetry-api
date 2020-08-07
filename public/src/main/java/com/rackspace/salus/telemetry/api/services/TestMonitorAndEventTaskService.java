@@ -22,7 +22,7 @@ import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.manage.web.client.EventTaskApi;
 import com.rackspace.salus.monitor_management.web.client.MonitorApi;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
-import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
+import com.rackspace.salus.monitor_management.web.model.TestMonitorResult;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
@@ -50,18 +50,18 @@ public class TestMonitorAndEventTaskService {
   public TestMonitorAndEventTaskResponse performTestMonitorAndEventTask(String tenantId,
       TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
     try {
-      TestMonitorOutput testMonitorOutput = monitorApi
+      TestMonitorResult testMonitorResult = monitorApi
           .performTestMonitor(tenantId, new TestMonitorInput()
               .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
               .setDetails(testMonitorAndEventTaskRequest.getDetails()));
 
-      List<SimpleNameTagValueMetric> metrics = testMonitorOutput.getMetrics().stream()
+      List<SimpleNameTagValueMetric> metrics = testMonitorResult.getData().getMetrics().stream()
           .filter(
               e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
           .collect(Collectors.toList());
       if (CollectionUtils.isEmpty(metrics)) {
         return new TestMonitorAndEventTaskResponse(
-            new TestMonitorAndEventTask(testMonitorOutput, null),
+            new TestMonitorAndEventTask(testMonitorResult, null),
             List.of("Unable to find matching metric name"));
       }
       TestTaskRequest testTaskRequest = new TestTaskRequest()
@@ -71,7 +71,7 @@ public class TestMonitorAndEventTaskService {
           .performTestTask(tenantId, testTaskRequest);
 
       return new TestMonitorAndEventTaskResponse(
-          new TestMonitorAndEventTask(testMonitorOutput, testTaskResult), null);
+          new TestMonitorAndEventTask(testMonitorResult, testTaskResult), null);
     } catch (RemoteServiceCallException e) {
       return new TestMonitorAndEventTaskResponse(
           new TestMonitorAndEventTask(null, null), List.of(String

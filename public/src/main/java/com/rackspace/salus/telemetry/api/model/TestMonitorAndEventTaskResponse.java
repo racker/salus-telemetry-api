@@ -17,7 +17,7 @@
 package com.rackspace.salus.telemetry.api.model;
 
 import com.rackspace.salus.event.manage.model.TestTaskResult;
-import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
+import com.rackspace.salus.monitor_management.web.model.TestMonitorResult;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class TestMonitorAndEventTaskResponse {
   @AllArgsConstructor
   public static class TestMonitorAndEventTask {
 
-    private TestMonitorOutput monitor;
+    private TestMonitorResult monitor;
     private TestTaskResult task;
   }
 }
