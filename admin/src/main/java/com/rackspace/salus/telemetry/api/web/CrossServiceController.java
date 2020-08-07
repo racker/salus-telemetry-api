@@ -19,6 +19,9 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -46,7 +49,7 @@ public class CrossServiceController {
   }
 
   @DeleteMapping("/{tenantId}")
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+  public ResponseEntity<?> deleteAll(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
       @PathVariable String tenantId) {
@@ -138,10 +141,46 @@ public class CrossServiceController {
     if(zone.getStatusCode().isError() || tenantMetadata.getStatusCode().isError() || monitor.getStatusCode().isError()
       ||  resource.getStatusCode().isError() || eventResponse.getStatusCode().isError()
       || envoyTokens.getStatusCode().isError() || agentInstalls.getStatusCode().isError()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST_400).headers(headers).body(zone.getBody());
+
+      LinkedHashMap responseBody = new LinkedHashMap();
+      List bodies = new LinkedList();
+
+      if(zone.getBody() != null) {
+        bodies.add(zone.getBody());
+      }
+
+      if(tenantMetadata.getBody() != null) {
+        bodies.add(tenantMetadata.getBody());
+      }
+
+      if(monitor.getBody() != null) {
+        bodies.add(monitor.getBody());
+      }
+
+      if(resource.getBody() != null) {
+        bodies.add(resource.getBody());
+      }
+
+      if(eventResponse.getBody() != null) {
+        bodies.add(eventResponse.getBody());
+      }
+
+      if(envoyTokens.getBody() != null) {
+        bodies.add(envoyTokens.getBody());
+      }
+
+      if(agentInstalls.getBody() != null) {
+        bodies.add(agentInstalls.getBody());
+      }
+      responseBody.put("messages", bodies);
+
+      return ResponseEntity.status(HttpStatus.CONFLICT_409).headers(headers).body(responseBody);
     }
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT_204).headers(headers).build();
   }
+
+
+
 
 }
