@@ -136,6 +136,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.rackspace.salus</groupId>
+            <artifactId>salus-event-engine-common</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
       <dependency>
         <groupId>uk.co.jemos.podam</groupId>
         <artifactId>podam</artifactId>
