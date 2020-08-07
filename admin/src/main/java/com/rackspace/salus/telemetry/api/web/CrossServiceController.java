@@ -19,7 +19,6 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import java.net.URI;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -52,81 +51,65 @@ public class CrossServiceController {
       @RequestParam MultiValueMap<String,String> queryParams,
       @PathVariable String tenantId) {
 
-
-
-
-
     // delete agent installs
     final String agentCatalogManagementURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
-        .path("/admin/tenant/{tenantId}/zones")
+        .path("/api/admin/tenant/{tenantId}/agent-installs")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> agentInstalls = proxy.uri(agentCatalogManagementURI).get();
+    ResponseEntity<?> agentInstalls = proxy.uri(agentCatalogManagementURI).delete();
 
     // delete envoy tokens
     final String authURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
-        .path("/admin/tenant/{tenantId}/envoy-tokens")
+        .path("/api/admin/tenant/{tenantId}/envoy-tokens")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> envoyTokens = proxy.uri(authURI).get();
+    ResponseEntity<?> envoyTokens = proxy.uri(authURI).delete();
 
     // delete event engine tasks
     final String eventEngineURI = UriComponentsBuilder
-        .fromUriString(servicesProperties.getEventEngineUrl())
-        .path("/admin/tenant/{tenantId}/monitors")
+        .fromUriString(servicesProperties.getEventManagementUrl())
+        .path("/api/admin/tenant/{tenantId}/tasks")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> eventResponse = proxy.uri(eventEngineURI).get();
+    ResponseEntity<?> eventResponse = proxy.uri(eventEngineURI).delete();
 
     // Delete from resources first
     final String resourcesURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
-        .path("/admin/tenant/{tenantId}/resources")
+        .path("/api/admin/tenant/{tenantId}/resources")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> resource = proxy.uri(resourcesURI).get();
-
-    // Delete policies
-    final String policyURI = UriComponentsBuilder
-        .fromUriString(servicesProperties.getPolicyManagementUrl())
-        .path("/admin/tenant/{tenantId}/monitors")
-        .queryParams(queryParams)
-        .buildAndExpand(tenantId)
-        .toUriString();
-
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    ResponseEntity<?> policies = proxy.uri(policyURI).get();
+    ResponseEntity<?> resource = proxy.uri(resourcesURI).delete();
 
     // Delete monitors
     final String monitorsURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/admin/tenant/{tenantId}/monitors")
+        .path("/api/admin/tenant/{tenantId}/monitors")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> monitor = proxy.uri(monitorsURI).get();
+    ResponseEntity<?> monitor = proxy.uri(monitorsURI).delete();
 
     // delete tenant metadata -- I think this already exists
     final String tenantMetadataURI = UriComponentsBuilder
@@ -138,27 +121,27 @@ public class CrossServiceController {
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> tenantMetadata = proxy.uri(tenantMetadataURI).get();
+    ResponseEntity<?> tenantMetadata = proxy.uri(tenantMetadataURI).delete();
 
     // delete zones
     final String zonesURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/admin/tenant/{tenantId}/zones")
+        .path("/api/admin/tenant/{tenantId}/zones")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    ResponseEntity<?> zone = proxy.uri(zonesURI).get();
-    URI location = URI.create(zonesURI);
+    ResponseEntity<?> zone = proxy.uri(zonesURI).delete();
+
     if(zone.getStatusCode().isError() || tenantMetadata.getStatusCode().isError() || monitor.getStatusCode().isError()
-      || policies.getStatusCode().isError() || resource.getStatusCode().isError() || eventResponse.getStatusCode().isError()
+      ||  resource.getStatusCode().isError() || eventResponse.getStatusCode().isError()
       || envoyTokens.getStatusCode().isError() || agentInstalls.getStatusCode().isError()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST_400).headers(headers).body(zone.getBody());
     }
 
-    return null;
+    return ResponseEntity.status(HttpStatus.NO_CONTENT_204).headers(headers).build();
   }
 
 }
