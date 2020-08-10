@@ -54,6 +54,7 @@ public class CrossServiceController {
       @RequestParam MultiValueMap<String,String> queryParams,
       @PathVariable String tenantId) {
     queryParams.add("sendEvents", "false");
+    List bodies = new LinkedList();
 
     // delete agent installs
     final String agentCatalogManagementURI = UriComponentsBuilder
@@ -66,6 +67,9 @@ public class CrossServiceController {
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     ResponseEntity<?> agentInstalls = proxy.uri(agentCatalogManagementURI).delete();
+    if(agentInstalls.getStatusCode().isError()) {
+      bodies.add(agentInstalls.getBody());
+    }
 
     // delete envoy tokens
     final String authURI = UriComponentsBuilder
@@ -79,6 +83,10 @@ public class CrossServiceController {
 
     ResponseEntity<?> envoyTokens = proxy.uri(authURI).delete();
 
+    if(envoyTokens.getStatusCode().isError()) {
+      bodies.add(envoyTokens.getBody());
+    }
+
     // delete event engine tasks
     final String eventEngineURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
@@ -87,9 +95,11 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
     ResponseEntity<?> eventResponse = proxy.uri(eventEngineURI).delete();
+
+    if(eventResponse.getStatusCode().isError()) {
+      bodies.add(eventResponse.getBody());
+    }
 
     // Delete from resources first
     final String resourcesURI = UriComponentsBuilder
@@ -99,9 +109,11 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
     ResponseEntity<?> resource = proxy.uri(resourcesURI).delete();
+
+    if(resource.getStatusCode().isError()) {
+      bodies.add(resource.getBody());
+    }
 
     // Delete monitors
     final String monitorsURI = UriComponentsBuilder
@@ -111,11 +123,13 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
     ResponseEntity<?> monitor = proxy.uri(monitorsURI).delete();
 
-    // delete tenant metadata -- I think this already exists
+    if(monitor.getStatusCode().isError()) {
+      bodies.add(monitor.getBody());
+    }
+
+    // delete tenant metadata
     final String tenantMetadataURI = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/tenant-metadata/{tenantId}")
@@ -123,9 +137,11 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
     ResponseEntity<?> tenantMetadata = proxy.uri(tenantMetadataURI).delete();
+
+    if(tenantMetadata.getStatusCode().isError()) {
+      bodies.add(tenantMetadata.getBody());
+    }
 
     // delete zones
     final String zonesURI = UriComponentsBuilder
@@ -135,44 +151,15 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
     ResponseEntity<?> zone = proxy.uri(zonesURI).delete();
 
-    if(zone.getStatusCode().isError() || tenantMetadata.getStatusCode().isError() || monitor.getStatusCode().isError()
-      ||  resource.getStatusCode().isError() || eventResponse.getStatusCode().isError()
-      || envoyTokens.getStatusCode().isError() || agentInstalls.getStatusCode().isError()) {
+    if(zone.getStatusCode().isError()) {
+      bodies.add(zone.getBody());
+    }
 
+    if(!bodies.isEmpty()) {
       LinkedHashMap responseBody = new LinkedHashMap();
-      List bodies = new LinkedList();
 
-      if(zone.getBody() != null) {
-        bodies.add(zone.getBody());
-      }
-
-      if(tenantMetadata.getBody() != null) {
-        bodies.add(tenantMetadata.getBody());
-      }
-
-      if(monitor.getBody() != null) {
-        bodies.add(monitor.getBody());
-      }
-
-      if(resource.getBody() != null) {
-        bodies.add(resource.getBody());
-      }
-
-      if(eventResponse.getBody() != null) {
-        bodies.add(eventResponse.getBody());
-      }
-
-      if(envoyTokens.getBody() != null) {
-        bodies.add(envoyTokens.getBody());
-      }
-
-      if(agentInstalls.getBody() != null) {
-        bodies.add(agentInstalls.getBody());
-      }
       responseBody.put("messages", bodies);
 
       return ResponseEntity.status(HttpStatus.CONFLICT_409).headers(headers).body(responseBody);
