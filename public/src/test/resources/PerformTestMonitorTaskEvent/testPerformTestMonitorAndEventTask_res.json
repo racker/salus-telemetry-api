@@ -1,7 +1,6 @@
 {
   "data": {
     "monitor": {
-      "errors": [],
       "metrics": [
         {
           "name": "mem",
@@ -16,7 +15,6 @@
       ]
     },
     "task": {
-      "partialResults": false,
       "events": [
         {
           "level": "INFO",
