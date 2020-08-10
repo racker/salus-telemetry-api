@@ -27,9 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.manage.model.TestTaskResult.EventResult;
-import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.EventData;
-import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.SeriesItem;
-import com.rackspace.salus.event.manage.model.kapacitor.Task.Stats;
+import com.rackspace.salus.event.model.kapacitor.KapacitorEvent.EventData;
+import com.rackspace.salus.event.model.kapacitor.KapacitorEvent.SeriesItem;
+import com.rackspace.salus.event.model.kapacitor.Task.Stats;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
 import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
