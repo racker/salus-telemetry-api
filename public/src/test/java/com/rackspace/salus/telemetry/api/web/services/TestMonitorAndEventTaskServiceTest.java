@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.event.manage.model.TestTaskRequest;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.manage.model.TestTaskResult.EventResult;
-import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.EventData;
-import com.rackspace.salus.event.manage.model.kapacitor.KapacitorEvent.SeriesItem;
-import com.rackspace.salus.event.manage.model.kapacitor.Task.Stats;
+import com.rackspace.salus.event.model.kapacitor.KapacitorEvent.EventData;
+import com.rackspace.salus.event.model.kapacitor.KapacitorEvent.SeriesItem;
+import com.rackspace.salus.event.model.kapacitor.Task.Stats;
 import com.rackspace.salus.event.manage.web.client.EventTaskApi;
 import com.rackspace.salus.monitor_management.web.client.MonitorApi;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
@@ -52,7 +52,9 @@ import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {
+    "salus.api.public.roles: IDENTITY_DEFAULT"
+})
 public class TestMonitorAndEventTaskServiceTest {
 
   private PodamFactory podamFactory = new PodamFactoryImpl();
