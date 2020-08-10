@@ -52,7 +52,8 @@ public class CrossServiceController {
   public ResponseEntity<?> deleteAll(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @PathVariable String tenantId) {
+      @PathVariable String tenantId,
+      @RequestParam(defaultValue = "true") boolean removeTenant) {
     queryParams.add("sendEvents", "false");
     List bodies = new LinkedList();
 
@@ -130,17 +131,19 @@ public class CrossServiceController {
     }
 
     // delete tenant metadata
-    final String tenantMetadataURI = UriComponentsBuilder
-        .fromUriString(servicesProperties.getPolicyManagementUrl())
-        .path("/api/admin/tenant-metadata/{tenantId}")
-        .queryParams(queryParams)
-        .buildAndExpand(tenantId)
-        .toUriString();
+    if(removeTenant) {
+      final String tenantMetadataURI = UriComponentsBuilder
+          .fromUriString(servicesProperties.getPolicyManagementUrl())
+          .path("/api/admin/tenant-metadata/{tenantId}")
+          .queryParams(queryParams)
+          .buildAndExpand(tenantId)
+          .toUriString();
 
-    ResponseEntity<?> tenantMetadata = proxy.uri(tenantMetadataURI).delete();
+      ResponseEntity<?> tenantMetadata = proxy.uri(tenantMetadataURI).delete();
 
-    if(tenantMetadata.getStatusCode().isError()) {
-      bodies.add(tenantMetadata.getBody());
+      if (tenantMetadata.getStatusCode().isError()) {
+        bodies.add(tenantMetadata.getBody());
+      }
     }
 
     // delete zones
