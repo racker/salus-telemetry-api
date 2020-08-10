@@ -16,6 +16,14 @@
 
 package com.rackspace.salus.telemetry.api.web.services;
 
+import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.event.manage.model.TestTaskRequest;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
@@ -31,10 +39,11 @@ import com.rackspace.salus.monitor_management.web.model.TestMonitorResult;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorResult.TestMonitorResultData;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask.TestTaskResultResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,17 +53,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
-
-import java.util.List;
-import java.util.Map;
-
-import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {
@@ -123,11 +121,11 @@ public class TestMonitorAndEventTaskServiceTest {
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse()
         .setData(
-            new TestMonitorAndEventTask()
-                .setMonitor(new TestMonitorAndEventTask.TestMonitorResultData()
+            new ResponseData()
+                .setMonitor(new ResponseData.TestMonitorResultData()
                     .setMetrics(testMonitorResult.getData().getMetrics()))
                 .setTask(
-                    new TestTaskResultResultData().setStats(testTaskResult.getData().getStats())
+                    new ResponseData.TestTaskResultData().setStats(testTaskResult.getData().getStats())
                         .setEvents(testTaskResult.getData().getEvents())));
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponseActual = testMonitorAndEventTaskService
@@ -205,8 +203,8 @@ public class TestMonitorAndEventTaskServiceTest {
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse()
         .setData(
-            new TestMonitorAndEventTask().setMonitor(
-                new TestMonitorAndEventTask.TestMonitorResultData()
+            new ResponseData().setMonitor(
+                new ResponseData.TestMonitorResultData()
                     .setMetrics(testMonitorResult.getData().getMetrics())))
         .setErrors(List.of("Unable to get test event data"));
 

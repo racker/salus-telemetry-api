@@ -25,14 +25,14 @@ import lombok.Data;
 @Data
 public class TestMonitorAndEventTaskResponse {
 
-  private TestMonitorAndEventTask data;
+  private ResponseData data;
   private List<String> errors;
 
   @Data
-  public static class TestMonitorAndEventTask {
+  public static class ResponseData {
 
     private TestMonitorResultData monitor;
-    private TestTaskResultResultData task;
+    private TestTaskResultData task;
 
     @Data
     public static class TestMonitorResultData {
@@ -41,7 +41,7 @@ public class TestMonitorAndEventTaskResponse {
     }
 
     @Data
-    public static class TestTaskResultResultData {
+    public static class TestTaskResultData {
 
       List<EventResult> events;
 

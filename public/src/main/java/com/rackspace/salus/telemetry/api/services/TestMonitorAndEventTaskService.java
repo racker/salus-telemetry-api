@@ -25,9 +25,9 @@ import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorResult;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask.TestMonitorResultData;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask.TestTaskResultResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestMonitorResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestTaskResultData;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,71 +52,73 @@ public class TestMonitorAndEventTaskService {
 
   public TestMonitorAndEventTaskResponse performTestMonitorAndEventTask(String tenantId,
       TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
-    TestMonitorResult testMonitorResult = null;
-    TestTaskResult testTaskResult = null;
+    final TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse();
     try {
-      testMonitorResult = monitorApi
+      TestMonitorResult testMonitorResult = monitorApi
           .performTestMonitor(tenantId, new TestMonitorInput()
               .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
               .setDetails(testMonitorAndEventTaskRequest.getDetails()));
-
-      if (testMonitorResult == null || !CollectionUtils.isEmpty(testMonitorResult.getErrors())
-          || CollectionUtils
-          .isEmpty(testMonitorResult.getData().getMetrics())) {
-        return new TestMonitorAndEventTaskResponse().setErrors(
+      if (testMonitorResult == null) {
+        testMonitorAndEventTaskResponse.setErrors(List.of("Unable to get test-Monitor Metrics"));
+        return testMonitorAndEventTaskResponse;
+      } else if (!CollectionUtils.isEmpty(testMonitorResult.getErrors())
+          || CollectionUtils.isEmpty(testMonitorResult.getData().getMetrics())) {
+        testMonitorAndEventTaskResponse.setErrors(
             CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
                 .of("Unable to get test-Monitor Metrics") : testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
       }
+      testMonitorAndEventTaskResponse.setData(new ResponseData().setMonitor(
+          new TestMonitorResultData().setMetrics(testMonitorResult.getData().getMetrics())));
 
-      List<SimpleNameTagValueMetric> metrics = testMonitorResult.getData().getMetrics().stream()
+      // Validating requested measurement against collected TestMonitorResult metrics measurements
+      List<SimpleNameTagValueMetric> metricsForTask = testMonitorResult.getData().getMetrics()
+          .stream()
           .filter(
               e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
           .collect(Collectors.toList());
-      if (CollectionUtils.isEmpty(metrics)) {
-        return new TestMonitorAndEventTaskResponse()
-            .setData(new TestMonitorAndEventTask().setMonitor(
-                new TestMonitorResultData().setMetrics(testMonitorResult.getData().getMetrics())))
-            .setErrors(List.of("Unable to find matching metric name"));
+      if (CollectionUtils.isEmpty(metricsForTask)) {
+        testMonitorAndEventTaskResponse.setErrors(List.of("Unable to find matching metric name"));
+        return testMonitorAndEventTaskResponse;
       }
 
       TestTaskRequest testTaskRequest = new TestTaskRequest()
           .setTask(testMonitorAndEventTaskRequest.getTask())
-          .setMetrics(metrics);
+          .setMetrics(metricsForTask);
 
-      testTaskResult = eventTaskApi
+      TestTaskResult testTaskResult = eventTaskApi
           .performTestTask(tenantId, testTaskRequest);
 
-      if (testTaskResult == null || !CollectionUtils.isEmpty(testTaskResult.getErrors())
-          || testTaskResult.getData() == null) {
-        return new TestMonitorAndEventTaskResponse().setData(new TestMonitorAndEventTask()
-            .setMonitor(
-                new TestMonitorResultData().setMetrics(testMonitorResult.getData().getMetrics())))
+      if (testTaskResult == null) {
+        testMonitorAndEventTaskResponse
             .setErrors(CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
                 .of("Unable to get test event data") : testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
+      } else if (!CollectionUtils.isEmpty(testTaskResult.getErrors())
+          || testTaskResult.getData() == null) {
+        testMonitorAndEventTaskResponse
+            .setErrors(CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
+                .of("Unable to get test event data") : testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
       }
 
-      return new TestMonitorAndEventTaskResponse().setData(new TestMonitorAndEventTask()
-          .setMonitor(
-              new TestMonitorResultData().setMetrics(testMonitorResult.getData().getMetrics()))
-          .setTask(new TestTaskResultResultData().setEvents(testTaskResult.getData().getEvents())
+      testMonitorAndEventTaskResponse.getData()
+          .setTask(new TestTaskResultData().setEvents(testTaskResult.getData().getEvents())
               .setStats(testTaskResult.getData()
-                  .getStats())));
+                  .getStats()));
+      return testMonitorAndEventTaskResponse;
     } catch (RemoteServiceCallException e) {
-      TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse();
-      if (testMonitorResult.getData() != null) {
-        testMonitorAndEventTaskResponse.setData(
-            new TestMonitorAndEventTask().setMonitor(
-                new TestMonitorResultData().setMetrics(testMonitorResult.getData().getMetrics())));
-      } else if (testTaskResult.getData() != null) {
-        new TestMonitorAndEventTask().setTask(
-            new TestTaskResultResultData().setEvents(testTaskResult.getData().getEvents())
-                .setStats(testTaskResult.getData()
-                    .getStats()));
+      if (testMonitorAndEventTaskResponse.getData() != null
+          && testMonitorAndEventTaskResponse.getData().getMonitor() != null) {
+        testMonitorAndEventTaskResponse.setErrors(List.of(e.getMessage()));
+      } else if (testMonitorAndEventTaskResponse.getData() != null
+          && testMonitorAndEventTaskResponse.getData().getTask() != null) {
+        testMonitorAndEventTaskResponse.setErrors(List.of(e.getMessage()));
       } else {
-        return new TestMonitorAndEventTaskResponse().setErrors(List.of(String
+        testMonitorAndEventTaskResponse.setErrors(List.of(String
             .format("An unexpected internal error occurred: %s", e.getMessage())));
       }
+      return testMonitorAndEventTaskResponse;
     }
-    return null;
   }
 }

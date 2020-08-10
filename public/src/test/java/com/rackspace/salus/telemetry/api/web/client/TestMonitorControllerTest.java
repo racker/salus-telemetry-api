@@ -16,6 +16,14 @@
 
 package com.rackspace.salus.telemetry.api.web.client;
 
+import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.model.kapacitor.KapacitorEvent;
@@ -25,12 +33,14 @@ import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask.TestMonitorResultData;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask.TestTaskResultResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestMonitorResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestTaskResultData;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
 import com.rackspace.salus.telemetry.api.web.TestMonitorController;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,17 +54,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
-
-import java.util.List;
-import java.util.Map;
-
-import static com.rackspace.salus.common.util.SpringResourceUtils.readContent;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles({"unsecured"})
 @RunWith(SpringRunner.class)
@@ -123,9 +122,9 @@ public class TestMonitorControllerTest {
                 .setSvalues(Map.of()))));
 
     TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse()
-        .setData(new TestMonitorAndEventTask().setMonitor(new TestMonitorResultData()
+        .setData(new ResponseData().setMonitor(new TestMonitorResultData()
             .setMetrics(testMonitorOutputExpected.getData().getMetrics())).setTask(
-            new TestTaskResultResultData().setEvents(testTaskResultExpected.getData().getEvents())
+            new TestTaskResultData().setEvents(testTaskResultExpected.getData().getEvents())
                 .setStats(testTaskResultExpected.getData()
                     .getStats()))).setErrors(List.of());
 
