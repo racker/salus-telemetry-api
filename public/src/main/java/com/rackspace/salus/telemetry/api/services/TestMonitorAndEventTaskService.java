@@ -58,14 +58,15 @@ public class TestMonitorAndEventTaskService {
           .performTestMonitor(tenantId, new TestMonitorInput()
               .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
               .setDetails(testMonitorAndEventTaskRequest.getDetails()));
+
       if (testMonitorResult == null) {
         testMonitorAndEventTaskResponse.setErrors(List.of("Unable to get test-Monitor Metrics"));
         return testMonitorAndEventTaskResponse;
-      } else if (!CollectionUtils.isEmpty(testMonitorResult.getErrors())
-          || CollectionUtils.isEmpty(testMonitorResult.getData().getMetrics())) {
-        testMonitorAndEventTaskResponse.setErrors(
-            CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
-                .of("Unable to get test-Monitor Metrics") : testMonitorResult.getErrors());
+      } else if (!CollectionUtils.isEmpty(testMonitorResult.getErrors())) {
+        testMonitorAndEventTaskResponse.setErrors(testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
+      } else if (CollectionUtils.isEmpty(testMonitorResult.getData().getMetrics())) {
+        testMonitorAndEventTaskResponse.setErrors(List.of("Unable to get test-Monitor Metrics"));
         return testMonitorAndEventTaskResponse;
       }
       testMonitorAndEventTaskResponse.setData(new ResponseData().setMonitor(
@@ -94,11 +95,12 @@ public class TestMonitorAndEventTaskService {
             .setErrors(CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
                 .of("Unable to get test event data") : testMonitorResult.getErrors());
         return testMonitorAndEventTaskResponse;
-      } else if (!CollectionUtils.isEmpty(testTaskResult.getErrors())
-          || testTaskResult.getData() == null) {
+      } else if (!CollectionUtils.isEmpty(testTaskResult.getErrors())) {
+        testMonitorAndEventTaskResponse.setErrors(testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
+      } else if (testTaskResult.getData() == null) {
         testMonitorAndEventTaskResponse
-            .setErrors(CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
-                .of("Unable to get test event data") : testMonitorResult.getErrors());
+            .setErrors(List.of("Unable to get test event data"));
         return testMonitorAndEventTaskResponse;
       }
 
@@ -108,16 +110,8 @@ public class TestMonitorAndEventTaskService {
                   .getStats()));
       return testMonitorAndEventTaskResponse;
     } catch (RemoteServiceCallException e) {
-      if (testMonitorAndEventTaskResponse.getData() != null
-          && testMonitorAndEventTaskResponse.getData().getMonitor() != null) {
-        testMonitorAndEventTaskResponse.setErrors(List.of(e.getMessage()));
-      } else if (testMonitorAndEventTaskResponse.getData() != null
-          && testMonitorAndEventTaskResponse.getData().getTask() != null) {
-        testMonitorAndEventTaskResponse.setErrors(List.of(e.getMessage()));
-      } else {
-        testMonitorAndEventTaskResponse.setErrors(List.of(String
-            .format("An unexpected internal error occurred: %s", e.getMessage())));
-      }
+      testMonitorAndEventTaskResponse.setErrors(List.of(String
+          .format("An unexpected internal error occurred: %s", e.getMessage())));
       return testMonitorAndEventTaskResponse;
     }
   }
