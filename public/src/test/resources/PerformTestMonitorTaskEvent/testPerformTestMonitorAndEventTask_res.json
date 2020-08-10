@@ -1,0 +1,59 @@
+{
+  "data": {
+    "monitor": {
+      "errors": [],
+      "metrics": [
+        {
+          "name": "mem",
+          "tags": {
+          },
+          "ivalues": {},
+          "fvalues": {
+            "available_percent": 33.502197265625
+          },
+          "svalues": {}
+        }
+      ]
+    },
+    "task": {
+      "partialResults": false,
+      "events": [
+        {
+          "level": "INFO",
+          "data": {
+            "series": [
+              {
+                "name": "mem",
+                "columns": [
+                  "time",
+                  "active",
+                  "available",
+                  "available_percent"
+                ],
+                "values": [
+                  [
+                    "2020-08-04T18:47:04.9975142Z",
+                    5743112192,
+                    5755633664,
+                    33.502197265625
+                  ]
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "stats": {
+        "task-stats": {
+          "throughput": 0
+        },
+        "node-stats": {
+          "alert2": {
+            "crits_triggered": 1
+          }
+        }
+      }
+    }
+  },
+  "errors": []
+}

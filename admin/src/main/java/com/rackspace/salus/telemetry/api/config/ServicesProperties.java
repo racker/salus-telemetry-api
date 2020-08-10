@@ -17,26 +17,29 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties("salus.services")
 @Component
 @Data
+@Validated
 public class ServicesProperties {
-  @NotEmpty
+  @NotBlank
   String monitorManagementUrl = "http://monitor-management:8080";
-  @NotEmpty
+  @NotBlank
   String resourceManagementUrl = "http://resource-management:8080";
-  @NotEmpty
+  @NotBlank
   String eventManagementUrl = "http://event-management:8080";
-  @NotEmpty
+  @NotBlank
   String presenceMonitorUrl = "http://presence-monitor:8080";
-  @NotEmpty
+  @NotBlank
   String agentCatalogManagementUrl = "http://agent-catalog-management:8080";
-  @NotEmpty
+  @NotBlank
   String policyManagementUrl = "http://policy-management:8080";
   @NotEmpty
   String authServiceUrl = "http://authserv:8082";

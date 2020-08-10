@@ -20,25 +20,30 @@ import com.rackspace.salus.telemetry.model.LabelNamespaces;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties("salus.api.admin")
 @Component
 @Data
+@Validated
 public class ApiAdminProperties {
 
   /**
    * The roles (without "ROLE_" prefix) that are required to allow the user to make use of tenant APIs.
    * Identity roles are translated to this format via {@link com.rackspace.salus.common.web.PreAuthenticatedFilter}.
    */
+  @NotEmpty
   List<String> roles = new ArrayList<>();
 
   /**
    * When registering an agent release, these are the labels that are required to be present
    * in the selector.
    */
+  @NotEmpty
   List<String> requiredAgentLabels = Arrays.asList(
       LabelNamespaces.applyNamespace(LabelNamespaces.AGENT, "discovered_os"),
       LabelNamespaces.applyNamespace(LabelNamespaces.AGENT, "discovered_arch")
