@@ -16,24 +16,36 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
-import com.rackspace.salus.event.manage.model.TestTaskResult;
-import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
+import com.rackspace.salus.event.manage.model.TestTaskResult.TestTaskResultData.EventResult;
+import com.rackspace.salus.event.model.kapacitor.Task;
+import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class TestMonitorAndEventTaskResponse {
 
-  private TestMonitorAndEventTask data;
+  private ResponseData data;
   private List<String> errors;
 
   @Data
-  @AllArgsConstructor
-  public static class TestMonitorAndEventTask {
+  public static class ResponseData {
 
-    private TestMonitorOutput monitor;
-    private TestTaskResult task;
+    private TestMonitorResultData monitor;
+    private TestTaskResultData task;
+
+    @Data
+    public static class TestMonitorResultData {
+
+      List<SimpleNameTagValueMetric> metrics;
+    }
+
+    @Data
+    public static class TestTaskResultData {
+
+      List<EventResult> events;
+
+      Task.Stats stats;
+    }
   }
 }
