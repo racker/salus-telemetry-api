@@ -22,17 +22,20 @@ import com.rackspace.salus.event.manage.model.TestTaskResult;
 import com.rackspace.salus.event.manage.web.client.EventTaskApi;
 import com.rackspace.salus.monitor_management.web.client.MonitorApi;
 import com.rackspace.salus.monitor_management.web.model.TestMonitorInput;
-import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
+import com.rackspace.salus.monitor_management.web.model.TestMonitorResult;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestMonitorResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestTaskResultData;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,34 +52,67 @@ public class TestMonitorAndEventTaskService {
 
   public TestMonitorAndEventTaskResponse performTestMonitorAndEventTask(String tenantId,
       TestMonitorAndEventTaskRequest testMonitorAndEventTaskRequest) {
+    final TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse();
     try {
-      TestMonitorOutput testMonitorOutput = monitorApi
+      TestMonitorResult testMonitorResult = monitorApi
           .performTestMonitor(tenantId, new TestMonitorInput()
               .setResourceId(testMonitorAndEventTaskRequest.getResourceId())
               .setDetails(testMonitorAndEventTaskRequest.getDetails()));
 
-      List<SimpleNameTagValueMetric> metrics = testMonitorOutput.getMetrics().stream()
+      if (testMonitorResult == null) {
+        testMonitorAndEventTaskResponse.setErrors(List.of("Unable to get test-Monitor Metrics"));
+        return testMonitorAndEventTaskResponse;
+      } else if (!CollectionUtils.isEmpty(testMonitorResult.getErrors())) {
+        testMonitorAndEventTaskResponse.setErrors(testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
+      } else if (CollectionUtils.isEmpty(testMonitorResult.getData().getMetrics())) {
+        testMonitorAndEventTaskResponse.setErrors(List.of("Unable to get test-Monitor Metrics"));
+        return testMonitorAndEventTaskResponse;
+      }
+      testMonitorAndEventTaskResponse.setData(new ResponseData().setMonitor(
+          new TestMonitorResultData().setMetrics(testMonitorResult.getData().getMetrics())));
+
+      // Validating requested measurement against collected TestMonitorResult metrics measurements
+      List<SimpleNameTagValueMetric> metricsForTask = testMonitorResult.getData().getMetrics()
+          .stream()
           .filter(
               e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
           .collect(Collectors.toList());
-      if (CollectionUtils.isEmpty(metrics)) {
-        return new TestMonitorAndEventTaskResponse(
-            new TestMonitorAndEventTask(testMonitorOutput, null),
-            List.of("Unable to find matching metric name"));
+      if (CollectionUtils.isEmpty(metricsForTask)) {
+        testMonitorAndEventTaskResponse.setErrors(List.of("Unable to find matching metric name"));
+        return testMonitorAndEventTaskResponse;
       }
+
       TestTaskRequest testTaskRequest = new TestTaskRequest()
           .setTask(testMonitorAndEventTaskRequest.getTask())
-          .setMetrics(metrics);
+          .setMetrics(metricsForTask);
+
       TestTaskResult testTaskResult = eventTaskApi
           .performTestTask(tenantId, testTaskRequest);
 
-      return new TestMonitorAndEventTaskResponse(
-          new TestMonitorAndEventTask(testMonitorOutput, testTaskResult), null);
-    } catch (RemoteServiceCallException e) {
-      return new TestMonitorAndEventTaskResponse(
-          new TestMonitorAndEventTask(null, null), List.of(String
-          .format("An unexpected internal error occurred: %s", e.getMessage())));
-    }
+      if (testTaskResult == null) {
+        testMonitorAndEventTaskResponse
+            .setErrors(CollectionUtils.isEmpty(testMonitorResult.getErrors()) ? List
+                .of("Unable to get test event data") : testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
+      } else if (!CollectionUtils.isEmpty(testTaskResult.getErrors())) {
+        testMonitorAndEventTaskResponse.setErrors(testMonitorResult.getErrors());
+        return testMonitorAndEventTaskResponse;
+      } else if (testTaskResult.getData() == null) {
+        testMonitorAndEventTaskResponse
+            .setErrors(List.of("Unable to get test event data"));
+        return testMonitorAndEventTaskResponse;
+      }
 
+      testMonitorAndEventTaskResponse.getData()
+          .setTask(new TestTaskResultData().setEvents(testTaskResult.getData().getEvents())
+              .setStats(testTaskResult.getData()
+                  .getStats()));
+      return testMonitorAndEventTaskResponse;
+    } catch (RemoteServiceCallException e) {
+      testMonitorAndEventTaskResponse.setErrors(List.of(String
+          .format("An unexpected internal error occurred: %s", e.getMessage())));
+      return testMonitorAndEventTaskResponse;
+    }
   }
 }

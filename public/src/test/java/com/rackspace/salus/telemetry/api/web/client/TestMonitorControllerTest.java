@@ -26,16 +26,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.event.manage.model.TestTaskResult;
-import com.rackspace.salus.event.manage.model.TestTaskResult.EventResult;
-import com.rackspace.salus.event.model.kapacitor.KapacitorEvent.EventData;
-import com.rackspace.salus.event.model.kapacitor.KapacitorEvent.SeriesItem;
-import com.rackspace.salus.event.model.kapacitor.Task.Stats;
-import com.rackspace.salus.monitor_management.web.model.TestMonitorOutput;
+import com.rackspace.salus.event.model.kapacitor.KapacitorEvent;
+import com.rackspace.salus.event.model.kapacitor.Task;
+import com.rackspace.salus.monitor_management.web.model.TestMonitorResult;
 import com.rackspace.salus.telemetry.api.config.ApiPublicProperties;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
-import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.TestMonitorAndEventTask;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestMonitorResultData;
+import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse.ResponseData.TestTaskResultData;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
 import com.rackspace.salus.telemetry.api.web.TestMonitorController;
 import com.rackspace.salus.telemetry.model.SimpleNameTagValueMetric;
@@ -92,43 +92,41 @@ public class TestMonitorControllerTest {
             TestMonitorAndEventTaskRequest.class);
 
     final TestTaskResult testTaskResultExpected = new TestTaskResult()
-        .setEvents(List.of(
-            new EventResult()
+        .setData(new TestTaskResult.TestTaskResultData().setEvents(List.of(
+            new TestTaskResult.TestTaskResultData.EventResult()
                 .setData(
-                    new EventData()
-                        .setSeries(List.of(
-                            new SeriesItem()
-                                .setName(testMonitorAndEventTaskRequest.getTask().getMeasurement())
-                                .setColumns(
-                                    List.of("time", "active", "available", "available_percent"))
-                                .setValues(List.of(List.of("2020-08-04T18:47:04.9975142Z",
-                                    Double.valueOf("5743112192"), Double.valueOf("5755633664"),
-                                    Double.valueOf("33.502197265625")
-                                    ))
-                                )
-                        ))
-                )
-                .setLevel("INFO")
-        ))
-        .setStats(
-            new Stats()
+                    new KapacitorEvent.EventData().setSeries(List.of(new KapacitorEvent.SeriesItem()
+                        .setName(testMonitorAndEventTaskRequest.getTask().getMeasurement())
+                        .setColumns(
+                            List.of("time", "active", "available", "available_percent"))
+                        .setValues(List.of(List.of("2020-08-04T18:47:04.9975142Z",
+                            Double.valueOf("5743112192"), Double.valueOf("5755633664"),
+                            Double.valueOf("33.502197265625")
+                            ))
+                        )
+                    )))
+                .setLevel("INFO"))).setStats(
+            new Task.Stats()
                 .setNodeStats(Map.of("alert2", Map.of("crits_triggered", 1)))
                 .setTaskStats(Map.of("throughput", 0))
-        );
+        ));
 
-    TestMonitorOutput testMonitorOutputExpected = new TestMonitorOutput()
+    TestMonitorResult testMonitorOutputExpected = new TestMonitorResult()
         .setErrors(List.of())
-        .setMetrics(List.of(
+        .setData(new TestMonitorResult.TestMonitorResultData().setMetrics(List.of(
             new SimpleNameTagValueMetric()
                 .setTags(Map.of())
                 .setName(testMonitorAndEventTaskRequest.getTask().getMeasurement())
                 .setFvalues(Map.of("available_percent", 33.502197265625))
                 .setIvalues(Map.of())
-                .setSvalues(Map.of())
-        ));
+                .setSvalues(Map.of()))));
 
-    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse(
-        new TestMonitorAndEventTask(testMonitorOutputExpected, testTaskResultExpected), List.of());
+    TestMonitorAndEventTaskResponse testMonitorAndEventTaskResponse = new TestMonitorAndEventTaskResponse()
+        .setData(new ResponseData().setMonitor(new TestMonitorResultData()
+            .setMetrics(testMonitorOutputExpected.getData().getMetrics())).setTask(
+            new TestTaskResultData().setEvents(testTaskResultExpected.getData().getEvents())
+                .setStats(testTaskResultExpected.getData()
+                    .getStats()))).setErrors(List.of());
 
     when(testMonitorAndEventTaskService.performTestMonitorAndEventTask(anyString(), any()))
         .thenReturn(testMonitorAndEventTaskResponse);
@@ -143,7 +141,8 @@ public class TestMonitorControllerTest {
             readContent("PerformTestMonitorTaskEvent/testPerformTestMonitorAndEventTask_res.json"),
             true));
 
-    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
+    verify(testMonitorAndEventTaskService)
+        .performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
   }
 
 
@@ -165,6 +164,7 @@ public class TestMonitorControllerTest {
             .characterEncoding("utf-8"))
         .andExpect(status().isBadRequest());
 
-    verify(testMonitorAndEventTaskService).performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
+    verify(testMonitorAndEventTaskService)
+        .performTestMonitorAndEventTask(tenantId, testMonitorAndEventTaskRequest);
   }
 }
