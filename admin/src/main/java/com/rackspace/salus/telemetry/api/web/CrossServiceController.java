@@ -53,7 +53,7 @@ public class CrossServiceController {
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
       @PathVariable String tenantId,
-      @RequestParam(defaultValue = "true") boolean removeTenant) {
+      @RequestParam(defaultValue = "true") boolean removeTenantMetadata) {
     queryParams.add("sendEvents", "false");
     List bodies = new LinkedList();
 
@@ -131,7 +131,7 @@ public class CrossServiceController {
     }
 
     // delete tenant metadata
-    if(removeTenant) {
+    if(removeTenantMetadata) {
       final String tenantMetadataURI = UriComponentsBuilder
           .fromUriString(servicesProperties.getPolicyManagementUrl())
           .path("/api/admin/tenant-metadata/{tenantId}")
