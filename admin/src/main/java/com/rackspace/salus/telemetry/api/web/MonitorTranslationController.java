@@ -71,8 +71,8 @@ public class MonitorTranslationController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations/{id}")
-        .build(id)
-        .toString();
+        .buildAndExpand(id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -100,8 +100,8 @@ public class MonitorTranslationController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations/{id}")
-        .build(id)
-        .toString();
+        .buildAndExpand(id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

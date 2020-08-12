@@ -56,8 +56,8 @@ public class TenantMetadataController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/tenant-metadata")
         .queryParams(queryParams)
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -74,8 +74,8 @@ public class TenantMetadataController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/tenant-metadata/{tenantId}")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -89,8 +89,8 @@ public class TenantMetadataController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/tenant-metadata")
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -105,8 +105,8 @@ public class TenantMetadataController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/tenant-metadata/{tenantId}")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -121,8 +121,8 @@ public class TenantMetadataController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/tenant-metadata/{tenantId}")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

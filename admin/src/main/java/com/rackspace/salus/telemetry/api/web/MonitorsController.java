@@ -53,8 +53,8 @@ public class MonitorsController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitors")
         .queryParams(queryParams)
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
