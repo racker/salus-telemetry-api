@@ -53,8 +53,8 @@ public class MonitorPolicyController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/policy-monitors")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -71,8 +71,8 @@ public class MonitorPolicyController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/policy-monitors/{uuid}")
         .queryParams(queryParams)
-        .build(tenantId, uuid)
-        .toString();
+        .buildAndExpand(tenantId, uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

@@ -51,8 +51,8 @@ public class EnvoyTokensController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -68,8 +68,8 @@ public class EnvoyTokensController {
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -84,8 +84,8 @@ public class EnvoyTokensController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -100,8 +100,8 @@ public class EnvoyTokensController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -117,8 +117,8 @@ public class EnvoyTokensController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

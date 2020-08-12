@@ -72,8 +72,8 @@ public class ZonesController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/zones")
         .queryParams(queryParams)
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -88,8 +88,8 @@ public class ZonesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/zones")
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

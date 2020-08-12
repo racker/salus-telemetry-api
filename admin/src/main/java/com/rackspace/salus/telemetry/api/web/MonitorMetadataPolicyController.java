@@ -59,8 +59,8 @@ public class MonitorMetadataPolicyController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor")
         .queryParams(queryParams)
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -77,8 +77,8 @@ public class MonitorMetadataPolicyController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor/{uuid}")
         .queryParams(queryParams)
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -92,8 +92,8 @@ public class MonitorMetadataPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor")
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -109,8 +109,8 @@ public class MonitorMetadataPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor/{uuid}")
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -125,8 +125,8 @@ public class MonitorMetadataPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor/{uuid}")
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -143,8 +143,8 @@ public class MonitorMetadataPolicyController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor/effective/{tenantId}")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -163,8 +163,8 @@ public class MonitorMetadataPolicyController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/monitor/effective/{tenantId}/{className}/{monitorType}")
         .queryParams(queryParams)
-        .build(tenantId, className, monitorType)
-        .toString();
+        .buildAndExpand(tenantId, className, monitorType)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -178,8 +178,8 @@ public class MonitorMetadataPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/zones")
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -195,8 +195,8 @@ public class MonitorMetadataPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/zones/{region}")
-        .build(region)
-        .toString();
+        .buildAndExpand(region)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -211,8 +211,8 @@ public class MonitorMetadataPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/metadata/zones/{region}")
-        .build(region)
-        .toString();
+        .buildAndExpand(region)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

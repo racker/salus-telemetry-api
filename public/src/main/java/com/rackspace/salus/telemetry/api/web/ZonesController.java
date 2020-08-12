@@ -52,8 +52,8 @@ public class ZonesController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -84,8 +84,8 @@ public class ZonesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -101,8 +101,8 @@ public class ZonesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones/{name}")
-        .build(tenantId, name)
-        .toString();
+        .buildAndExpand(tenantId, name)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -118,8 +118,8 @@ public class ZonesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones/{name}")
-        .build(tenantId, name)
-        .toString();
+        .buildAndExpand(tenantId, name)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -134,9 +134,8 @@ public class ZonesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zone-assignment-counts/{name}")
-        .build(tenantId, name)
-        .toString();
-
+        .buildAndExpand(tenantId, name)
+        .toUriString();
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
@@ -150,8 +149,8 @@ public class ZonesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/rebalance-zone/{name}")
-        .build(tenantId, name)
-        .toString();
+        .buildAndExpand(tenantId, name)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

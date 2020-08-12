@@ -58,8 +58,8 @@ public class AgentInstallationController {
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-installs")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -74,8 +74,8 @@ public class AgentInstallationController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-installs")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -90,8 +90,8 @@ public class AgentInstallationController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-installs/{agentInstallId}")
-        .build(tenantId, agentInstallId)
-        .toString();
+        .buildAndExpand(tenantId,agentInstallId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
