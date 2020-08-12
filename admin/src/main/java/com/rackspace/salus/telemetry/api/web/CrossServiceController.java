@@ -54,7 +54,8 @@ public class CrossServiceController {
       @RequestParam MultiValueMap<String,String> queryParams,
       @PathVariable String tenantId,
       @RequestParam(defaultValue = "true") boolean removeTenantMetadata) {
-    queryParams.add("sendEvents", "false");
+    //sending events will remove bound monitors
+    queryParams.add("sendEvents", "true");
     List bodies = new LinkedList();
 
     // delete agent installs
