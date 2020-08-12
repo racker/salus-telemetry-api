@@ -52,8 +52,8 @@ public class TestMonitorController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/test-monitor")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

@@ -59,8 +59,8 @@ public class ResourcesController {
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -76,8 +76,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .build(tenantId, resourceId)
-        .toString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -96,8 +96,8 @@ public class ResourcesController {
     labels.forEach(builder::queryParam);
 
     final String backendUri = builder
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -111,8 +111,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-labels")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -126,8 +126,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-metadata-keys")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -141,8 +141,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-label-namespaces")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -156,8 +156,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -172,8 +172,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .build(tenantId, resourceId)
-        .toString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -189,8 +189,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .build(tenantId, resourceId)
-        .toString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -207,8 +207,8 @@ public class ResourcesController {
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/search")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
