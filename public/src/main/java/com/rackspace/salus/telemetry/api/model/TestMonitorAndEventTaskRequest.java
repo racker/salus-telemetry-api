@@ -16,7 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.model;
 
-import com.rackspace.salus.event.manage.model.CreateTask;
+import com.rackspace.salus.event.manage.model.TaskCU;
 import com.rackspace.salus.monitor_management.web.model.MonitorDetails;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -34,5 +34,5 @@ public class TestMonitorAndEventTaskRequest {
     MonitorDetails details;
 
     @NotNull @Valid
-    CreateTask task;
+    TaskCU task;
 }
