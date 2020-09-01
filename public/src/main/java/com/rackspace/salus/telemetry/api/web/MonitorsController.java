@@ -240,4 +240,22 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
+  @PostMapping("/tenant/{tenantId}/monitors/{monitorId}/agent-config")
+  public ResponseEntity<?> getAgentConfigDetails(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @PathVariable String monitorId) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/monitors/{monitorId}/agent-config")
+        .buildAndExpand(tenantId, monitorId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri)
+        .post();
+  }
+
 }
