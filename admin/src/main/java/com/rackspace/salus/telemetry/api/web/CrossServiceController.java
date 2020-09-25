@@ -48,7 +48,7 @@ public class CrossServiceController {
 
   }
 
-  @DeleteMapping("/{tenantId}")
+  @DeleteMapping("/tenant/{tenantId}")
   public ResponseEntity<?> deleteAll(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
