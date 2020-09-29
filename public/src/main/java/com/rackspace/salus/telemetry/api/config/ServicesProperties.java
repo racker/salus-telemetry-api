@@ -38,5 +38,5 @@ public class ServicesProperties {
   @NotBlank
   String authServiceUrl = "http://authserv:8082";
   @NotBlank
-  String ambassadorServiceUrl = "http://ambassador:8081";
+  String ambassadorServiceUrl = "http://ambassador:8080";
 }
