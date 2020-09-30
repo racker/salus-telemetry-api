@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -53,6 +54,25 @@ public class AgentHistoryController {
         .path("/api/tenant/{tenantId}/agent-history")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/agent-history/{uuid}")
+  public ResponseEntity<?> getAgentHistoryById(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable UUID uuid,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAmbassadorServiceUrl())
+        .path("/api/tenant/{tenantId}/agent-history/{uuid}")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId, uuid)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
