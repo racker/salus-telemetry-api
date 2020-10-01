@@ -17,7 +17,6 @@
 package com.rackspace.salus.telemetry.api.config;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -38,4 +37,6 @@ public class ServicesProperties {
   String agentCatalogManagementUrl = "http://agent-catalog-management:8080";
   @NotBlank
   String authServiceUrl = "http://authserv:8082";
+  @NotBlank
+  String ambassadorServiceUrl = "http://ambassador:8080";
 }
