@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
+import com.rackspace.salus.common.web.EnableSecureRestTemplate;
 import com.rackspace.salus.common.web.RequestLogging;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @Slf4j
+@EnableSecureRestTemplate
 public class WebConfig implements WebMvcConfigurer {
 
   @Override

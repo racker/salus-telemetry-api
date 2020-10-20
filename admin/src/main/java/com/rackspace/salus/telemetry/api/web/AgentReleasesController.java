@@ -53,7 +53,7 @@ public class AgentReleasesController {
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/admin/agent-releases")
         .queryParams(queryParams)
-        .build()
+        .buildAndExpand()
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -68,8 +68,8 @@ public class AgentReleasesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/admin/agent-releases/{agentReleaseId}")
-        .build(agentReleaseId)
-        .toString();
+        .buildAndExpand(agentReleaseId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -83,7 +83,7 @@ public class AgentReleasesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/admin/agent-releases")
-        .build()
+        .buildAndExpand()
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -98,8 +98,8 @@ public class AgentReleasesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/admin/agent-releases/{agentReleaseId}")
-        .build(agentReleaseId)
-        .toString();
+        .buildAndExpand(agentReleaseId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

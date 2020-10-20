@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -25,35 +26,34 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api")
 @Slf4j
-@SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
-public class MonitorsController {
+public class AgentHistoryController {
 
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public MonitorsController(ServicesProperties servicesProperties) {
+  public AgentHistoryController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/monitors")
-  public ResponseEntity<?> getAllMonitors(ProxyExchange<?> proxy,
-                                  @RequestHeader HttpHeaders headers,
-                                  @RequestParam MultiValueMap<String,String> queryParams) {
+  @GetMapping("/tenant/{tenantId}/agent-history")
+  public ResponseEntity<?> getAgentHistoryForTenant(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/monitors")
+        .fromUriString(servicesProperties.getAmbassadorServiceUrl())
+        .path("/api/tenant/{tenantId}/agent-history")
         .queryParams(queryParams)
-        .buildAndExpand()
+        .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -61,4 +61,22 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/agent-history/{uuid}")
+  public ResponseEntity<?> getAgentHistoryById(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable UUID uuid,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAmbassadorServiceUrl())
+        .path("/api/tenant/{tenantId}/agent-history/{uuid}")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId, uuid)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
 }

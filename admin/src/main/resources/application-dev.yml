@@ -3,6 +3,10 @@ server:
 logging:
   level:
     com.rackspace.salus: debug
+salus:
+  api:
+    admin:
+      roles: ["MONITORING_SERVICE_ADMIN"]
 salus.services:
     monitor-management-url: http://localhost:8089
     resource-management-url: http://localhost:8085
@@ -10,6 +14,7 @@ salus.services:
     presence-monitor-url: http://localhost:8083
     agent-catalog-management-url: http://localhost:8090
     policy-management-url: http://localhost:8091
+    auth-service-url: http://localhost:8082
 spring:
   profiles:
     include: unsecured

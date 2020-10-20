@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.rackspace.salus.telemetry.api.web;
@@ -58,8 +59,8 @@ public class ResourcesController {
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -75,8 +76,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .build(tenantId, resourceId)
-        .toString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -95,8 +96,8 @@ public class ResourcesController {
     labels.forEach(builder::queryParam);
 
     final String backendUri = builder
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -110,8 +111,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-labels")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -125,8 +126,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-metadata-keys")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -140,8 +141,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-label-namespaces")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -155,8 +156,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -171,8 +172,8 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .build(tenantId, resourceId)
-        .toString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -188,11 +189,29 @@ public class ResourcesController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .build(tenantId, resourceId)
-        .toString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
+  }
+
+  @GetMapping("/tenant/{tenantId}/resources-search/")
+  public ResponseEntity<?> searchResources(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getResourceManagementUrl())
+        .path("/api/tenant/{tenantId}/search")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
   }
 }

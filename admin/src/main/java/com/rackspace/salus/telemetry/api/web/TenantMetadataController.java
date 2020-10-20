@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,29 +35,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 @RestController
 @RequestMapping("/api")
-@SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
-public class ZonesController {
+@Slf4j
+public class TenantMetadataController {
+
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public ZonesController(ServicesProperties servicesProperties) {
+  public TenantMetadataController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/zones/**")
-  public ResponseEntity<?> get(ProxyExchange<?> proxy,
+  @GetMapping("/tenant-metadata")
+  public ResponseEntity<?> getAllTenantMetadata(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
-    final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/zones/{name}")
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/tenant-metadata")
         .queryParams(queryParams)
-        .buildAndExpand(zone)
+        .buildAndExpand()
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -63,66 +64,64 @@ public class ZonesController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/zones")
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+  @GetMapping("/tenant-metadata/{tenantId}")
+  public ResponseEntity<?> getTenantMetadata(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/zones")
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/tenant-metadata/{tenantId}")
         .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @PostMapping("/tenant-metadata")
+  public ResponseEntity<?> createTenantMetadata(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/tenant-metadata")
         .buildAndExpand()
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    return proxy.uri(backendUri)
-        .get();
+    return proxy.uri(backendUri).post();
   }
 
-  @PostMapping("/zones")
-  public ResponseEntity<?> create(ProxyExchange<?> proxy,
+  @PutMapping("/tenant-metadata/{tenantId}")
+  public ResponseEntity<?> upsertTenantMetadata(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/zones")
-        .buildAndExpand()
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/tenant-metadata/{tenantId}")
+        .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
-    return proxy.uri(backendUri)
-        .post();
+    return proxy.uri(backendUri).put();
   }
 
-  @PutMapping("/zones/**")
-  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+  @DeleteMapping("/tenant-metadata/{tenantId}")
+  public ResponseEntity<?> deleteTenantMetadata(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers) {
-    final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/zones/{name}")
-        .buildAndExpand(zone)
-        .toUriString();
-
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    return proxy.uri(backendUri)
-        .put();
-  }
-
-  @DeleteMapping("/zones/**")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
-    final String zone = proxy.path("/api/zones/");
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/zones/{name}")
-        .buildAndExpand(zone)
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/tenant-metadata/{tenantId}")
+        .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -130,38 +129,4 @@ public class ZonesController {
     return proxy.uri(backendUri).delete();
   }
 
-  @GetMapping("/zone-assignment-counts/**")
-  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
-    String zone = proxy.path("/api/zone-assignment-counts/");
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/zone-assignment-counts/{name}")
-        .buildAndExpand(zone)
-        .toUriString();
-
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    return proxy.uri(backendUri).get();
-  }
-
-  @PostMapping("/rebalance-zone/**")
-  public ResponseEntity<?> rebalancePublicZone(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
-    String zone = proxy.path("/api/rebalance-zone/");
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/rebalance-zone/{name}")
-        .buildAndExpand(zone)
-        .toUriString();
-
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    return proxy.uri(backendUri)
-        // no body needed for this operation, but proxy wants to resolve one
-        .body("")
-        .post();
-  }
 }

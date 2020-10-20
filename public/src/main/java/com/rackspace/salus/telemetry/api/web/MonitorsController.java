@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.rackspace.salus.telemetry.api.web;
@@ -62,8 +63,8 @@ public class MonitorsController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -78,8 +79,8 @@ public class MonitorsController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -93,8 +94,8 @@ public class MonitorsController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -110,8 +111,8 @@ public class MonitorsController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -138,8 +139,8 @@ public class MonitorsController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     HttpEntity<String> entity = new HttpEntity<>(body, headers);
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -156,8 +157,8 @@ public class MonitorsController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
-        .build(tenantId, id)
-        .toString();
+        .buildAndExpand(tenantId, id)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -171,8 +172,8 @@ public class MonitorsController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitor-label-selectors")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -192,6 +193,19 @@ public class MonitorsController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/schema/monitors")
+  public ResponseEntity<?> getMonitorsSchema(ProxyExchange<?> proxy,
+                                             @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/schema/monitors")
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
   @GetMapping("/tenant/{tenantId}/bound-monitors")
   public ResponseEntity<?> getAllBoundMonitors(ProxyExchange<?> proxy,
                                                @PathVariable String tenantId,
@@ -201,12 +215,47 @@ public class MonitorsController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/bound-monitors")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/monitors-search")
+  public ResponseEntity<?> searchMonitors(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/search")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @PostMapping("/tenant/{tenantId}/monitors/{monitorId}/agent-config")
+  public ResponseEntity<?> getAgentConfigDetails(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @PathVariable String monitorId) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/monitors/{monitorId}/agent-config")
+        .buildAndExpand(tenantId, monitorId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri)
+        .post();
   }
 
 }

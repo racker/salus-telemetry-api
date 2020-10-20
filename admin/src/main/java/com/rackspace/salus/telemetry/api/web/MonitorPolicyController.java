@@ -57,8 +57,8 @@ public class MonitorPolicyController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/policy-monitors")
         .queryParams(queryParams)
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -75,8 +75,8 @@ public class MonitorPolicyController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/policy-monitors/{uuid}")
         .queryParams(queryParams)
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -90,8 +90,8 @@ public class MonitorPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/policy-monitors")
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -106,8 +106,8 @@ public class MonitorPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/policy-monitors/{uuid}")
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -122,8 +122,8 @@ public class MonitorPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/policy-monitors/{uuid}")
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -139,8 +139,8 @@ public class MonitorPolicyController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors")
         .queryParams(queryParams)
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -157,8 +157,8 @@ public class MonitorPolicyController {
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors/{uuid}")
         .queryParams(queryParams)
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -171,8 +171,8 @@ public class MonitorPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors")
-        .build()
-        .toString();
+        .buildAndExpand()
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -187,11 +187,81 @@ public class MonitorPolicyController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors/{uuid}")
-        .build(uuid)
-        .toString();
+        .buildAndExpand(uuid)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
+  }
+
+  @PostMapping("/policies/monitors/opt-out")
+  public ResponseEntity<?> optOutPolicy(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/monitors/opt-out")
+        .buildAndExpand()
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri)
+        .post();
+  }
+
+  @GetMapping("/policies/monitors/effective/{tenantId}")
+  public ResponseEntity<?> getEffectivePoliciesByTenantId(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/monitors/effective/{tenantId}")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/policies/monitors/effective/{tenantId}/monitor-ids")
+  public ResponseEntity<?> getEffectivePolicyMonitorIdsForTenant(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/monitors/effective/{tenantId}/monitor-ids")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/policies/monitors/effective/{tenantId}/policy-ids")
+  public ResponseEntity<?> getEffectiveMonitorPolicyIdsForTenant(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestParam(required = false, defaultValue = "true") boolean includeNullMonitors,
+      @RequestHeader HttpHeaders headers,
+      @RequestParam MultiValueMap<String,String> queryParams) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getPolicyManagementUrl())
+        .path("/api/admin/policy/monitors/effective/{tenantId}/policy-ids")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
   }
 }

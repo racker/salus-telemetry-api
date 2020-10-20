@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -28,64 +27,31 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api")
-@Slf4j
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
-public class MonitorTranslationController {
+public class EnvoyTokensController {
 
   private final ServicesProperties servicesProperties;
 
   @Autowired
-  public MonitorTranslationController(ServicesProperties servicesProperties) {
+  public EnvoyTokensController(ServicesProperties servicesProperties) {
     this.servicesProperties = servicesProperties;
   }
-
-  @GetMapping("/monitor-translations")
-  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
-                                  @RequestHeader HttpHeaders headers,
-                                  @RequestParam MultiValueMap<String, String> queryParams) {
-
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/monitor-translations")
-        .queryParams(queryParams)
-        .build()
-        .toUriString();
-
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    return proxy.uri(backendUri).get();
-  }
-
-  @GetMapping("/monitor-translations/{id}")
-  public ResponseEntity<?> getById(ProxyExchange<?> proxy,
-                                   @PathVariable String id,
-                                   @RequestHeader HttpHeaders headers) {
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/monitor-translations/{id}")
-        .buildAndExpand(id)
-        .toUriString();
-
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    return proxy.uri(backendUri).get();
-  }
-
-  @PostMapping("/monitor-translations")
+  
+  @PostMapping("/tenant/{tenantId}/envoy-tokens")
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/monitor-translations")
-        .build()
+        .fromUriString(servicesProperties.getAuthServiceUrl())
+        .path("/api/tenant/{tenantId}/envoy-tokens")
+        .buildAndExpand(tenantId)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -93,18 +59,70 @@ public class MonitorTranslationController {
     return proxy.uri(backendUri).post();
   }
 
-  @DeleteMapping("/monitor-translations/{id}")
-  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
+  @GetMapping("/tenant/{tenantId}/envoy-tokens")
+  public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @RequestHeader HttpHeaders headers,
+                                  @RequestParam MultiValueMap<String,String> queryParams) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAuthServiceUrl())
+        .path("/api/tenant/{tenantId}/envoy-tokens")
+        .queryParams(queryParams)
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/envoy-tokens/{id}")
+  public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
                                   @PathVariable String id,
                                   @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/monitor-translations/{id}")
-        .buildAndExpand(id)
+        .fromUriString(servicesProperties.getAuthServiceUrl())
+        .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
+        .buildAndExpand(tenantId, id)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @PutMapping("/tenant/{tenantId}/envoy-tokens/{id}")
+  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @PathVariable String id,
+                                  @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAuthServiceUrl())
+        .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
+        .buildAndExpand(tenantId, id)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri)
+        .put();
+  }
+
+  @DeleteMapping("/tenant/{tenantId}/envoy-tokens/{id}")
+  public ResponseEntity<?> delete(ProxyExchange<?> proxy,
+                                  @PathVariable String tenantId,
+                                  @PathVariable String id,
+                                  @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getAuthServiceUrl())
+        .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
+        .buildAndExpand(tenantId, id)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
   }
+
 }

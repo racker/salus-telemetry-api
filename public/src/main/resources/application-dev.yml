@@ -4,12 +4,18 @@ logging:
     com.rackspace.salus.telemetry.api: debug
     com.rackspace.salus.common.web: debug
     web: debug
+salus:
+  api:
+    public:
+      roles: ["COMPUTE_DEFAULT", "MONITORING_SERVICE_ADMIN", "IDENTITY_USER_ADMIN", "IDENTITY_DEFAULT"]
 salus.services:
   monitor-management-url: http://localhost:8089
   resource-management-url: http://localhost:8085
   event-management-url: http://localhost:8087
   agent-catalog-management-url: http://localhost:8090
   policy-management-url: http://localhost:8091
+  auth-service-url: http://localhost:8082
+  ambassador-service-url: http://localhost:8081
 spring:
   profiles:
     include: "unsecured"

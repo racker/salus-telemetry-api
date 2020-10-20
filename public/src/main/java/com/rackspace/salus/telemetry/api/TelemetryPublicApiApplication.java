@@ -19,8 +19,10 @@ package com.rackspace.salus.telemetry.api;
 import com.rackspace.salus.common.util.DumpConfigProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.rackspace.salus.common.config.AutoConfigureSalusAppMetrics;
 
 @SpringBootApplication
+@AutoConfigureSalusAppMetrics
 public class TelemetryPublicApiApplication {
 
   public static void main(String[] args) {

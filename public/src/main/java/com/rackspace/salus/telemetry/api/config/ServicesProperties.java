@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,27 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties("salus.services")
 @Component
 @Data
+@Validated
 public class ServicesProperties {
-  @NotEmpty
+  @NotBlank
   String monitorManagementUrl = "http://monitor-management:8080";
-  @NotEmpty
+  @NotBlank
   String resourceManagementUrl = "http://resource-management:8080";
-  @NotEmpty
+  @NotBlank
   String eventManagementUrl = "http://event-management:8080";
-  @NotEmpty
+  @NotBlank
   String agentCatalogManagementUrl = "http://agent-catalog-management:8080";
+  @NotBlank
+  String authServiceUrl = "http://authserv:8082";
+  @NotBlank
+  String ambassadorServiceUrl = "http://ambassador:8080";
 }

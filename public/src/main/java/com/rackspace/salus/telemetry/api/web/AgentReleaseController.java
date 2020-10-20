@@ -49,8 +49,8 @@ public class AgentReleaseController {
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-releases")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -65,8 +65,8 @@ public class AgentReleaseController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAgentCatalogManagementUrl())
         .path("/api/tenant/{tenantId}/agent-releases/{agentReleaseId}")
-        .build(tenantId, agentReleaseId)
-        .toString();
+        .buildAndExpand(tenantId, agentReleaseId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

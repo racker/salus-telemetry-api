@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,8 +52,8 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -67,8 +69,8 @@ public class EventTasksController {
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
         .queryParams(queryParams)
-        .build(tenantId)
-        .toString();
+        .buildAndExpand(tenantId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -83,8 +85,8 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")
-        .build(tenantId, taskId)
-        .toString();
+        .buildAndExpand(tenantId, taskId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -99,11 +101,42 @@ public class EventTasksController {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")
-        .build(tenantId, taskId)
-        .toString();
+        .buildAndExpand(tenantId, taskId)
+        .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
     return proxy.uri(backendUri).delete();
+  }
+
+  @PostMapping("/tenant/{tenantId}/test-event-task")
+  public ResponseEntity<?> testEventTask(ProxyExchange<?> proxy,
+                                         @PathVariable String tenantId,
+                                         @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getEventManagementUrl())
+        .path("/api/tenant/{tenantId}/test-task")
+        .buildAndExpand(tenantId)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).post();
+  }
+
+  @PutMapping("/tenant/{tenantId}/event-tasks/{uuid}")
+  public ResponseEntity<?> update(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable UUID uuid,
+      @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getEventManagementUrl())
+        .path("/api/tenant/{tenantId}/tasks/{uuid}")
+        .buildAndExpand(tenantId, uuid)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).put();
   }
 }
