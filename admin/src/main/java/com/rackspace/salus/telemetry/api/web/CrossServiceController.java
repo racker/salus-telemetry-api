@@ -168,7 +168,7 @@ public class CrossServiceController {
       return ResponseEntity.status(HttpStatus.CONFLICT_409).headers(headers).body(responseBody);
     }
 
-    return ResponseEntity.status(HttpStatus.NO_CONTENT_204).headers(headers).build();
+    return ResponseEntity.status(HttpStatus.ACCEPTED_202).headers(headers).build();
   }
 
 
