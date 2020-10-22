@@ -164,4 +164,20 @@ public class ZonesController {
         .body("")
         .post();
   }
+
+  @GetMapping("/zone/**")
+  public ResponseEntity<?> getDetachedTimeoutPollers(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
+    final String zone = proxy.path("/api/zone/");
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getZoneWatcherUrl())
+        .path("/api/admin/zone/{name}")
+        .buildAndExpand(zone)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
 }

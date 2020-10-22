@@ -160,4 +160,19 @@ public class ZonesController {
         .post();
 
   }
+
+  @GetMapping("/tenant/{tenantId}/zone/{zone}/detached-pollers")
+  public ResponseEntity<?> getDetachedPendingtimeoutPollers(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @PathVariable String zone,
+      @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getZoneWatcherUrl())
+        .path("/api/tenant/{tenantId}/zone/{zone}/detached-pollers")
+        .buildAndExpand(tenantId, zone)
+        .toUriString();
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
 }
