@@ -15,7 +15,6 @@ salus.services:
     agent-catalog-management-url: http://localhost:8090
     policy-management-url: http://localhost:8091
     auth-service-url: http://localhost:8082
-    zone-watcher-url: http://localhost:8084
 spring:
   profiles:
     include: unsecured

@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -161,15 +162,17 @@ public class ZonesController {
 
   }
 
-  @GetMapping("/tenant/{tenantId}/zone/{zone}/detached-pollers")
+  @GetMapping(value = {"/tenant/{tenantId}/detached-pollers/{zone}", "/tenant/{tenantId}/detached-pollers"})
   public ResponseEntity<?> getDetachedPendingtimeoutPollers(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
-      @PathVariable String zone,
+      @PathVariable Optional<String> zone,
       @RequestHeader HttpHeaders headers) {
+
+    String zoneName = zone.orElse("");
     final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getZoneWatcherUrl())
-        .path("/api/tenant/{tenantId}/zone/{zone}/detached-pollers")
-        .buildAndExpand(tenantId, zone)
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/detached-pollers/{zone}")
+        .buildAndExpand(tenantId, zoneName)
         .toUriString();
     ApiUtils.applyRequiredHeaders(proxy, headers);
 

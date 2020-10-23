@@ -43,6 +43,4 @@ public class ServicesProperties {
   String policyManagementUrl = "http://policy-management:8080";
   @NotEmpty
   String authServiceUrl = "http://authserv:8082";
-  @NotBlank
-  String zoneWatcherUrl = "http://zone-watcher:8084";
 }

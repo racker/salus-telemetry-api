@@ -39,6 +39,4 @@ public class ServicesProperties {
   String authServiceUrl = "http://authserv:8082";
   @NotBlank
   String ambassadorServiceUrl = "http://ambassador:8080";
-  @NotBlank
-  String zoneWatcherUrl = "http://zone-watcher:8084";
 }
