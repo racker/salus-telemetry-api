@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -127,7 +128,7 @@ public class ZonesController {
   }
 
   @GetMapping("/tenant/{tenantId}/zone-assignment-counts/{name}")
-  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getPrivateZoneAssignmentCountsForZone(ProxyExchange<?> proxy,
                                                           @PathVariable String tenantId,
                                                           @PathVariable String name,
                                                           @RequestHeader HttpHeaders headers) {
@@ -135,6 +136,20 @@ public class ZonesController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zone-assignment-counts/{name}")
         .buildAndExpand(tenantId, name)
+        .toUriString();
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/tenant/{tenantId}/zone-assignment-counts")
+  public ResponseEntity<?> getAllPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/zone-assignment-counts")
+        .buildAndExpand(tenantId)
         .toUriString();
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
