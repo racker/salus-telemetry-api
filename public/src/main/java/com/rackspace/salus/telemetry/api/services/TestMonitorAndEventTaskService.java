@@ -75,8 +75,9 @@ public class TestMonitorAndEventTaskService {
       // Validating requested measurement against collected TestMonitorResult metrics measurements
       List<SimpleNameTagValueMetric> metricsForTask = testMonitorResult.getData().getMetrics()
           .stream()
-          .filter(
-              e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
+//          TODO this will change once test-task is updated for the esper event engine
+//          .filter(
+//              e -> e.getName().equals(testMonitorAndEventTaskRequest.getTask().getMeasurement()))
           .collect(Collectors.toList());
       if (CollectionUtils.isEmpty(metricsForTask)) {
         testMonitorAndEventTaskResponse.setErrors(List.of("Unable to find matching metric name"));
