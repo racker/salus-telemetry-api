@@ -101,8 +101,8 @@ public class ZonesControllerTest {
   }
 
   @Test
-  public void testGetPrivateZoneAssignmentCounts() {
-    zonesController.getPrivateZoneAssignmentCounts(proxyExchange, new HttpHeaders());
+  public void testGetPublicZoneAssignmentCounts() {
+    zonesController.getPublicZoneAssignmentCounts(proxyExchange, new HttpHeaders());
     verify(proxyExchange).uri("http://test/api/admin/zone-assignment-counts/public/dev");
   }
 

@@ -142,6 +142,20 @@ public class ZonesController {
     return proxy.uri(backendUri).get();
   }
 
+  @GetMapping("/tenant/{tenantId}/zone-assignment-counts")
+  public ResponseEntity<?> getPrivateZoneAssignmentCountsPerTenant(ProxyExchange<?> proxy,
+      @PathVariable String tenantId,
+      @RequestHeader HttpHeaders headers) {
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/tenant/{tenantId}/zone-assignment-counts")
+        .buildAndExpand(tenantId)
+        .toUriString();
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
   @PostMapping("/tenant/{tenantId}/rebalance-zone/{name}")
   public ResponseEntity<?> rebalancePrivateZone(ProxyExchange<?> proxy,
                                                 @PathVariable String tenantId,
