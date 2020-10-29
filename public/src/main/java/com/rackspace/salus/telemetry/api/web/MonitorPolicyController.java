@@ -44,14 +44,14 @@ public class MonitorPolicyController {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/tenant/{tenantId}/policy-monitors")
+  @GetMapping("/tenant/{tenantId}/monitor-templates")
   public ResponseEntity<?> getAllForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/policy-monitors")
+        .path("/api/tenant/{tenantId}/monitor-templates")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
         .toUriString();
@@ -61,7 +61,7 @@ public class MonitorPolicyController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/tenant/{tenantId}/policy-monitors/{uuid}")
+  @GetMapping("/tenant/{tenantId}/monitor-templates/{uuid}")
   public ResponseEntity<?> getOneForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @PathVariable UUID uuid,
@@ -69,7 +69,7 @@ public class MonitorPolicyController {
       @RequestParam MultiValueMap<String,String> queryParams) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/policy-monitors/{uuid}")
+        .path("/api/tenant/{tenantId}/monitor-templates/{uuid}")
         .queryParams(queryParams)
         .buildAndExpand(tenantId, uuid)
         .toUriString();
