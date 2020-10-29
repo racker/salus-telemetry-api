@@ -131,7 +131,7 @@ public class ZonesController {
   }
 
   @GetMapping("/zone-assignment-counts/**")
-  public ResponseEntity<?> getPublicZoneAssignmentCounts(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getPublicZoneAssignmentCountsForZone(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers) {
     String zone = proxy.path("/api/zone-assignment-counts/");
 
@@ -147,7 +147,7 @@ public class ZonesController {
   }
 
   @GetMapping("/zone-assignment-counts")
-  public ResponseEntity<?> getPublicZoneAssignmentCountsPerTenant(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getAllPublicZoneAssignmentCounts(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder

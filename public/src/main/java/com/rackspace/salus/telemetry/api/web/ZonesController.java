@@ -128,7 +128,7 @@ public class ZonesController {
   }
 
   @GetMapping("/tenant/{tenantId}/zone-assignment-counts/{name}")
-  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getPrivateZoneAssignmentCountsForZone(ProxyExchange<?> proxy,
                                                           @PathVariable String tenantId,
                                                           @PathVariable String name,
                                                           @RequestHeader HttpHeaders headers) {
@@ -143,7 +143,7 @@ public class ZonesController {
   }
 
   @GetMapping("/tenant/{tenantId}/zone-assignment-counts")
-  public ResponseEntity<?> getPrivateZoneAssignmentCountsPerTenant(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getAllPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers) {
     final String backendUri = UriComponentsBuilder
@@ -174,22 +174,5 @@ public class ZonesController {
         .body("")
         .post();
 
-  }
-
-  @GetMapping(value = {"/tenant/{tenantId}/detached-pollers/{zone}", "/tenant/{tenantId}/detached-pollers"})
-  public ResponseEntity<?> getDetachedPendingtimeoutPollers(ProxyExchange<?> proxy,
-      @PathVariable String tenantId,
-      @PathVariable Optional<String> zone,
-      @RequestHeader HttpHeaders headers) {
-
-    String zoneName = zone.orElse("");
-    final String backendUri = UriComponentsBuilder
-        .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/tenant/{tenantId}/detached-pollers/{zone}")
-        .buildAndExpand(tenantId, zoneName)
-        .toUriString();
-    ApiUtils.applyRequiredHeaders(proxy, headers);
-
-    return proxy.uri(backendUri).get();
   }
 }
