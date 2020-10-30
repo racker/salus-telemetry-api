@@ -131,7 +131,7 @@ public class ZonesController {
   }
 
   @GetMapping("/zone-assignment-counts/**")
-  public ResponseEntity<?> getPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getPublicZoneAssignmentCountsForZone(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers) {
     String zone = proxy.path("/api/zone-assignment-counts/");
 
@@ -139,6 +139,20 @@ public class ZonesController {
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/zone-assignment-counts/{name}")
         .buildAndExpand(zone)
+        .toUriString();
+
+    ApiUtils.applyRequiredHeaders(proxy, headers);
+
+    return proxy.uri(backendUri).get();
+  }
+
+  @GetMapping("/zone-assignment-counts")
+  public ResponseEntity<?> getAllPublicZoneAssignmentCounts(ProxyExchange<?> proxy,
+      @RequestHeader HttpHeaders headers) {
+
+    final String backendUri = UriComponentsBuilder
+        .fromUriString(servicesProperties.getMonitorManagementUrl())
+        .path("/api/admin/zone-assignment-counts")
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
@@ -164,4 +178,5 @@ public class ZonesController {
         .body("")
         .post();
   }
+
 }
