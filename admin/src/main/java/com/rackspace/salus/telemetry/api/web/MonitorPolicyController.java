@@ -229,7 +229,7 @@ public class MonitorPolicyController {
   }
 
   @GetMapping("/policies/monitors/effective/{tenantId}/monitor-ids")
-  public ResponseEntity<?> getEffectivePolicyMonitorIdsForTenant(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getEffectiveMonitorIdsUsingMonitorPoliciesForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
