@@ -48,14 +48,14 @@ public class MonitorPolicyController {
     this.servicesProperties = servicesProperties;
   }
 
-  @GetMapping("/policy-monitors")
-  public ResponseEntity<?> getAllPolicyMonitors(ProxyExchange<?> proxy,
+  @GetMapping("/monitor-templates")
+  public ResponseEntity<?> getAllMonitorTemplates(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/policy-monitors")
+        .path("/api/admin/monitor-templates")
         .queryParams(queryParams)
         .buildAndExpand()
         .toUriString();
@@ -65,15 +65,15 @@ public class MonitorPolicyController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/policy-monitors/{uuid}")
-  public ResponseEntity<?> getAllPolicyMonitors(ProxyExchange<?> proxy,
+  @GetMapping("/monitor-templates/{uuid}")
+  public ResponseEntity<?> getMonitorTemplate(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/policy-monitors/{uuid}")
+        .path("/api/admin/monitor-templates/{uuid}")
         .queryParams(queryParams)
         .buildAndExpand(uuid)
         .toUriString();
@@ -83,13 +83,13 @@ public class MonitorPolicyController {
     return proxy.uri(backendUri).get();
   }
 
-  @PostMapping("/policy-monitors")
-  public ResponseEntity<?> createPolicyMonitor(ProxyExchange<?> proxy,
+  @PostMapping("/monitor-templates")
+  public ResponseEntity<?> createMonitorTemplates(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/policy-monitors")
+        .path("/api/admin/monitor-templates")
         .buildAndExpand()
         .toUriString();
 
@@ -98,14 +98,14 @@ public class MonitorPolicyController {
     return proxy.uri(backendUri).post();
   }
 
-  @PutMapping("/policy-monitors/{uuid}")
-  public ResponseEntity<?> updatePolicyMonitor(ProxyExchange<?> proxy,
+  @PutMapping("/monitor-templates/{uuid}")
+  public ResponseEntity<?> updateMonitorTemplates(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/policy-monitors/{uuid}")
+        .path("/api/admin/monitor-templates/{uuid}")
         .buildAndExpand(uuid)
         .toUriString();
 
@@ -114,14 +114,14 @@ public class MonitorPolicyController {
     return proxy.uri(backendUri).put();
   }
 
-  @DeleteMapping("/policy-monitors/{uuid}")
-  public ResponseEntity<?> deletePolicyMonitor(ProxyExchange<?> proxy,
+  @DeleteMapping("/monitor-templates/{uuid}")
+  public ResponseEntity<?> deleteMonitorTemplates(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
-        .path("/api/admin/policy-monitors/{uuid}")
+        .path("/api/admin/monitor-templates/{uuid}")
         .buildAndExpand(uuid)
         .toUriString();
 
@@ -229,7 +229,7 @@ public class MonitorPolicyController {
   }
 
   @GetMapping("/policies/monitors/effective/{tenantId}/monitor-ids")
-  public ResponseEntity<?> getEffectivePolicyMonitorIdsForTenant(ProxyExchange<?> proxy,
+  public ResponseEntity<?> getEffectiveMonitorIdsUsingMonitorPoliciesForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
