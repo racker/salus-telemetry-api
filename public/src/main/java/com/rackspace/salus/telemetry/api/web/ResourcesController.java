@@ -84,19 +84,20 @@ public class ResourcesController {
     return proxy.uri(backendUri).get();
   }
 
-  @GetMapping("/tenant/{tenantId}/resources-by-label")
+  @GetMapping("/tenant/{tenantId}/resources-by-label/{logicalOperator}")
   public ResponseEntity<?> getResourcesWithLabels(ProxyExchange<?> proxy,
                                                   @PathVariable String tenantId,
+                                                  @PathVariable String logicalOperator,
                                                   @RequestHeader HttpHeaders headers,
                                                   @RequestParam Map<String, String> labels) {
     final UriComponentsBuilder builder = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
-        .path("/api/tenant/{tenantId}/resources-by-label");
+        .path("/api/tenant/{tenantId}/resources-by-label/{logicalOperator}");
 
     labels.forEach(builder::queryParam);
 
     final String backendUri = builder
-        .buildAndExpand(tenantId)
+        .buildAndExpand(tenantId, logicalOperator)
         .toUriString();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
