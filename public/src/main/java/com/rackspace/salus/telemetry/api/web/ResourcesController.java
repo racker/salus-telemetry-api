@@ -22,7 +22,6 @@ import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +42,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  * to proxy calls to the resource-management service.
  */
 @RestController
-@Slf4j
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class ResourcesController {
 
