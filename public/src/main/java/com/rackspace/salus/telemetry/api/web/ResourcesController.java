@@ -19,7 +19,6 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,9 +72,9 @@ public class ResourcesController {
   public ResponseEntity<?> getOne(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @PathVariable String resourceId) throws UnsupportedEncodingException {
+      @PathVariable String resourceId) {
 
-    URI backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .buildAndExpand(tenantId, resourceId)
