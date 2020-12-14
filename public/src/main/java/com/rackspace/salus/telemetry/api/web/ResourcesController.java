@@ -20,8 +20,9 @@ package com.rackspace.salus.telemetry.api.web;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * to proxy calls to the resource-management service.
  */
 @RestController
+@Slf4j
 @SuppressWarnings("Duplicates") // due to repetitive proxy setup/calls
 public class ResourcesController {
 
@@ -74,11 +76,12 @@ public class ResourcesController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @PathVariable String resourceId) throws UnsupportedEncodingException {
-    String backendUri = UriComponentsBuilder
+
+    URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
-        .buildAndExpand(tenantId, URLEncoder.encode(resourceId,"UTF-8"))
-        .toUriString();
+        .buildAndExpand(tenantId, resourceId)
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -171,11 +174,12 @@ public class ResourcesController {
                                   @PathVariable String tenantId,
                                   @PathVariable String resourceId,
                                   @RequestHeader HttpHeaders headers) {
-    final String backendUri = UriComponentsBuilder
+
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .buildAndExpand(tenantId, resourceId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -188,11 +192,11 @@ public class ResourcesController {
                                   @PathVariable String resourceId,
                                   @RequestHeader HttpHeaders headers) {
 
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .buildAndExpand(tenantId, resourceId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
