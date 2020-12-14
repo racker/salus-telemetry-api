@@ -19,6 +19,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.net.URI;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -73,11 +74,11 @@ public class ResourcesController {
       @RequestHeader HttpHeaders headers,
       @PathVariable String resourceId) {
 
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .buildAndExpand(tenantId, resourceId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -170,11 +171,12 @@ public class ResourcesController {
                                   @PathVariable String tenantId,
                                   @PathVariable String resourceId,
                                   @RequestHeader HttpHeaders headers) {
-    final String backendUri = UriComponentsBuilder
+
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .buildAndExpand(tenantId, resourceId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -187,11 +189,11 @@ public class ResourcesController {
                                   @PathVariable String resourceId,
                                   @RequestHeader HttpHeaders headers) {
 
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources/{resourceId}")
         .buildAndExpand(tenantId, resourceId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
