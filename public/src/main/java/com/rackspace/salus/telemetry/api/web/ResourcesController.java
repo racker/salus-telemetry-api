@@ -206,12 +206,12 @@ public class ResourcesController {
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
 
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/search")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
