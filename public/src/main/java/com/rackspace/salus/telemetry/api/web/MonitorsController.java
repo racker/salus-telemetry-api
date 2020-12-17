@@ -19,6 +19,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -59,12 +60,12 @@ public class MonitorsController {
                                   @PathVariable String tenantId,
                                   @RequestHeader HttpHeaders headers,
                                   @RequestParam MultiValueMap<String,String> queryParams) {
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -211,12 +212,12 @@ public class MonitorsController {
                                                @PathVariable String tenantId,
                                                @RequestHeader HttpHeaders headers,
                                                @RequestParam MultiValueMap<String,String> queryParams) {
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/bound-monitors")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
@@ -228,12 +229,12 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams) {
-    final String backendUri = UriComponentsBuilder
+    final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/search")
         .queryParams(queryParams)
         .buildAndExpand(tenantId)
-        .toUriString();
+        .toUri();
 
     ApiUtils.applyRequiredHeaders(proxy, headers);
 
