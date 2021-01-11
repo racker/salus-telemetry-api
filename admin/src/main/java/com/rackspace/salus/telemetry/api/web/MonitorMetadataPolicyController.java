@@ -20,6 +20,7 @@ import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.model.MonitorType;
 import com.rackspace.salus.telemetry.model.TargetClassName;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,7 +55,8 @@ public class MonitorMetadataPolicyController {
   @GetMapping("/policy/metadata/monitor")
   public ResponseEntity<?> getAllMetadataPoliciesForMonitors(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -62,7 +65,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -71,7 +74,8 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> getMetadataPolicyForMonitors(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -80,14 +84,15 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/policy/metadata/monitor")
   public ResponseEntity<?> createMetadataPolicyForMonitors(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -95,7 +100,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri)
         .post();
@@ -104,7 +109,8 @@ public class MonitorMetadataPolicyController {
   @PutMapping("/policy/metadata/monitor/{uuid}")
   public ResponseEntity<?> updateMetadataPolicyForMonitors(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -112,7 +118,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).put();
   }
@@ -120,7 +126,8 @@ public class MonitorMetadataPolicyController {
   @DeleteMapping("/policy/metadata/monitor/{uuid}")
   public ResponseEntity<?> deleteMetadataPolicyForMonitors(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -128,7 +135,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).delete();
   }
@@ -137,7 +144,8 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> getEffectiveMetadataPolicyForMonitorsByTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -146,7 +154,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -157,7 +165,8 @@ public class MonitorMetadataPolicyController {
       @PathVariable TargetClassName className,
       @PathVariable MonitorType monitorType,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -166,14 +175,15 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(tenantId, className, monitorType)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/policy/metadata/zones")
   public ResponseEntity<?> createMetadataPolicyForZones(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -181,7 +191,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri)
         .post();
@@ -190,7 +200,8 @@ public class MonitorMetadataPolicyController {
   @PutMapping("/policy/metadata/zones/{region}")
   public ResponseEntity<?> updateMetadataPolicyForZones(ProxyExchange<?> proxy,
       @PathVariable String region,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -198,7 +209,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(region)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).put();
   }
@@ -206,7 +217,8 @@ public class MonitorMetadataPolicyController {
   @DeleteMapping("/policy/metadata/zones/{region}")
   public ResponseEntity<?> deleteMetadataPolicyForZones(ProxyExchange<?> proxy,
       @PathVariable String region,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -214,7 +226,7 @@ public class MonitorMetadataPolicyController {
         .buildAndExpand(region)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).delete();
   }

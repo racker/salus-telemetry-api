@@ -18,6 +18,7 @@ package com.rackspace.salus.telemetry.api.web;
 
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +52,8 @@ public class MonitorTranslationController {
   @GetMapping("/monitor-translations")
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
                                   @RequestHeader HttpHeaders headers,
-                                  @RequestParam MultiValueMap<String, String> queryParams) {
+                                  @RequestParam MultiValueMap<String, String> queryParams,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -59,7 +62,7 @@ public class MonitorTranslationController {
         .build()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -67,28 +70,30 @@ public class MonitorTranslationController {
   @GetMapping("/monitor-translations/{id}")
   public ResponseEntity<?> getById(ProxyExchange<?> proxy,
                                    @PathVariable String id,
-                                   @RequestHeader HttpHeaders headers) {
+                                   @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations/{id}")
         .buildAndExpand(id)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/monitor-translations")
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
-                                  @RequestHeader HttpHeaders headers) {
+                                  @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations")
         .build()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).post();
   }
@@ -96,14 +101,15 @@ public class MonitorTranslationController {
   @DeleteMapping("/monitor-translations/{id}")
   public ResponseEntity<?> delete(ProxyExchange<?> proxy,
                                   @PathVariable String id,
-                                  @RequestHeader HttpHeaders headers) {
+                                  @RequestHeader HttpHeaders headers,
+      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/admin/monitor-translations/{id}")
         .buildAndExpand(id)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).delete();
   }

@@ -8,6 +8,11 @@ salus:
   api:
     public:
       roles: ["COMPUTE_DEFAULT", "MONITORING_SERVICE_ADMIN", "IDENTITY_USER_ADMIN", "IDENTITY_DEFAULT"]
+  identity:
+    endpoint:
+    admin-username:
+    admin-password:
+
 salus.services:
   monitor-management-url: http://localhost:8089
   resource-management-url: http://localhost:8085

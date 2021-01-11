@@ -16,7 +16,11 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
-import com.rackspace.salus.common.web.ReposeHeaderFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rackspace.salus.common.config.IdentityProperties;
+import com.rackspace.salus.common.services.IdentityAdminAuthService;
+import com.rackspace.salus.common.services.IdentityTokenValidationService;
+import com.rackspace.salus.common.web.IdentityAuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +28,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @Slf4j
@@ -31,23 +36,43 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiPublicProperties apiPublicProperties;
+  private final RestTemplate restTemplate;
+  private final ObjectMapper objectMapper;
+  private final IdentityProperties identityProperties;
+
+  private AuthExceptionHandler authExceptionHandler;
 
   @Autowired
-  public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties) {
+  public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties,
+      IdentityProperties identityProperties,
+      RestTemplate restTemplate, ObjectMapper objectMapper,
+      AuthExceptionHandler authExceptionHandler) {
     this.apiPublicProperties = apiPublicProperties;
+    this.identityProperties = identityProperties;
+    this.objectMapper = objectMapper;
+    this.restTemplate = restTemplate;
+    this.authExceptionHandler = authExceptionHandler;
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    log.debug("Configuring tenant web security to authorize roles: {}", apiPublicProperties.getRoles());
+    log.debug("Configuring tenant web security to authorize roles: {}",
+        apiPublicProperties.getRoles());
     http
+        .cors().and()
         .csrf().disable()
         .addFilterBefore(
-            new ReposeHeaderFilter(true),
+            new IdentityAuthFilter(
+                new IdentityTokenValidationService(
+                    new IdentityAdminAuthService(
+                        restTemplate, identityProperties),
+                    restTemplate, identityProperties),
+                objectMapper, true),
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
         .antMatchers("/tenant/**")
-        .hasAnyRole(apiPublicProperties.getRoles().toArray(new String[0]));
+        .hasAnyRole(apiPublicProperties.getRoles().toArray(new String[0]))
+        .and().exceptionHandling().authenticationEntryPoint(authExceptionHandler);
   }
 }

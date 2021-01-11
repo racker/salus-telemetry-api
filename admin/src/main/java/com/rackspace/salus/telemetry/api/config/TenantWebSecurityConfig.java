@@ -16,7 +16,12 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
-import com.rackspace.salus.common.web.ReposeHeaderFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rackspace.salus.common.config.IdentityProperties;
+import com.rackspace.salus.common.services.IdentityAdminAuthService;
+import com.rackspace.salus.common.services.IdentityTokenValidationService;
+import com.rackspace.salus.common.web.IdentityAuthFilter;
+import com.rackspace.salus.telemetry.api.web.RestExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +29,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @Slf4j
@@ -31,19 +37,34 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiAdminProperties apiAdminProperties;
+  private final RestTemplate restTemplate;
+  private final ObjectMapper objectMapper;
+  private final IdentityProperties identityProperties;
+  private RestExceptionHandler restExceptionHandler;
 
   @Autowired
-  public TenantWebSecurityConfig(ApiAdminProperties apiAdminProperties) {
+  public TenantWebSecurityConfig(ApiAdminProperties apiAdminProperties,
+      IdentityProperties identityProperties,
+      RestTemplate restTemplate, ObjectMapper objectMapper) {
     this.apiAdminProperties = apiAdminProperties;
+    this.identityProperties = identityProperties;
+    this.objectMapper = objectMapper;
+    this.restTemplate = restTemplate;
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    log.debug("Configuring tenant web security to authorize roles: {}", apiAdminProperties.getRoles());
+    log.debug("Configuring tenant web security to authorize roles: {}",
+        apiAdminProperties.getRoles());
     http
         .csrf().disable()
         .addFilterBefore(
-            new ReposeHeaderFilter(false),
+            new IdentityAuthFilter(
+                new IdentityTokenValidationService(
+                    new IdentityAdminAuthService(
+                        restTemplate, identityProperties),
+                    restTemplate, identityProperties),
+                objectMapper, false),
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()
