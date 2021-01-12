@@ -16,13 +16,10 @@
 
 package com.rackspace.salus.telemetry.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.common.config.AutoConfigureSalusAppMetrics;
 import com.rackspace.salus.common.util.DumpConfigProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @AutoConfigureSalusAppMetrics
@@ -32,15 +29,5 @@ public class TelemetryPublicApiApplication {
     DumpConfigProperties.process(args);
 
     SpringApplication.run(TelemetryPublicApiApplication.class, args);
-  }
-
-  @Bean
-  public RestTemplate getRestTemplate() {
-    return new RestTemplate();
-  }
-
-  @Bean
-  public ObjectMapper getObjectMapper() {
-    return new ObjectMapper();
   }
 }

@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class MonitorsController {
   public ResponseEntity<?> getAllMonitors(ProxyExchange<?> proxy,
                                   @RequestHeader HttpHeaders headers,
                                   @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())

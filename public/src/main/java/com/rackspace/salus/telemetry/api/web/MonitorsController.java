@@ -17,6 +17,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.net.URI;
@@ -65,7 +66,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
@@ -83,7 +84,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @PathVariable String id,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
@@ -99,7 +100,7 @@ public class MonitorsController {
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors")
@@ -117,7 +118,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @PathVariable String id,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
@@ -164,7 +165,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @PathVariable String id,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitors/{uuid}")
@@ -180,7 +181,7 @@ public class MonitorsController {
   public ResponseEntity<?> getMonitorLabelSelectors(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/monitor-label-selectors")
@@ -195,7 +196,7 @@ public class MonitorsController {
   @GetMapping("/tenant/{tenantId}/schema/monitor-plugins")
   public ResponseEntity<?> getMonitorPluginsSchema(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/schema/monitor-plugins")
@@ -209,7 +210,7 @@ public class MonitorsController {
   @GetMapping("/tenant/{tenantId}/schema/monitors")
   public ResponseEntity<?> getMonitorsSchema(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/schema/monitors")
@@ -225,7 +226,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/bound-monitors")
@@ -242,7 +243,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/search")
@@ -259,7 +260,7 @@ public class MonitorsController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @PathVariable String monitorId,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())

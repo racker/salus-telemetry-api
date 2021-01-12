@@ -20,38 +20,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.common.config.IdentityProperties;
 import com.rackspace.salus.common.services.IdentityAdminAuthService;
 import com.rackspace.salus.common.services.IdentityTokenValidationService;
+import com.rackspace.salus.common.web.ExceptionHandlerFilter;
 import com.rackspace.salus.common.web.IdentityAuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @Slf4j
 @Profile("!unsecured")
+@EnableConfigurationProperties({IdentityProperties.class})
+@Import({RestTemplate.class, ObjectMapper.class, ExceptionHandlerFilter.class})
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiPublicProperties apiPublicProperties;
   private final RestTemplate restTemplate;
   private final ObjectMapper objectMapper;
   private final IdentityProperties identityProperties;
-
-  private AuthExceptionHandler authExceptionHandler;
+  private @Autowired ExceptionHandlerFilter exceptionHandlerFilter;
 
   @Autowired
   public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties,
       IdentityProperties identityProperties,
-      RestTemplate restTemplate, ObjectMapper objectMapper,
-      AuthExceptionHandler authExceptionHandler) {
+      RestTemplate restTemplate, ObjectMapper objectMapper) {
     this.apiPublicProperties = apiPublicProperties;
     this.identityProperties = identityProperties;
     this.objectMapper = objectMapper;
     this.restTemplate = restTemplate;
-    this.authExceptionHandler = authExceptionHandler;
   }
 
   @Override
@@ -61,6 +64,10 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .cors().and()
         .csrf().disable()
+        .addFilterBefore(
+            exceptionHandlerFilter,
+            LogoutFilter.class
+        )
         .addFilterBefore(
             new IdentityAuthFilter(
                 new IdentityTokenValidationService(
@@ -72,7 +79,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
         )
         .authorizeRequests()
         .antMatchers("/tenant/**")
-        .hasAnyRole(apiPublicProperties.getRoles().toArray(new String[0]))
-        .and().exceptionHandling().authenticationEntryPoint(authExceptionHandler);
+        .hasAnyRole(apiPublicProperties.getRoles().toArray(new String[0]));
+//        .and().exceptionHandling().authenticationEntryPoint(authExceptionHandler);
   }
 }

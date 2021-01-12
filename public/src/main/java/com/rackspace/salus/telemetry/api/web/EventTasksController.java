@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class EventTasksController {
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
@@ -70,7 +71,7 @@ public class EventTasksController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks")
@@ -88,7 +89,7 @@ public class EventTasksController {
       @PathVariable String tenantId,
       @PathVariable String taskId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")
@@ -105,7 +106,7 @@ public class EventTasksController {
       @PathVariable String tenantId,
       @PathVariable String taskId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{taskId}")
@@ -121,7 +122,7 @@ public class EventTasksController {
   public ResponseEntity<?> testEventTask(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/test-task")
@@ -138,7 +139,7 @@ public class EventTasksController {
       @PathVariable String tenantId,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getEventManagementUrl())
         .path("/api/tenant/{tenantId}/tasks/{uuid}")

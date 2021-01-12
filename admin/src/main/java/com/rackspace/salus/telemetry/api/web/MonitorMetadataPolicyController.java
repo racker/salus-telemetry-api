@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.model.MonitorType;
@@ -56,7 +57,7 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> getAllMetadataPoliciesForMonitors(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -75,7 +76,7 @@ public class MonitorMetadataPolicyController {
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -92,7 +93,7 @@ public class MonitorMetadataPolicyController {
   @PostMapping("/policy/metadata/monitor")
   public ResponseEntity<?> createMetadataPolicyForMonitors(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -110,7 +111,7 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> updateMetadataPolicyForMonitors(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -127,7 +128,7 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> deleteMetadataPolicyForMonitors(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -145,7 +146,7 @@ public class MonitorMetadataPolicyController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -166,7 +167,7 @@ public class MonitorMetadataPolicyController {
       @PathVariable MonitorType monitorType,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -183,7 +184,7 @@ public class MonitorMetadataPolicyController {
   @PostMapping("/policy/metadata/zones")
   public ResponseEntity<?> createMetadataPolicyForZones(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -201,7 +202,7 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> updateMetadataPolicyForZones(ProxyExchange<?> proxy,
       @PathVariable String region,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -218,7 +219,7 @@ public class MonitorMetadataPolicyController {
   public ResponseEntity<?> deleteMetadataPolicyForZones(ProxyExchange<?> proxy,
       @PathVariable String region,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())

@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class ZonesController {
   public ResponseEntity<?> get(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -70,7 +71,7 @@ public class ZonesController {
   public ResponseEntity<?> getAll(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String,String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -88,7 +89,7 @@ public class ZonesController {
   @PostMapping("/zones")
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -105,7 +106,7 @@ public class ZonesController {
   @PutMapping("/zones/**")
   public ResponseEntity<?> update(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -123,7 +124,7 @@ public class ZonesController {
   @DeleteMapping("/zones/**")
   public ResponseEntity<?> delete(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -140,7 +141,7 @@ public class ZonesController {
   @GetMapping("/zone-assignment-counts/**")
   public ResponseEntity<?> getPublicZoneAssignmentCountsForZone(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     String zone = proxy.path("/api/zone-assignment-counts/");
 
     final String backendUri = UriComponentsBuilder
@@ -157,7 +158,7 @@ public class ZonesController {
   @GetMapping("/zone-assignment-counts")
   public ResponseEntity<?> getAllPublicZoneAssignmentCounts(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -172,7 +173,7 @@ public class ZonesController {
   @PostMapping("/rebalance-zone/**")
   public ResponseEntity<?> rebalancePublicZone(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     String zone = proxy.path("/api/rebalance-zone/");
 
     final String backendUri = UriComponentsBuilder

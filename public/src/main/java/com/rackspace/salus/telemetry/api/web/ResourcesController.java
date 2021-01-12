@@ -17,6 +17,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.net.URI;
@@ -59,7 +60,7 @@ public class ResourcesController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
@@ -77,7 +78,7 @@ public class ResourcesController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @PathVariable String resourceId,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
@@ -96,7 +97,7 @@ public class ResourcesController {
       @PathVariable String logicalOperator,
       @RequestHeader HttpHeaders headers,
       @RequestParam Map<String, String> labels,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final UriComponentsBuilder builder = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources-by-label/{logicalOperator}");
@@ -116,7 +117,7 @@ public class ResourcesController {
   public ResponseEntity<?> getResourceLabels(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-labels")
@@ -132,7 +133,7 @@ public class ResourcesController {
   public ResponseEntity<?> getResourceMetadataKeys(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-metadata-keys")
@@ -148,7 +149,7 @@ public class ResourcesController {
   public ResponseEntity<?> getLabelNamespaces(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resource-label-namespaces")
@@ -164,7 +165,7 @@ public class ResourcesController {
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
         .path("/api/tenant/{tenantId}/resources")
@@ -181,7 +182,7 @@ public class ResourcesController {
       @PathVariable String tenantId,
       @PathVariable String resourceId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
@@ -199,7 +200,7 @@ public class ResourcesController {
       @PathVariable String tenantId,
       @PathVariable String resourceId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())
@@ -217,7 +218,7 @@ public class ResourcesController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final URI backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getResourceManagementUrl())

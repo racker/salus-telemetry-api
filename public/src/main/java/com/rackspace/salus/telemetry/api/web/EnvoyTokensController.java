@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class EnvoyTokensController {
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens")
@@ -69,7 +70,7 @@ public class EnvoyTokensController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens")
@@ -87,7 +88,7 @@ public class EnvoyTokensController {
       @PathVariable String tenantId,
       @PathVariable String id,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
@@ -104,7 +105,7 @@ public class EnvoyTokensController {
       @PathVariable String tenantId,
       @PathVariable String id,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens/{id}")
@@ -122,7 +123,7 @@ public class EnvoyTokensController {
       @PathVariable String tenantId,
       @PathVariable String id,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getAuthServiceUrl())
         .path("/api/tenant/{tenantId}/envoy-tokens/{id}")

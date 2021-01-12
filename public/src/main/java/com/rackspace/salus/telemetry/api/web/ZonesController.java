@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class ZonesController {
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
       @RequestParam MultiValueMap<String, String> queryParams,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones")
@@ -70,7 +71,7 @@ public class ZonesController {
   public ResponseEntity<?> get(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String zone = proxy.path("/api/zones/");
 
     final String backendUri = UriComponentsBuilder
@@ -88,7 +89,7 @@ public class ZonesController {
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones")
@@ -106,7 +107,7 @@ public class ZonesController {
       @PathVariable String tenantId,
       @PathVariable String name,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones/{name}")
@@ -124,7 +125,7 @@ public class ZonesController {
       @PathVariable String tenantId,
       @PathVariable String name,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zones/{name}")
@@ -141,7 +142,7 @@ public class ZonesController {
       @PathVariable String tenantId,
       @PathVariable String name,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zone-assignment-counts/{name}")
@@ -156,7 +157,7 @@ public class ZonesController {
   public ResponseEntity<?> getAllPrivateZoneAssignmentCounts(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/zone-assignment-counts")
@@ -172,7 +173,7 @@ public class ZonesController {
       @PathVariable String tenantId,
       @PathVariable String name,
       @RequestHeader HttpHeaders headers,
-      @RequestAttribute("identityHeadersMap") Map<String, Object> attributes) {
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/rebalance-zone/{name}")
