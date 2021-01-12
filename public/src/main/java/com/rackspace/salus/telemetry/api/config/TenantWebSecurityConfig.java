@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rackspace.salus.common.config.IdentityProperties;
 import com.rackspace.salus.common.services.IdentityAdminAuthService;
 import com.rackspace.salus.common.services.IdentityTokenValidationService;
-import com.rackspace.salus.common.web.ExceptionHandlerFilter;
 import com.rackspace.salus.common.web.IdentityAuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,14 +36,13 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Profile("!unsecured")
 @EnableConfigurationProperties({IdentityProperties.class})
-@Import({RestTemplate.class, ObjectMapper.class, ExceptionHandlerFilter.class})
+@Import({RestTemplate.class, ObjectMapper.class})
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiPublicProperties apiPublicProperties;
   private final RestTemplate restTemplate;
   private final ObjectMapper objectMapper;
   private final IdentityProperties identityProperties;
-  private @Autowired ExceptionHandlerFilter exceptionHandlerFilter;
 
   @Autowired
   public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties,
@@ -65,10 +62,6 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
         .cors().and()
         .csrf().disable()
         .addFilterBefore(
-            exceptionHandlerFilter,
-            LogoutFilter.class
-        )
-        .addFilterBefore(
             new IdentityAuthFilter(
                 new IdentityTokenValidationService(
                     new IdentityAdminAuthService(
@@ -80,6 +73,5 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers("/tenant/**")
         .hasAnyRole(apiPublicProperties.getRoles().toArray(new String[0]));
-//        .and().exceptionHandling().authenticationEntryPoint(authExceptionHandler);
   }
 }
