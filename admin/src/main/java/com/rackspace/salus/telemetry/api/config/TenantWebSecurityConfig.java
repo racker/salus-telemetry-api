@@ -25,6 +25,7 @@ import com.rackspace.salus.telemetry.api.web.RestExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
@@ -38,6 +39,7 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!unsecured")
 @EnableConfigurationProperties({IdentityProperties.class})
 @Import({RestTemplate.class, ObjectMapper.class})
+@EnableCaching
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiAdminProperties apiAdminProperties;
