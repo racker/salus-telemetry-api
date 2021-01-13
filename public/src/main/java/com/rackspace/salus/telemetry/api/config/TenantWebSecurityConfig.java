@@ -24,7 +24,10 @@ import com.rackspace.salus.common.web.IdentityAuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
@@ -37,23 +40,21 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Profile("!unsecured")
 @EnableConfigurationProperties({IdentityProperties.class})
-@Import({RestTemplate.class, ObjectMapper.class})
 @EnableCaching
+@ComponentScan("com.rackspace.salus.common.services")
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiPublicProperties apiPublicProperties;
-  private final RestTemplate restTemplate;
+  private final IdentityTokenValidationService identityTokenValidationService;
   private final ObjectMapper objectMapper;
-  private final IdentityProperties identityProperties;
 
   @Autowired
   public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties,
-      IdentityProperties identityProperties,
-      RestTemplate restTemplate, ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 IdentityTokenValidationService identityTokenValidationService) {
     this.apiPublicProperties = apiPublicProperties;
-    this.identityProperties = identityProperties;
     this.objectMapper = objectMapper;
-    this.restTemplate = restTemplate;
+    this.identityTokenValidationService = identityTokenValidationService;
   }
 
   @Override
@@ -65,10 +66,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf().disable()
         .addFilterBefore(
             new IdentityAuthFilter(
-                new IdentityTokenValidationService(
-                    new IdentityAdminAuthService(
-                        restTemplate, identityProperties),
-                    restTemplate, identityProperties),
+                identityTokenValidationService,
                 objectMapper, true),
             BasicAuthenticationFilter.class
         )

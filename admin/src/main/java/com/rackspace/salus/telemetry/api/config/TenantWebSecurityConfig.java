@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
@@ -38,24 +39,22 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Profile("!unsecured")
 @EnableConfigurationProperties({IdentityProperties.class})
-@Import({RestTemplate.class, ObjectMapper.class})
 @EnableCaching
+@ComponentScan("com.rackspace.salus.common.services")
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiAdminProperties apiAdminProperties;
-  private final RestTemplate restTemplate;
+  private final IdentityTokenValidationService identityTokenValidationService;
   private final ObjectMapper objectMapper;
-  private final IdentityProperties identityProperties;
   private RestExceptionHandler restExceptionHandler;
 
   @Autowired
   public TenantWebSecurityConfig(ApiAdminProperties apiAdminProperties,
-      IdentityProperties identityProperties,
-      RestTemplate restTemplate, ObjectMapper objectMapper) {
+                                 IdentityTokenValidationService identityTokenValidationService,
+                                 ObjectMapper objectMapper) {
     this.apiAdminProperties = apiAdminProperties;
-    this.identityProperties = identityProperties;
+    this.identityTokenValidationService = identityTokenValidationService;
     this.objectMapper = objectMapper;
-    this.restTemplate = restTemplate;
   }
 
   @Override
@@ -66,10 +65,7 @@ public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf().disable()
         .addFilterBefore(
             new IdentityAuthFilter(
-                new IdentityTokenValidationService(
-                    new IdentityAdminAuthService(
-                        restTemplate, identityProperties),
-                    restTemplate, identityProperties),
+                identityTokenValidationService,
                 objectMapper, false),
             BasicAuthenticationFilter.class
         )
