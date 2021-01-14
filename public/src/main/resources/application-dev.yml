@@ -24,3 +24,8 @@ salus.services:
 spring:
   profiles:
     include: "unsecured"
+  cache:
+    type: "caffeine"
+    cache-names: "identityTokenCache"
+    caffeine:
+      spec: "maximumSize=500,expireAfterAccess=24h"
