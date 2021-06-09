@@ -16,23 +16,28 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskRequest;
 import com.rackspace.salus.telemetry.api.model.TestMonitorAndEventTaskResponse;
 import com.rackspace.salus.telemetry.api.services.TestMonitorAndEventTaskService;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
+@PreAuthorize("{#tenantId == authentication.principal}")
 public class TestMonitorController {
 
   private final ServicesProperties servicesProperties;
@@ -48,14 +53,15 @@ public class TestMonitorController {
   @PostMapping("/tenant/{tenantId}/test-monitor")
   public ResponseEntity<?> create(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
         .path("/api/tenant/{tenantId}/test-monitor")
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri)
         .post();

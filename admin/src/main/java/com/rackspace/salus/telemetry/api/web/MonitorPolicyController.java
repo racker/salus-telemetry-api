@@ -16,8 +16,10 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,7 +54,8 @@ public class MonitorPolicyController {
   @GetMapping("/monitor-templates")
   public ResponseEntity<?> getAllMonitorTemplates(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -60,7 +64,7 @@ public class MonitorPolicyController {
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -69,7 +73,8 @@ public class MonitorPolicyController {
   public ResponseEntity<?> getMonitorTemplate(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -78,14 +83,15 @@ public class MonitorPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/monitor-templates")
   public ResponseEntity<?> createMonitorTemplates(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -93,7 +99,7 @@ public class MonitorPolicyController {
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).post();
   }
@@ -101,7 +107,8 @@ public class MonitorPolicyController {
   @PutMapping("/monitor-templates/{uuid}")
   public ResponseEntity<?> updateMonitorTemplates(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -109,7 +116,7 @@ public class MonitorPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).put();
   }
@@ -117,7 +124,8 @@ public class MonitorPolicyController {
   @DeleteMapping("/monitor-templates/{uuid}")
   public ResponseEntity<?> deleteMonitorTemplates(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getMonitorManagementUrl())
@@ -125,7 +133,7 @@ public class MonitorPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).delete();
   }
@@ -133,7 +141,8 @@ public class MonitorPolicyController {
   @GetMapping("/policies/monitors")
   public ResponseEntity<?> getAllMonitorPolicies(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -142,7 +151,7 @@ public class MonitorPolicyController {
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -151,7 +160,8 @@ public class MonitorPolicyController {
   public ResponseEntity<?> getAllMonitorPolicies(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -160,21 +170,22 @@ public class MonitorPolicyController {
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
 
   @PostMapping("/policies/monitors")
   public ResponseEntity<?> createPolicy(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors")
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri)
         .post();
@@ -183,28 +194,30 @@ public class MonitorPolicyController {
   @DeleteMapping("/policies/monitors/{uuid}")
   public ResponseEntity<?> deletePolicy(ProxyExchange<?> proxy,
       @PathVariable UUID uuid,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors/{uuid}")
         .buildAndExpand(uuid)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).delete();
   }
 
   @PostMapping("/policies/monitors/opt-out")
   public ResponseEntity<?> optOutPolicy(ProxyExchange<?> proxy,
-      @RequestHeader HttpHeaders headers) {
+      @RequestHeader HttpHeaders headers,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
         .path("/api/admin/policy/monitors/opt-out")
         .buildAndExpand()
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri)
         .post();
@@ -214,7 +227,8 @@ public class MonitorPolicyController {
   public ResponseEntity<?> getEffectivePoliciesByTenantId(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -223,7 +237,7 @@ public class MonitorPolicyController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -232,7 +246,8 @@ public class MonitorPolicyController {
   public ResponseEntity<?> getEffectiveMonitorIdsUsingMonitorPoliciesForTenant(ProxyExchange<?> proxy,
       @PathVariable String tenantId,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -241,7 +256,7 @@ public class MonitorPolicyController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }
@@ -251,7 +266,8 @@ public class MonitorPolicyController {
       @PathVariable String tenantId,
       @RequestParam(required = false, defaultValue = "true") boolean includeNullMonitors,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams) {
+      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
 
     final String backendUri = UriComponentsBuilder
         .fromUriString(servicesProperties.getPolicyManagementUrl())
@@ -260,7 +276,7 @@ public class MonitorPolicyController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     return proxy.uri(backendUri).get();
   }

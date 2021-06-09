@@ -16,9 +16,15 @@
 
 package com.rackspace.salus.telemetry.api.config;
 
-import com.rackspace.salus.common.web.ReposeHeaderFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rackspace.salus.common.config.IdentityProperties;
+import com.rackspace.salus.common.services.IdentityTokenValidationService;
+import com.rackspace.salus.common.web.IdentityAuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,22 +34,35 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 @Slf4j
 @Profile("!unsecured")
+@EnableConfigurationProperties({IdentityProperties.class})
+@EnableCaching
+@ComponentScan("com.rackspace.salus.common.services")
 public class TenantWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final ApiPublicProperties apiPublicProperties;
+  private final IdentityTokenValidationService identityTokenValidationService;
+  private final ObjectMapper objectMapper;
 
   @Autowired
-  public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties) {
+  public TenantWebSecurityConfig(ApiPublicProperties apiPublicProperties,
+                                 ObjectMapper objectMapper,
+                                 IdentityTokenValidationService identityTokenValidationService) {
     this.apiPublicProperties = apiPublicProperties;
+    this.objectMapper = objectMapper;
+    this.identityTokenValidationService = identityTokenValidationService;
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    log.debug("Configuring tenant web security to authorize roles: {}", apiPublicProperties.getRoles());
+    log.debug("Configuring tenant web security to authorize roles: {}",
+        apiPublicProperties.getRoles());
     http
+        .cors().and()
         .csrf().disable()
         .addFilterBefore(
-            new ReposeHeaderFilter(true),
+            new IdentityAuthFilter(
+                identityTokenValidationService,
+                objectMapper, true),
             BasicAuthenticationFilter.class
         )
         .authorizeRequests()

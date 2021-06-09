@@ -17,11 +17,13 @@
 
 package com.rackspace.salus.telemetry.api.web;
 
+import com.rackspace.salus.common.config.IdentityConfig;
 import com.rackspace.salus.common.util.ApiUtils;
 import com.rackspace.salus.telemetry.api.config.ServicesProperties;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.mvc.ProxyExchange;
@@ -30,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,9 +54,10 @@ public class CrossServiceController {
   @DeleteMapping("/tenant/{tenantId}")
   public ResponseEntity<?> deleteAll(ProxyExchange<?> proxy,
       @RequestHeader HttpHeaders headers,
-      @RequestParam MultiValueMap<String,String> queryParams,
+      @RequestParam MultiValueMap<String, String> queryParams,
       @PathVariable String tenantId,
-      @RequestParam(defaultValue = "true") boolean removeTenantMetadata) {
+      @RequestParam(defaultValue = "true") boolean removeTenantMetadata,
+      @RequestAttribute(IdentityConfig.ATTRIBUTE_NAME) Map<String, Object> attributes) {
     queryParams.add("sendEvents", "false");
     List bodies = new LinkedList();
 
@@ -65,10 +69,10 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     ResponseEntity<?> agentInstalls = proxy.uri(agentCatalogManagementURI).delete();
-    if(agentInstalls.getStatusCode().isError()) {
+    if (agentInstalls.getStatusCode().isError()) {
       bodies.add(agentInstalls.getBody());
     }
 
@@ -80,11 +84,11 @@ public class CrossServiceController {
         .buildAndExpand(tenantId)
         .toUriString();
 
-    ApiUtils.applyRequiredHeaders(proxy, headers);
+    ApiUtils.applyRequiredHeaders(proxy, headers, attributes);
 
     ResponseEntity<?> envoyTokens = proxy.uri(authURI).delete();
 
-    if(envoyTokens.getStatusCode().isError()) {
+    if (envoyTokens.getStatusCode().isError()) {
       bodies.add(envoyTokens.getBody());
     }
 
@@ -98,7 +102,7 @@ public class CrossServiceController {
 
     ResponseEntity<?> eventResponse = proxy.uri(eventEngineURI).delete();
 
-    if(eventResponse.getStatusCode().isError()) {
+    if (eventResponse.getStatusCode().isError()) {
       bodies.add(eventResponse.getBody());
     }
 
@@ -112,7 +116,7 @@ public class CrossServiceController {
 
     ResponseEntity<?> resource = proxy.uri(resourcesURI).delete();
 
-    if(resource.getStatusCode().isError()) {
+    if (resource.getStatusCode().isError()) {
       bodies.add(resource.getBody());
     }
 
@@ -126,12 +130,12 @@ public class CrossServiceController {
 
     ResponseEntity<?> monitor = proxy.uri(monitorsURI).delete();
 
-    if(monitor.getStatusCode().isError()) {
+    if (monitor.getStatusCode().isError()) {
       bodies.add(monitor.getBody());
     }
 
     // delete tenant metadata
-    if(removeTenantMetadata) {
+    if (removeTenantMetadata) {
       final String tenantMetadataURI = UriComponentsBuilder
           .fromUriString(servicesProperties.getPolicyManagementUrl())
           .path("/api/admin/tenant-metadata/{tenantId}")
@@ -156,11 +160,11 @@ public class CrossServiceController {
 
     ResponseEntity<?> zone = proxy.uri(zonesURI).delete();
 
-    if(zone.getStatusCode().isError()) {
+    if (zone.getStatusCode().isError()) {
       bodies.add(zone.getBody());
     }
 
-    if(!bodies.isEmpty()) {
+    if (!bodies.isEmpty()) {
       LinkedHashMap responseBody = new LinkedHashMap();
 
       responseBody.put("messages", bodies);
@@ -170,8 +174,6 @@ public class CrossServiceController {
 
     return ResponseEntity.status(HttpStatus.ACCEPTED_202).headers(headers).build();
   }
-
-
 
 
 }
